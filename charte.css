@@ -3105,6 +3105,14 @@
     margin: 0 0 0.75rem;
     max-width: 46rem;
   }
+  .ui-navbar-totem__langue {
+    display: contents;
+  }
+  .fi-demos__langue {
+    margin-inline-start: auto;
+    display: flex;
+    align-items: center;
+  }
   .fi-demos__choix {
     display: flex;
     flex-direction: column;
@@ -3263,12 +3271,7 @@
     padding: 1.5rem;
     text-align: center;
     color: var(--color-texte-efface);
-  }
-  .fi-demos__cadre[data-etat="en-ligne"]:empty::after {
-    content: "Cliquez sur « Démarrer la démo » pour la charger ici.";
-  }
-  .fi-demos__cadre[data-etat="a-venir"]:empty::after {
-    content: "Cette démo arrive bientôt sur le site.";
+    content: attr(data-vide);
   }
   .fi-demos__iframe {
     width: 100%;
@@ -3279,6 +3282,14 @@
   @media (min-width: 900px) {
     .fi-demos__intro {
       display: block;
+    }
+    .ui-navbar-totem__langue {
+      display: contents;
+    }
+    .fi-demos__langue {
+      margin-inline-start: auto;
+      display: flex;
+      align-items: center;
     }
     .fi-demos__choix {
       flex-direction: row;

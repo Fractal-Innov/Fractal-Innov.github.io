@@ -20,7 +20,7 @@
   <meta name="og:description" content="WIP">
   <meta name="generator" content="Unity 2022.3.62f2, Needle Engine Integration @5.1.10">
   <meta name="needle-engine" content="5.1.10">
-  <meta name="needle:buildtime" content="2026-09-04T12:32:06.306Z">
+  <meta name="needle:buildtime" content="2026-09-04T12:44:27.560Z">
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -61,15 +61,15 @@
 }
   </script>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14"></script>
-  <script type="module" crossorigin src="./assets/index-CElsRNE6.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index.Ak09Ofjy.css">
+  <script type="module" crossorigin src="./assets/index-D2jdz9Ti.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index.CuYITJjD.css">
 </head>
 <body class="m-0 h-dvh overflow-hidden font-ui text-texte leading-relaxed bg-fond-haut
              bg-[radial-gradient(120%_80%_at_50%_-10%,var(--color-action)_0%,transparent_55%)]
              bg-fixed">
   <script>/* needle: fix for peerjs */ window.global = window; var parcelRequire;</script>
 
-  <div id="fi-splash" class="ui-splash" role="status" aria-live="polite" aria-label="Chargement">
+  <div id="fi-splash" class="ui-splash" role="status" aria-live="polite" aria-label="Chargement" data-i18n-aria="splash.chargement">
     <img
       class="ui-splash__logo"
       src="./assets/fi-logo-252.B9F72pmF.webp"
@@ -82,7 +82,7 @@
     />
     <p class="ui-splash__marque">Fractal Innov</p>
     <div class="ui-splash__jauge-zone">
-      <p class="ui-splash__sous-titre">Expérience Interactive</p>
+      <p class="ui-splash__sous-titre" data-i18n="splash.sousTitre">Expérience Interactive</p>
       <div class="ui-splash__jauge" aria-hidden="true"></div>
     </div>
   </div>
@@ -190,7 +190,7 @@
              rangée est reprise au cadre. Le `h2` reste, en `sr-only` : un
              lecteur d'écran a besoin de ce niveau de titre pour naviguer, et le
              supprimer laisserait la section sans nom accessible. -->
-        <h2 class="fi-demos__display sr-only">Les démonstrateurs</h2>
+        <h2 class="fi-demos__display sr-only" data-i18n="demos.titre">Les démonstrateurs</h2>
         <!-- ⚠️ **Le cadre passe AVANT le reste, juste sous le titre.** Ce que
              le visiteur est venu voir doit occuper le haut de l'écran ; la
              liste, l'accroche et les points clés se lisent en descendant. Le
@@ -211,7 +211,7 @@
             <!-- Un vrai lien, pas un bouton : le clic du milieu, le menu
                  contextuel et « copier l'adresse » marchent alors sans une ligne
                  de JavaScript. Son adresse est posée par `carrousel.ts`. -->
-            <a id="fi-demos-ouvrir" class="ui-bouton ui-bouton--discret" target="_blank" rel="noopener">Ouvrir l'adresse</a>
+            <a id="fi-demos-ouvrir" class="ui-bouton ui-bouton--discret" target="_blank" rel="noopener" data-i18n="demos.ouvrirAdresse">Ouvrir l'adresse</a>
 
             <!-- ⚠️ **Les flèches tiennent la MÊME ligne que les commandes, et
                  le compteur « 1 / 4 » a été retiré.** Il redisait ce que la liste
@@ -222,14 +222,14 @@
                  l'ouvrir, passer à la suivante — au lieu de dépenser deux
                  rangées de hauteur d'écran pour la même chose. -->
             <div class="fi-demos__pager">
-              <button type="button" id="fi-demos-precedent" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur précédent">←</button>
-              <button type="button" id="fi-demos-suivant" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur suivant">→</button>
+              <button type="button" id="fi-demos-precedent" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur précédent" data-i18n-aria="demos.precedent">←</button>
+              <button type="button" id="fi-demos-suivant" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur suivant" data-i18n-aria="demos.suivant">→</button>
             </div>
           </div>
-          <button type="button" id="fi-demos-reduire" class="fi-demos__reduire ui-bouton ui-bouton--discret">Quitter le plein écran</button>
+          <button type="button" id="fi-demos-reduire" class="fi-demos__reduire ui-bouton ui-bouton--discret" data-i18n="demos.quitterPleinEcran">Quitter le plein écran</button>
         </div>
 
-        <p class="fi-demos__intro">Chacun tourne dans le navigateur, sans installer quoi que ce soit. Ouvrez-les ici même, ou en plein écran.</p>
+        <p class="fi-demos__intro" data-i18n="demos.intro">Chacun tourne dans le navigateur, sans installer quoi que ce soit. Ouvrez-les ici même, ou en plein écran.</p>
 
         <!-- Le choix de la démo : la liste, ses flèches et le compteur, ensemble.
              ⚠️ Les flèches vivent À CÔTÉ du sélecteur et non sous le cadre :
@@ -237,7 +237,7 @@
              commandes de la démo elle-même. -->
         <div class="fi-demos__choix">
           <!-- Peinte par `carrousel.ts` depuis `demos.ts` : aucun titre ici. -->
-          <nav id="fi-demos-liste" class="fi-demos__liste" aria-label="Choisir un démonstrateur"></nav>
+          <nav id="fi-demos-liste" class="fi-demos__liste" aria-label="Choisir un démonstrateur" data-i18n-aria="demos.choisir"></nav>
         </div>
 
 
@@ -248,7 +248,7 @@
                `<details>` natif, donc ouvrable au clavier et annoncé comme
                tel, sans une ligne de JavaScript. -->
           <details class="ui-repli fi-demos__repli">
-            <summary class="ui-repli__bouton">Ce que montre cette démo</summary>
+            <summary class="ui-repli__bouton" data-i18n="demos.repli">Ce que montre cette démo</summary>
             <!-- ⚠️ **L'accroche est la PREMIÈRE ligne du repli, plus une ligne
                  à part.** Dehors, elle occupait deux lignes pleines pour dire ce
                  que le repli annonce déjà ; dedans, elle est la phrase qui
@@ -262,10 +262,10 @@
   </main>
 
   <footer class="w-[min(var(--largeur-contenu),100%-2.5rem)] mx-auto py-12 border-t border-texte/10 text-texte-efface text-[0.95rem] relative z-[1]">
-    <p class="my-1.5 max-w-[46rem]">Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque.</p>
-    <p class="my-1.5">Contact : <a href="mailto:contact@fractal-innov.fr">contact@fractal-innov.fr</a></p>
-    <p class="my-1.5">Un premier projet en ligne en 15 jours, à partir de 4900&nbsp;€.</p>
-    <p class="mt-4"><a class="ui-bouton ui-bouton--discret" href="/rayon-x/">Essayer une expérience →</a></p>
+    <p class="my-1.5 max-w-[46rem]" data-i18n="pied.promesse">Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque.</p>
+    <p class="my-1.5"><span data-i18n="pied.contact">Contact :</span> <a href="mailto:contact@fractal-innov.fr">contact@fractal-innov.fr</a></p>
+    <p class="my-1.5" data-i18n="pied.pilote">Un premier projet en ligne en 15 jours, à partir de 4900&nbsp;€.</p>
+    <p class="mt-4"><a class="ui-bouton ui-bouton--discret" href="/rayon-x/" data-i18n="pied.essayer">Essayer une expérience →</a></p>
   </footer>
   </div>
 
@@ -330,7 +330,7 @@
              seuil change avec la taille, pas avec le goût. Une dent de t85
              mesure les arrêts du dégradé ET vérifie qu'aucun libellé ne l'a
              attrapé au passage. -->
-        <p class="ui-navbar-totem__accroche-display">Transmettre les savoirs <span class="ui-navbar-totem__accroche-eclat">par l&rsquo;expérience</span></p>
+        <p class="ui-navbar-totem__accroche-display"><span data-i18n="lobby.accroche">Transmettre les savoirs</span> <span class="ui-navbar-totem__accroche-eclat" data-i18n="lobby.accrocheEclat">par l&rsquo;expérience</span></p>
         <!-- ⚠️ CE QUI LIMITE N'EST PAS LE SUPPORT, C'EST L'ORDRE (01/09/2026).
              Cette ligne disait « quelque chose à montrer qui ne tient pas dans
              une photo ». Deux défauts : « quelque chose » ne nomme rien, et
@@ -341,7 +341,7 @@
              📌 Le mot WebXR reste absent : le site a une page entière pour
              l'expliquer, mais le lobby arrive avant elle, et ce texte est
              INDEXÉ (index.html est l'accueil déployé). -->
-        <p class="ui-navbar-totem__sous-ligne">Une photo montre un angle. Une vidéo impose un ordre.<br /><span class="ui-navbar-totem__sous-ligne-conclusion">Une expérience laisse choisir le chemin.</span></p>
+        <p class="ui-navbar-totem__sous-ligne"><span data-i18n="lobby.sousLigne">Une photo montre un angle. Une vidéo impose un ordre.</span><br /><span class="ui-navbar-totem__sous-ligne-conclusion" data-i18n="lobby.sousLigneConclusion">Une expérience laisse choisir le chemin.</span></p>
         <!-- ⚠️ **L'AMORCE A DISPARU LE 01/09/2026, ET AVEC ELLE SA CONTRAINTE.**
              « Sous trois formes : » sortait du repli parce qu'un deux-points ne
              peut pas pendre au-dessus d'une liste non annoncée. Depuis que les
@@ -356,29 +356,29 @@
              ⚠️ Le texte reste dans le DOM, jamais retiré : c'est du contenu
              indexé qui n'existe qu'ici, une seule fois dans toute la page. -->
         <details class="ui-navbar-totem__repli">
-          <summary class="ui-navbar-totem__repli-bouton">Les expériences produites</summary>
-          <p class="ui-navbar-totem__signal">Ce site est la démonstration de ce que je produis : de la 3D et de la Réalité Augmentée qui s&rsquo;ouvrent dans un navigateur, sans application ni casque.</p>
+          <summary class="ui-navbar-totem__repli-bouton" data-i18n="lobby.repli">Les expériences produites</summary>
+          <p class="ui-navbar-totem__signal" data-i18n="lobby.signal">Ce site est la démonstration de ce que je produis : de la 3D et de la Réalité Augmentée qui s&rsquo;ouvrent dans un navigateur, sans application ni casque.</p>
         </details>
         <div class="ui-navbar-totem__accroches">
           <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--reveal">
             <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span>
             <div class="ui-navbar-totem__accroche-texte-groupe">
               <p class="ui-navbar-totem__accroche-nom">REVEAL</p>
-              <p class="ui-navbar-totem__accroche-texte">Montrer un produit ou un lieu qui n'est pas là</p>
+              <p class="ui-navbar-totem__accroche-texte" data-i18n="lobby.reveal">Montrer un produit ou un lieu qui n'est pas là</p>
             </div>
           </div>
           <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--explore">
             <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span>
             <div class="ui-navbar-totem__accroche-texte-groupe">
               <p class="ui-navbar-totem__accroche-nom">EXPLORE</p>
-              <p class="ui-navbar-totem__accroche-texte">Faire explorer, et voir ce qui accroche</p>
+              <p class="ui-navbar-totem__accroche-texte" data-i18n="lobby.explore">Faire explorer, et voir ce qui accroche</p>
             </div>
           </div>
           <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--configure">
             <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span>
             <div class="ui-navbar-totem__accroche-texte-groupe">
               <p class="ui-navbar-totem__accroche-nom">CONFIGURE</p>
-              <p class="ui-navbar-totem__accroche-texte">Laisser composer, recevoir la demande</p>
+              <p class="ui-navbar-totem__accroche-texte" data-i18n="lobby.configure">Laisser composer, recevoir la demande</p>
             </div>
           </div>
         </div>
@@ -397,8 +397,8 @@
              promesse de duree que la visite ne tient pas coute plus qu'elle ne
              rapporte. ⚠️ L'id reste fi-lobby-titre : splashLobby.ts le cherche
              par cet id, et t39 tient la liste de ces crochets. -->
-        <p id="fi-lobby-titre" class="ui-navbar-totem__question">Découvrir ce qui existe, composer votre projet, repartir avec un message prêt à envoyer.</p>
-        <p id="fi-lobby-erreur" class="ui-navbar-totem__erreur" hidden>
+        <p id="fi-lobby-titre" class="ui-navbar-totem__question" data-i18n="lobby.question">Découvrir ce qui existe, composer votre projet, repartir avec un message prêt à envoyer.</p>
+        <p id="fi-lobby-erreur" class="ui-navbar-totem__erreur" hidden data-i18n="lobby.erreur">
           Le monde 3D met plus de temps que prévu, vous pouvez continuer, le site reste consultable.
         </p>
       </div>
@@ -549,6 +549,19 @@
       </button>
         <span class="ui-navbar-totem__separateur" aria-hidden="true"></span>
         <div class="ui-navbar-totem__commandes">
+          <!-- ⚠️ **Le point d'accueil du bouton de langue, et il est VIDE.** Le
+               bouton est fabriqué par `socle/ui/boutonLangue.ts` et monté ici par
+               `src/i18n/textes.ts` : le balisage décide de l'ENDROIT, le socle du
+               bouton. C'est la règle 7 — un contrôle vit dans la bande centrale,
+               et cette bande n'est pas la même d'un projet à l'autre, donc le
+               socle ne peut pas la connaître.
+               📌 Il vit dans la rangée du totem, à côté des autres commandes :
+               c'est la seule zone qui reste à l'écran dans l'état lobby comme
+               dans l'état dock. Le second point d'accueil, lui, est posé par
+               `lobbyHub.ts` dans la bande de la vue des démos, qui masque
+               celle-ci. -->
+          <div id="fi-lobby-langue" class="ui-navbar-totem__langue"></div>
+
         <button type="button" id="fi-navbar-totem-masque" class="ui-navbar-totem__masque" title="Revoir le cadrage téléphone" aria-label="Revoir le cadrage téléphone">
           <span class="ui-navbar-totem__picto" aria-hidden="true">▮</span>
         </button>
