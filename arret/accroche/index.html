@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr" class="ui-fragment-racine">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Une expérience 3D en quelques secondes</title>
+
+  <!-- ⚠️ noindex ET hors sitemap : voir l'en-tête du module. Ce document
+       redit, en moins complet, ce que la vraie page dit déjà. -->
+  <meta name="robots" content="noindex,nofollow" />
+
+  <link rel="stylesheet" href="../../charte.css" />
+  <script type="module" defer src="../../js/Needle/fractal-innov/src/offre/fragmentPublic.js"></script>
+</head>
+<body class="ui-fragment" data-arret="accroche" data-suivant="techno">
+  <main class="ui-fragment__carte ui-verre-sombre">
+    <p class="ui-fragment__eyebrow">Arrêt 1 sur 13</p>
+    <h2 class="ui-fragment__titre">Une expérience 3D en quelques secondes</h2>
+    <p class="ui-fragment__resume">Un lien, un QR code, n'importe quel écran.</p>
+    <ul class="ui-fragment__points">
+        <li class="ui-fragment__point"><strong>Rien à télécharger</strong> L'expérience démarre dans le navigateur des visiteurs, sans application à installer et sans appareil/casque à prêter.</li>
+        <li class="ui-fragment__point">Les démonstrations sont en ligne et testables tout de suite, sans rendez-vous</li>
+    </ul>
+
+    <!-- ⚠️ Ce bouton pilote la CAMÉRA de la scène parente, il ne navigue pas :
+         un lien ordinaire rechargerait le document dans le quad et ferait
+         sortir le visiteur de l'expérience. Voir fragmentPublic.ts. -->
+    <button type="button" id="fi-fragment-suivant" class="ui-bouton ui-fragment__suivant">
+      Arrêt suivant : WebXR, la 3D temps réel dans un navigateur
+    </button>
+  </main>
+</body>
+</html>

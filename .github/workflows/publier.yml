@@ -1,0 +1,67 @@
+# ════════════════════════════════════════════════════════════════════════════
+# Le workflow de publication, poussé dans chaque dépôt de production.
+#
+# Ce qu'il fait : il prend le contenu du dépôt tel quel et le publie sur Pages.
+# Il ne compile RIEN.
+#
+# ⚠️ **C'est un choix, contre l'habitude de compiler dans la CI, et il se
+# défend sur trois faits :**
+#
+#   1. La chaîne Needle ne compile pas dans un runner nu. Elle télécharge des
+#      outils et compresse le glb, et cette étape échoue déjà ailleurs. Une CI
+#      qui la rejouerait hériterait de la panne, et on verrait rouge sans savoir
+#      si c'est son propre commit.
+#   2. Ce qui est publié est EXACTEMENT ce qui a été vu tourner en local. Une CI
+#      qui recompile publie autre chose que ce qui a été validé, et l'écart ne
+#      se voit qu'en production.
+#   3. Le déploiement devient trivial, donc lisible : pas de secret, pas de
+#      cache, rien à déboguer un jour de panne.
+#
+# ⚠️ **Les actions sont épinglées à une version majeure**, jamais à `@main` :
+# une action qui change sous les pieds transforme un dépôt figé en dépôt qui
+# publie autre chose, sans qu'aucun commit ne l'explique.
+# ════════════════════════════════════════════════════════════════════════════
+
+name: Publier sur GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  # Permet de republier sans pousser, depuis l'onglet Actions.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# ⚠️ Une publication à la fois, et la plus récente gagne. Sans ce garde-fou,
+# deux pushs rapprochés se déploient en parallèle et c'est le plus LENT qui
+# écrase le plus récent.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publier:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier que la build est bien là
+        # ⚠️ Un dépôt vide se publie sans erreur et rend une page 404 : le
+        # workflow serait vert et le site cassé. Trois secondes de garde ici
+        # évitent une enquête d'une heure là-bas.
+        run: |
+          test -f index.html || { echo "::error::index.html manquant : ce dépôt ne porte pas de build."; exit 1; }
+          test -f .nojekyll || { echo "::error::.nojekyll manquant : Pages ignorerait les dossiers commençant par un souligné."; exit 1; }
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deploiement
+        uses: actions/deploy-pages@v4

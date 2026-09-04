@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr" class="ui-fragment-racine">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3 Produits, les démos en ligne</title>
+
+  <!-- ⚠️ noindex ET hors sitemap : voir l'en-tête du module. Ce document
+       redit, en moins complet, ce que la vraie page dit déjà. -->
+  <meta name="robots" content="noindex,nofollow" />
+
+  <link rel="stylesheet" href="../../charte.css" />
+  <script type="module" defer src="../../js/Needle/fractal-innov/src/offre/fragmentPublic.js"></script>
+</head>
+<body class="ui-fragment" data-arret="produits" data-suivant="cas-salon">
+  <main class="ui-fragment__carte ui-verre-sombre">
+    <p class="ui-fragment__eyebrow">Arrêt 3 sur 13</p>
+    <h2 class="ui-fragment__titre">3 Produits, les démos en ligne</h2>
+    <p class="ui-fragment__resume">EXPLORE, REVEAL et CONFIGURE sont trois socles éprouvés, chacun avec une démonstration publique testable aujourd'hui. On choisit d'abord ce qu'on veut faire, pas une technologie.</p>
+    <ul class="ui-fragment__points">
+        <li class="ui-fragment__point"><strong>EXPLORE</strong> Mondes 3D gamifiés, pour les salons, les musées et la formation.</li>
+        <li class="ui-fragment__point"><strong>REVEAL</strong> Storytelling 3D et AR, pour les musées, les marques et le patrimoine.</li>
+        <li class="ui-fragment__point"><strong>CONFIGURE</strong> Configurateur 3D et AR, pour l'automobile, le retail et l'industrie.</li>
+    </ul>
+
+    <!-- ⚠️ Ce bouton pilote la CAMÉRA de la scène parente, il ne navigue pas :
+         un lien ordinaire rechargerait le document dans le quad et ferait
+         sortir le visiteur de l'expérience. Voir fragmentPublic.ts. -->
+    <button type="button" id="fi-fragment-suivant" class="ui-bouton ui-fragment__suivant">
+      Arrêt suivant : Sur un Salon, capter, mesurer, qualifier
+    </button>
+  </main>
+</body>
+</html>

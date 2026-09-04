@@ -1,13 +1,567 @@
-<!doctype html>
-<html lang="fr">
+<!DOCTYPE html>
+<html lang="fr" class="js">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fractal Innov</title>
-  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://www.gstatic.com">
+  <link rel="preconnect" href="https://cdn.needle.tools">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" crossorigin="" onload="this.rel='stylesheet'">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" crossorigin="" onload="this.rel='stylesheet'">
+  <link rel="preload" fetchpriority="high" as="image" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgMTYwIDE4Ny43NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJhIiB4MT0iODkuNjQiIHkxPSIxODQuODEiIHgyPSI5MC40OCIgeTI9IjIxLjg1IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNjJkMzk5Ii8+PHN0b3Agb2Zmc2V0PSIuNTEiIHN0b3AtY29sb3I9IiNhY2Q4NDIiLz48c3RvcCBvZmZzZXQ9Ii45IiBzdG9wLWNvbG9yPSIjZDdkYjBhIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImIiIHgxPSI2OS42OCIgeTE9IjE3OC45IiB4Mj0iNjguMDgiIHkyPSIxNi43NyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzBiYTM5OCIvPjxzdG9wIG9mZnNldD0iLjUiIHN0b3AtY29sb3I9IiM0Y2EzNTIiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3NmEzMGEiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iYyIgeDE9IjM2LjYiIHkxPSIxNTIuMTciIHgyPSIzNC43IiB5Mj0iODQuMTkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9Ii4xOSIgc3RvcC1jb2xvcj0iIzM2YTM4MiIvPjxzdG9wIG9mZnNldD0iLjU0IiBzdG9wLWNvbG9yPSIjNDlhNDU5Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzZhMzBiIi8+PC9saW5lYXJHcmFkaWVudD48bGluZWFyR3JhZGllbnQgaWQ9ImQiIHgxPSIxNS44MiIgeTE9IjE1My4yNCIgeDI9IjE4IiB5Mj0iOTAuODYiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMyNjc4ODAiLz48c3RvcCBvZmZzZXQ9Ii41MSIgc3RvcC1jb2xvcj0iIzQ1N2E1YyIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzcxNzUxNiIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJlIiB4MT0iMTM1LjA4IiB5MT0iMTM1LjQzIiB4Mj0iMTQ4LjkzIiB5Mj0iNjMuNDciIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNiMGQ5MzkiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYWRiMDQiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iZiIgeDE9Ii00MTYzLjI1IiB5MT0iMjI4NS4xMiIgeDI9Ii00MTYwLjgxIiB5Mj0iMjIxNS4zNCIgZ3JhZGllbnRUcmFuc2Zvcm09InJvdGF0ZSgyMCA0MDg4LjQ5IDEzMzE2LjcxMikiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBvZmZzZXQ9Ii4xNyIgc3RvcC1jb2xvcj0iIzc0YWY1MiIvPjxzdG9wIG9mZnNldD0iLjQ4IiBzdG9wLWNvbG9yPSIjOTliZTMyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYzBjNDBhIi8+PC9saW5lYXJHcmFkaWVudD48c3ltYm9sIGlkPSJnIiB2aWV3Qm94PSIwIDAgMTYwIDE4Ny43NCI+PHBhdGggc3R5bGU9ImZpbGw6dXJsKCNhKSIgZD0iTTc5LjMyIDM2Ljk4djE1MC43Nkw5NSAxNzQuNTRsNi41OS0xNTYuMzEtMjIuMjcgMTguNzV6Ii8+PHBhdGggc3R5bGU9ImZpbGw6dXJsKCNiKSIgZD0iTTc5LjMyIDM2Ljk4IDU3LjA1IDE4LjIzbDYuNTkgMTU2LjMxIDE1LjY4IDEzLjJWMzYuOTh6Ii8+PHBhdGggc3R5bGU9ImZpbGw6dXJsKCNjKSIgZD0ibTI1LjE5IDEwNC44MyA4LjYzIDQ5LjA0IDEyLjUtMTQuOTUtMi40Ni01Ni40Mi0xOC42NyAyMi4zM3oiLz48cGF0aCBzdHlsZT0iZmlsbDp1cmwoI2QpIiBkPSJNMjUuMTkgMTA0LjgzIDAgOTAuMjRsMTYuOTcgNTMuODYgMTYuODUgOS43Ny04LjYzLTQ5LjA0eiIvPjxwYXRoIHN0eWxlPSJmaWxsOiM5YzMiIGQ9Ik00My44NiA4Mi41IDE4LjY5IDY3Ljk4IDAgOTAuMjRsMjUuMTggMTQuNTlMNDMuODYgODIuNXoiLz48cGF0aCBzdHlsZT0iZmlsbDp1cmwoI2UpIiBkPSJtMTM0LjgyIDc4LjY5LTkuOTcgNTYuNSAxNS41OC05LjA0TDE2MCA2NC4xbC0yNS4xOCAxNC41OXoiLz48cGF0aCBzdHlsZT0iZmlsbDp1cmwoI2YpIiBkPSJtMTM0LjgyIDc4LjY5LTE4LjY4LTIyLjMzLTIuODYgNjUgMTEuNTcgMTMuODMgOS45Ny01Ni41eiIvPjxwYXRoIHN0eWxlPSJmaWxsOiNmZmUxMTMiIGQ9Im0xNjAgNjQuMS0xOC42OS0yMi4yNi0yNS4xNyAxNC41MiAxOC42NyAyMi4zM0wxNjAgNjQuMXoiLz48cGF0aCBzdHlsZT0iZmlsbDojZjNlNjAwIiBkPSJNMTAxLjU5IDE4LjIzIDc5LjMyIDAgNTcuMDUgMTguMjNsMjIuMjcgMTguNzUgMjIuMjctMTguNzV6Ii8+PC9zeW1ib2w+PC9kZWZzPjx1c2Ugd2lkdGg9IjE2MCIgaGVpZ2h0PSIxODcuNzQiIHhsaW5rOmhyZWY9IiNnIi8+PC9zdmc+" type="image/svg+xml">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://www.fractal-innov.fr/include/poster.webp">
+  <meta name="og:image" content="https://www.fractal-innov.fr/include/poster.webp">
+  <meta name="og:image:width" content=1080>
+  <meta name="og:image:height" content=1080>
+  <meta name="og:title" content="Fi v3">
+  <meta name="description" content="WIP">
+  <meta name="og:description" content="WIP">
+  <meta name="generator" content="Unity 2022.3.62f2, Needle Engine Integration @5.1.10">
+  <meta name="needle-engine" content="5.1.10">
+  <meta name="needle:buildtime" content="2026-09-04T12:05:02.600Z">
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Fi v3</title>
+  
+  <link rel="canonical" href="https://www.fractal-innov.fr/" />
+  <meta name="robots" content="index,follow" />
+
+  <meta property="og:type" content="website" />
+  
+  
+  <meta property="og:url" content="https://www.fractal-innov.fr/" />
+
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://www.fractal-innov.fr/#organisation",
+      "name": "Fractal Innov",
+      "url": "https://www.fractal-innov.fr",
+      "email": "contact@fractal-innov.fr",
+      "description": "Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque."
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://www.fractal-innov.fr/",
+      "url": "https://www.fractal-innov.fr/",
+      "name": "Fractal Innov : expériences 3D et AR dans le navigateur, sans application",
+      "description": "Un site où l'on voit ce qui tourne déjà, où l'on comprend ce que cela donne dans son métier, où l'on compose son projet en quelques choix, et d'où l'on repart avec un message prêt à envoyer.",
+      "isPartOf": {
+        "@id": "https://www.fractal-innov.fr/#organisation"
+      }
+    }
+  ]
+}
+  </script>
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14"></script>
+  <script type="module" crossorigin src="./assets/index-BxDBhiO5.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index.Bqheum4R.css">
 </head>
-<body>
-  <h1>Fractal Innov</h1>
-  <p>Racine provisoire, posée au jalon PUB-01. Le site vitrine arrive au PUB-02.</p>
+<body class="m-0 h-dvh overflow-hidden font-ui text-texte leading-relaxed bg-fond-haut
+             bg-[radial-gradient(120%_80%_at_50%_-10%,var(--color-action)_0%,transparent_55%)]
+             bg-fixed">
+  <script>/* needle: fix for peerjs */ window.global = window; var parcelRequire;</script>
+
+  <div id="fi-splash" class="ui-splash" role="status" aria-live="polite" aria-label="Chargement">
+    <img
+      class="ui-splash__logo"
+      src="./assets/fi-logo-252.B9F72pmF.webp"
+      srcset="./assets/fi-logo-168.Yl4Myr2Y.webp 168w, ./assets/fi-logo-252.B9F72pmF.webp 252w"
+      sizes="(min-width: 900px) 160px, 96px"
+      width="160" height="160"
+      alt=""
+      fetchpriority="high"
+      decoding="async"
+    />
+    <p class="ui-splash__marque">Fractal Innov</p>
+    <div class="ui-splash__jauge-zone">
+      <p class="ui-splash__sous-titre">Expérience Interactive</p>
+      <div class="ui-splash__jauge" aria-hidden="true"></div>
+    </div>
+  </div>
+
+
+  <!-- ⚠️ **`sr-only` n'est PAS une décoration d'accessibilité ici, c'est le
+       drapeau rendu visible.** Scène 3D allumée, tout ce contenu est lu par les
+       lecteurs d'écran et les moteurs, sans occuper l'écran que prend le
+       village. Scène éteinte, `hub/montage.ts` retire cette classe et le MÊME
+       contenu devient le site visible. C'est ce qui garantit qu'il n'y a jamais
+       deux versions à réconcilier : il n'y a qu'un texte, montré de deux
+       façons. -->
+  <div id="fi-contenu" class="sr-only">
+<header class="sticky top-0 z-10 flex flex-wrap items-center gap-x-8 gap-y-3 py-4 backdrop-blur-xl bg-fond-haut/80 border-b border-texte/10">
+    <div class="w-[min(var(--largeur-contenu),100%-2.5rem)] mx-auto flex flex-wrap items-center gap-x-8 gap-y-3">
+      <p class="me-auto m-0"><a class="me-auto font-bold tracking-wide text-texte no-underline" href="/">Fractal Innov</a></p>
+      <nav class="flex flex-wrap gap-x-5 gap-y-1 text-[0.92rem]">
+      <span aria-current="page" class="text-action font-semibold">Commencer ici</span>
+      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/webxr-dans-le-navigateur/">Sans application</a>
+      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/produits/">Ce qui tourne déjà</a>
+      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/cas-d-usage/">Dans votre métier</a>
+      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/niveaux-et-modules/">Jusqu'où aller</a>
+      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/pilote-15-jours/">Démarrer en 15 jours</a>
+      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/methode-et-contact/">Me contacter</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="w-[min(var(--largeur-contenu),100%-2.5rem)] mx-auto relative z-[1] pt-[clamp(2.5rem,6vw,5rem)] pb-16">
+    <h1 class="text-[clamp(2rem,1.4rem+3vw,3.6rem)] leading-[1.15] tracking-tight text-balance mb-3">Découvrir ce qui existe • Composer son projet • Repartir avec un message prêt à envoyer</h1>
+
+    <!-- ⚠️ La question à laquelle cette page répond, écrite en clair. C'est le
+         cœur du GEO : un modèle de langage cite une source qui répond
+         directement et de façon autonome, pas une qui effleure. -->
+    <p><strong class="block max-w-[46rem] text-[clamp(1.05rem,0.95rem+0.7vw,1.35rem)] font-medium text-texte-efface mb-[clamp(2rem,5vw,3.5rem)]">À quoi sert ce site, et qu'est-ce que j'en repars avec ?</strong></p>
+
+      <section id="accroche" data-arret="accroche" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2">Une expérience 3D en quelques secondes</h2>
+        <p class="max-w-[46rem] mb-4 text-pretty">Un lien, un QR code, n'importe quel écran.</p>
+        <ul class="grid gap-2.5 m-0 p-0 list-none">
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Rien à télécharger</strong> L'expérience démarre dans le navigateur des visiteurs, sans application à installer et sans appareil/casque à prêter.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Les démonstrations sont en ligne et testables tout de suite, sans rendez-vous</li>
+        </ul>
+      </section>
+      <section id="parcours" data-section="parcours" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2"></h2>
+        <p class="max-w-[46rem] mb-4 text-pretty"></p>
+        <ul class="grid gap-2.5 m-0 p-0 list-none">
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>REVEAL, la preuve</strong> Ce qui tourne déjà, en vrai, dans un navigateur. Ce qu'on y voit fonctionner est ce qui est réalisable.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>EXPLORE, la traduction</strong> Ce que chaque produit change dans un métier donné, avec ses contraintes.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>CONFIGURE, la projection</strong> Quelques choix par étape, dont sort la description de votre projet.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>LE CENTRE, le passage à l'acte</strong> Avec qui on travaille, et d'où part la demande.</li>
+        </ul>
+      </section>
+
+      <section id="ce-que-vous-repartez-avec" data-section="ce-que-vous-repartez-avec" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2"></h2>
+        <p class="max-w-[46rem] mb-4 text-pretty">Le configurateur compose un message que vous relisez et envoyez depuis votre propre boîte. Aucune donnée ne transite par un service tiers, il n'y a pas de formulaire, pas de compte à créer et rien à accepter.</p>
+        <ul class="grid gap-2.5 m-0 p-0 list-none">
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Un récapitulatif en clair</strong> Produit, niveau d'engagement, modules.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Un code de configuration court, dictable au téléphone, qui décrit la même chose sans ambiguïté.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Un devis en retour, établi à la main sur cette base. Le seul montant public est l'ancrage du projet pilote.</li>
+        </ul>
+      </section>
+
+      <section id="pour-demarrer" data-section="pour-demarrer" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2">Ce qu'il faut de votre côté pour démarrer</h2>
+        <p class="max-w-[46rem] mb-4 text-pretty">La liste est courte, et elle est la même quel que soit le niveau d'engagement. Ce qui manque au démarrage se construit ensemble, mais mieux vaut savoir dès maintenant ce que l'on vous demandera.</p>
+        <ul class="grid gap-2.5 m-0 p-0 list-none">
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Un objectif dit en une phrase</strong> Ce que le visiteur doit avoir compris ou fait à la fin.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Vos contenus</strong> Textes, images, sons, et les modèles 3D si vous en avez déjà.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Votre charte graphique, ou à défaut un logo et deux couleurs.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Un interlocuteur qui décide, côté vous, et qui peut valider en quelques jours.</li>
+          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>L'endroit où l'expérience vivra</strong> Un lien, un QR code, une page de votre site.</li>
+        </ul>
+      </section>
+
+      <!-- ⚠️ Cette section vit DANS `main`, donc dans le contenu commun, et non
+           dans un bloc réservé au mode sans 3D. Une section « de repli » serait
+           une seconde version déguisée, avec sa propre dérive. Le carrousel est
+           une partie du site ; la scène est ce qui s'ajoute par-dessus. -->
+      <!-- ⚠️ **AUCUN utilitaire Tailwind sur cette section, et c'est un
+           correctif, pas une préférence.** Elle en portait sept, dont
+           `relative`. En vue des démos, la charte lui donne `position: fixed` —
+           mais une utilitaire Tailwind vit dans une couche PLUS FORTE que
+           `@layer components` : `relative` l'emportait, la section restait dans
+           le flux, et le conteneur défilant n'existait donc pas. Symptôme
+           mesuré : impossible de faire défiler la vue sur téléphone, et un
+           panneau aux coins arrondis qui s'arrêtait au milieu de l'écran alors
+           que le fond devait aller au bord. Le `background` et le
+           `border-radius` de la charte perdaient de la même façon.
+           📌 L'apparence de la section vit maintenant dans `.fi-demos`, où les
+           deux états — dans le flux avec la scène, plein écran sans elle —
+           peuvent se contredire sans qu'aucune couche n'arbitre à leur place. -->
+      <section id="fi-demos" data-section="demos" class="fi-demos ui-revele">
+        <!-- ⚠️ **L'ordre du DOM EST l'ordre du téléphone.** La version d'avant
+             réordonnait en CSS avec `display: contents` et sept `order` : ça
+             marchait, mais la source ne disait plus ce que l'écran montre, et
+             toute relecture devait tenir les deux dans sa tête. Mobile d'abord
+             veut dire que le balisage part du téléphone ; c'est l'écran large
+             qui s'écarte, en grille, et lui seul. -->
+        <h2 class="fi-demos__display">Les démonstrateurs</h2>
+        <!-- ⚠️ **Le cadre passe AVANT le reste, juste sous le titre.** Ce que
+             le visiteur est venu voir doit occuper le haut de l'écran ; la
+             liste, l'accroche et les points clés se lisent en descendant. Le
+             reste de l'ordre est inchangé : intro, choix, puis détails. -->
+        <div id="fi-demos-scene" class="fi-demos__scene">
+          <!-- Le cadre reste vide tant que personne n'a cliqué : quatre
+               expériences 3D chargées d'un coup, ce sont plusieurs dizaines de
+               mégaoctets et quatre contextes WebGL pour une page survolée. -->
+          <div id="fi-demos-cadre" class="fi-demos__cadre" data-etat="a-venir"></div>
+
+          <!-- ⚠️ **Plus de bouton « Démarrer ».** La démo se charge dès que son
+               cadre entre à l'écran et se décharge dès qu'il en sort : demander
+               un clic pour voir ce qu'on est venu voir était un péage. Le
+               chargement paresseux qui le justifiait est conservé — c'est
+               l'observateur qui le porte maintenant, pas le visiteur. -->
+          <div class="fi-demos__actions">
+            <button type="button" id="fi-demos-agrandir" class="ui-bouton">Plein écran</button>
+            <!-- Un vrai lien, pas un bouton : le clic du milieu, le menu
+                 contextuel et « copier l'adresse » marchent alors sans une ligne
+                 de JavaScript. Son adresse est posée par `carrousel.ts`. -->
+            <a id="fi-demos-ouvrir" class="ui-bouton ui-bouton--discret" target="_blank" rel="noopener">Ouvrir l'adresse</a>
+          </div>
+          <button type="button" id="fi-demos-reduire" class="fi-demos__reduire ui-bouton ui-bouton--discret">Quitter le plein écran</button>
+        </div>
+
+        <p class="fi-demos__intro">Chacun tourne dans le navigateur, sans installer quoi que ce soit. Ouvrez-les ici même, ou en plein écran.</p>
+
+        <!-- Le choix de la démo : la liste, ses flèches et le compteur, ensemble.
+             ⚠️ Les flèches vivent À CÔTÉ du sélecteur et non sous le cadre :
+             séparées de ce qu'elles changent, elles se lisent comme les
+             commandes de la démo elle-même. -->
+        <div class="fi-demos__choix">
+          <!-- Peinte par `carrousel.ts` depuis `demos.ts` : aucun titre ici. -->
+          <nav id="fi-demos-liste" class="fi-demos__liste" aria-label="Choisir un démonstrateur"></nav>
+          <div class="fi-demos__pager">
+            <button type="button" id="fi-demos-precedent" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur précédent">←</button>
+            <button type="button" id="fi-demos-suivant" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur suivant">→</button>
+            <p id="fi-demos-compteur" class="fi-demos__compteur" aria-live="polite">1 / 4</p>
+          </div>
+        </div>
+
+
+        <div class="fi-demos__infos">
+          <!-- ⚠️ **Le titre de la démo n'est PAS répété ici.** Il est déjà
+               dans l'entrée sélectionnée de la liste, à trois centimètres
+               au-dessus, et deux fois le même titre sur un écran de téléphone
+               coûte une ligne pleine sans rien apprendre. -->
+          <p id="fi-demos-accroche" class="fi-demos__accroche">&nbsp;</p>
+
+          <!-- ⚠️ Les points clés sont REPLIÉS par défaut : quatre lignes de
+               détail poussaient le cadre hors de l'écran sur téléphone. Un
+               `<details>` natif, donc ouvrable au clavier et annoncé comme
+               tel, sans une ligne de JavaScript. -->
+          <details class="ui-repli fi-demos__repli">
+            <summary class="ui-repli__bouton">Ce que montre cette démo</summary>
+            <div id="fi-demos-points"></div>
+          </details>
+        </div>
+      </section>
+  </main>
+
+  <footer class="w-[min(var(--largeur-contenu),100%-2.5rem)] mx-auto py-12 border-t border-texte/10 text-texte-efface text-[0.95rem] relative z-[1]">
+    <p class="my-1.5 max-w-[46rem]">Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque.</p>
+    <p class="my-1.5">Contact : <a href="mailto:contact@fractal-innov.fr">contact@fractal-innov.fr</a></p>
+    <p class="my-1.5">Un premier projet en ligne en 15 jours, à partir de 4900&nbsp;€.</p>
+    <p class="mt-4"><a class="ui-bouton ui-bouton--discret" href="/rayon-x/">Essayer une expérience →</a></p>
+  </footer>
+  </div>
+
+  <div id="fi-totem-voile" class="ui-totem-voile" aria-hidden="true"></div>
+
+  <!-- ⚠️ **UN SEUL point d'entrée, et rien de statique vers le moteur.** La
+       balise de script vers le fichier engendré qui vivait ici démarrait la
+       scène à coup sûr : la vitrine aurait téléchargé plusieurs mégaoctets de
+       moteur 3D pour ne rien afficher. `hub/montage.ts` décide, et n'importe le
+       moteur que s'il en monte un. Voir `hub/drapeauScene.ts` pour
+       `?scene=on|off`.
+       ⚠️ Ce commentaire NE CITE PAS la balise interdite, volontairement : la
+       dent 1 de `t86` la cherche dans ce fichier, et l'a d'abord trouvée dans
+       sa propre documentation. Elle lit désormais le HTML sans commentaires,
+       mais un motif interdit écrit en toutes lettres à côté de sa garde reste
+       un piège à ressort. -->
+
+  <nav id="fi-navbar-totem" class="ui-navbar-totem" data-etat="lobby" aria-label="Explorer le totem">
+    <!-- ⚠️ Jalon 63c — UNE SEULE SURFACE DE VERRE, la carte. Le panneau et la
+         rangée en sont deux ZONES, plus deux surfaces posées l'une au-dessus de
+         l'autre avec chacune son coin arrondi et un souffle entre elles. Le
+         dessin du 23/08 ne montre qu'une carte : le lobby EST la pilule 1
+         affichee en plein ecran, pas un empilement. -->
+    <div id="fi-navbar-totem-carte" class="ui-navbar-totem__carte ui-verre-sombre">
+      <!-- ⚠️ LE LOGO EST UN ENFANT DIRECT DE LA CARTE, jamais de la rangée :
+           c'est l'ANCRE, le seul objet qui reste quand tout le reste se
+           rétracte. Enfermé dans la rangée, il ne pourrait pas être en haut de
+           la carte pendant le lobby, et la carte ne pourrait pas se refermer
+           autour de lui. Ce sont les zones de la grille qui le placent. -->
+      <button type="button" id="fi-navbar-totem-logo" class="ui-navbar-totem__logo" data-poi="accroche" title="Fractal Innov, voir l'accroche">
+        <span class="ui-navbar-totem__picto" aria-hidden="true"><img src="./assets/fi-logo-168.Yl4Myr2Y.webp" alt="" width="22" height="22" /></span><span class="ui-navbar-totem__marque">Fractal Innov</span>
+      </button>
+      <div id="fi-navbar-totem-panel" class="ui-navbar-totem__panel">
+      <!-- ⚠️ Jalon 63a — LE LOBBY EST UN ÉTAT DU TOTEM, plus une surface à
+           part. Les deux blocs ci-dessous sont les deux CONTENUS possibles du
+           panneau, et totemNavbar.ts en montre exactement un, dérivé de
+           data-etat. Ce sont des contenus alternatifs, pas deux formes d'une
+           même surface : c'est le panneau qui morphe, eux se remplacent.
+           ⚠️ Aucun accent grave dans ce commentaire : il est posé DANS un
+           littéral gabarit, et un accent grave le refermerait. -->
+      <div id="fi-totem-lobby" class="ui-navbar-totem__lobby">
+        <!-- ⚠️ LE SIGNAL EN DEUX MOUVEMENTS (24/08/2026) : le problème du
+             visiteur, PUIS la preuve. Il n'en faisait qu'un, et il parlait du
+             mécanisme du site (un configurateur d'offre a debloquer en chemin)
+             plutôt que de ce que le visiteur vient chercher. Deux paragraphes de
+             la MEME classe : aucun style neuf, et la respiration entre les deux
+             mouvements est ce qui rend le pave lisible sur un telephone.
+             ⚠️ Le mot WebXR a disparu d'ici : le site a une page entiere pour
+             l'expliquer (Sans application), mais le lobby arrive AVANT elle.
+             Un responsable de mediation ou de salon ne sait pas ce que le mot
+             promet, et ce texte est INDEXE (index.html est l'accueil deploye). -->
+
+        <!-- ⚠️ LA BASELINE PUBLIÉE EST LE DISPLAY (01/09/2026), et elle porte le
+             dégradé. Elle était en surtitre discret jusqu'ici, sous une accroche
+             plus grosse qu'elle : quelqu'un qui arrivait de LinkedIn lisait donc
+             d'abord une phrase qu'il n'avait jamais vue. C'est maintenant la
+             bannière du profil, mot pour mot et à la même échelle, qui accueille.
+             ⚠️ LE DÉGRADÉ N'A DROIT QU'À CET ENDROIT DU SITE. Le violet du logo
+             est interdit sous un libellé (voir --color-action-vive dans
+             theme.css) parce qu'un petit texte demande 4,5:1. WCAG n'en demande
+             que 3 pour un texte LARGE, et cette phrase est en display gras : le
+             seuil change avec la taille, pas avec le goût. Une dent de t85
+             mesure les arrêts du dégradé ET vérifie qu'aucun libellé ne l'a
+             attrapé au passage. -->
+        <p class="ui-navbar-totem__accroche-display">Transmettre les savoirs <span class="ui-navbar-totem__accroche-eclat">par l&rsquo;expérience</span></p>
+        <!-- ⚠️ CE QUI LIMITE N'EST PAS LE SUPPORT, C'EST L'ORDRE (01/09/2026).
+             Cette ligne disait « quelque chose à montrer qui ne tient pas dans
+             une photo ». Deux défauts : « quelque chose » ne nomme rien, et
+             opposer la 3D à la photo rétrécit le sujet, puisqu'une vidéo montre
+             déjà plusieurs angles. La vraie limite commune aux deux est qu'elles
+             imposent une SÉQUENCE, alors qu'une expérience laisse le visiteur
+             composer la sienne. C'est aussi, mot pour mot, ce que fait ce site.
+             📌 Le mot WebXR reste absent : le site a une page entière pour
+             l'expliquer, mais le lobby arrive avant elle, et ce texte est
+             INDEXÉ (index.html est l'accueil déployé). -->
+        <p class="ui-navbar-totem__sous-ligne">Une photo montre un angle. Une vidéo impose un ordre.<br /><span class="ui-navbar-totem__sous-ligne-conclusion">Une expérience laisse choisir le chemin.</span></p>
+        <!-- ⚠️ **L'AMORCE A DISPARU LE 01/09/2026, ET AVEC ELLE SA CONTRAINTE.**
+             « Sous trois formes : » sortait du repli parce qu'un deux-points ne
+             peut pas pendre au-dessus d'une liste non annoncée. Depuis que les
+             trois noms d'île sont blancs et gras, la liste s'annonce toute
+             seule : la phrase ne faisait plus qu'occuper un bloc gris de plus
+             entre la pastille et les accroches. Le reste du second mouvement
+             continue de se replier, et rien d'autre ne change ici.
+             ⚠️ <details> et non une bascule en JavaScript : splashLobby.ts
+             est la seule vraie porte de chargement du site, et rien de
+             décoratif n'a le droit d'y entrer. Le repli est ici gratuit, natif
+             et accessible au clavier.
+             ⚠️ Le texte reste dans le DOM, jamais retiré : c'est du contenu
+             indexé qui n'existe qu'ici, une seule fois dans toute la page. -->
+        <details class="ui-navbar-totem__repli">
+          <summary class="ui-navbar-totem__repli-bouton">Les expériences produites</summary>
+          <p class="ui-navbar-totem__signal">Ce site est la démonstration de ce que je produis : de la 3D et de la Réalité Augmentée qui s&rsquo;ouvrent dans un navigateur, sans application ni casque.</p>
+        </details>
+        <div class="ui-navbar-totem__accroches">
+          <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--reveal">
+            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span>
+            <div class="ui-navbar-totem__accroche-texte-groupe">
+              <p class="ui-navbar-totem__accroche-nom">REVEAL</p>
+              <p class="ui-navbar-totem__accroche-texte">Montrer un produit ou un lieu qui n'est pas là</p>
+            </div>
+          </div>
+          <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--explore">
+            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span>
+            <div class="ui-navbar-totem__accroche-texte-groupe">
+              <p class="ui-navbar-totem__accroche-nom">EXPLORE</p>
+              <p class="ui-navbar-totem__accroche-texte">Faire explorer, et voir ce qui accroche</p>
+            </div>
+          </div>
+          <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--configure">
+            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span>
+            <div class="ui-navbar-totem__accroche-texte-groupe">
+              <p class="ui-navbar-totem__accroche-nom">CONFIGURE</p>
+              <p class="ui-navbar-totem__accroche-texte">Laisser composer, recevoir la demande</p>
+            </div>
+          </div>
+        </div>
+        <!-- Pas de titre h1 ici : la page en a déjà un, plus bas dans le DOM
+             (le même que le site publié). Deux titres h1 sur une même page
+             diluent le signal le plus fort qu'elle porte. -->
+        <!-- ⚠️ UNE PROMESSE, PLUS UNE QUESTION (24/08/2026). Cette ligne
+             demandait par ou commencez-vous alors qu'il n'y a qu'UN bouton,
+             Demarrer : elle appelait un choix que l'interface ne rend pas
+             possible. Rendre les trois accroches cliquables aurait ete l'autre
+             reponse, mais Demarrer occupe LA PLACE des produits (jalon 63c) et
+             cela ferait quatre CTA sur une carte de quelques centimetres.
+             📌 Le texte est le h1 de la page d'accueil, a la deuxieme personne :
+             le lobby et la page qu'il ouvre cessent de raconter deux choses.
+             ⚠️ Aucune duree chiffree ici. Le parcours compte 12 arrets, et une
+             promesse de duree que la visite ne tient pas coute plus qu'elle ne
+             rapporte. ⚠️ L'id reste fi-lobby-titre : splashLobby.ts le cherche
+             par cet id, et t39 tient la liste de ces crochets. -->
+        <p id="fi-lobby-titre" class="ui-navbar-totem__question">Découvrir ce qui existe, composer votre projet, repartir avec un message prêt à envoyer.</p>
+        <p id="fi-lobby-erreur" class="ui-navbar-totem__erreur" hidden>
+          Le monde 3D met plus de temps que prévu, vous pouvez continuer, le site reste consultable.
+        </p>
+      </div>
+      <div id="fi-totem-archipel" class="ui-navbar-totem__archipel">
+      <section class="ui-navbar-totem__ile" data-ile="reveal" data-ouvert="non">
+        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-reveal" aria-expanded="false" aria-controls="fi-ile-reveal-quartiers">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span>
+          <span class="ui-navbar-totem__ile-texte">
+            <strong class="ui-navbar-totem__ile-nom">Espace Démo</strong>
+          </span>
+          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="ui-navbar-totem__ile-corps" id="fi-ile-reveal-quartiers" role="group" aria-labelledby="fi-ile-reveal">
+          <p class="ui-navbar-totem__ile-resume">L'espace de démonstration : tout ce qui tourne déjà,dans un navigateur. Ce qu'on y voit fonctionner est ce qui est réalisable pour un projet.</p>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="reveal" title="Voir Espace Démo en entier">
+            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="techno" title="WebXR, la 3D temps réel dans un navigateur">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">1</span><span class="ui-navbar-totem__libelle">WebXR, la 3D temps réel dans un navigateur</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="produits" title="3 Produits, les démos en ligne">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">2</span><span class="ui-navbar-totem__libelle">3 Produits, les démos en ligne</span>
+          </button>
+        </div>
+      </section>
+      <section class="ui-navbar-totem__ile" data-ile="explore" data-ouvert="non">
+        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-explore" aria-expanded="false" aria-controls="fi-ile-explore-quartiers">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span>
+          <span class="ui-navbar-totem__ile-texte">
+            <strong class="ui-navbar-totem__ile-nom">Cas d'Usage</strong>
+          </span>
+          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="ui-navbar-totem__ile-corps" id="fi-ile-explore-quartiers" role="group" aria-labelledby="fi-ile-explore">
+          <p class="ui-navbar-totem__ile-resume">Chaque produit se regarde depuis un métier : ses contraintes, ses enjeux.</p>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="explore" title="Voir Cas d'Usage en entier">
+            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-salon" title="Sur un Salon, capter, mesurer, qualifier">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">3</span><span class="ui-navbar-totem__libelle">Sur un Salon, capter, mesurer, qualifier</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-musee" title="Au Musée, la médiation dans la poche du visiteur">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">4</span><span class="ui-navbar-totem__libelle">Au Musée, la médiation dans la poche du visiteur</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-configurateur" title="Configurateur, du showroom au tunnel de commande">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">5</span><span class="ui-navbar-totem__libelle">Configurateur, du showroom au tunnel de commande</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-formation" title="En Formation, faire comprendre ce qu'on ne peut pas montrer">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">6</span><span class="ui-navbar-totem__libelle">En Formation, faire comprendre ce qu'on ne peut pas montrer</span>
+          </button>
+        </div>
+      </section>
+      <section class="ui-navbar-totem__ile" data-ile="configure" data-ouvert="non">
+        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-configure" aria-expanded="false" aria-controls="fi-ile-configure-quartiers">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span>
+          <span class="ui-navbar-totem__ile-texte">
+            <strong class="ui-navbar-totem__ile-nom">Votre Projet</strong>
+          </span>
+          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="ui-navbar-totem__ile-corps" id="fi-ile-configure-quartiers" role="group" aria-labelledby="fi-ile-configure">
+          <p class="ui-navbar-totem__ile-resume">Compose votre propre projet, quelques choix par étape.</p>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="configure" title="Voir Votre Projet en entier">
+            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="niveaux" title="Trois niveaux d'engagement, indépendants du produit">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">7</span><span class="ui-navbar-totem__libelle">Trois niveaux d'engagement, indépendants du produit</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="catalogue" title="Le catalogue de modules">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">8</span><span class="ui-navbar-totem__libelle">Le catalogue de modules</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="pilote" title="Un premier projet en 15 jours, à 4 900 €">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">9</span><span class="ui-navbar-totem__libelle">Un premier projet en 15 jours, à 4 900 €</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="deploiement" title="Du QR code à votre système d'information">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">10</span><span class="ui-navbar-totem__libelle">Du QR code à votre système d'information</span>
+          </button>
+        </div>
+      </section>
+      <section class="ui-navbar-totem__ile" data-ile="contact" data-ouvert="non">
+        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-contact" aria-expanded="false" aria-controls="fi-ile-contact-quartiers">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/network.BumOhohk.png');mask-image:url('./assets/network.BumOhohk.png')" aria-hidden="true"></span></span>
+          <span class="ui-navbar-totem__ile-texte">
+            <strong class="ui-navbar-totem__ile-nom">Contact</strong>
+          </span>
+          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
+        </button>
+        <div class="ui-navbar-totem__ile-corps" id="fi-ile-contact-quartiers" role="group" aria-labelledby="fi-ile-contact">
+          <p class="ui-navbar-totem__ile-resume">Le port de l'archipel : les partenaires mobilisables, la vue d'ensemble des possibles, et le tableau de bord d'où part la demande.</p>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="contact" title="Voir Contact en entier">
+            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/network.BumOhohk.png');mask-image:url('./assets/network.BumOhohk.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="interlocuteur" title="Un interlocuteur unique, un réseau mobilisable">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">11</span><span class="ui-navbar-totem__libelle">Un interlocuteur unique, un réseau mobilisable</span>
+          </button>
+          <button type="button" class="ui-navbar-totem__bouton" data-poi="ensemble" title="Travailler ensemble">
+            <span class="ui-navbar-totem__picto" aria-hidden="true">12</span><span class="ui-navbar-totem__libelle">Travailler ensemble</span>
+          </button>
+        </div>
+      </section>
+      </div>
+      </div>
+      <div class="ui-navbar-totem__dock">
+        <span class="ui-navbar-totem__separateur" aria-hidden="true"></span>
+        <div class="ui-navbar-totem__produits">
+        <button type="button" class="ui-navbar-totem__produit" data-poi="reveal" title="REVEAL, storytelling 3D et AR">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">REVEAL</span>
+        </button>
+        <button type="button" class="ui-navbar-totem__produit" data-poi="explore" title="EXPLORE, mondes 3D gamifiés">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">EXPLORE</span>
+        </button>
+        <button type="button" class="ui-navbar-totem__produit" data-poi="configure" title="CONFIGURE, configurateur 3D et AR">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">CONFIGURE</span>
+        </button>
+        </div>
+        <!-- ⚠️ Jalon 90 — CONTACT rejoint la rangée compacte, entre CONFIGURE
+             et le burger. Son propre séparateur la précède ; celui qui la suit
+             est l'ANCIEN séparateur produits/commandes, qui ne bouge pas de
+             place — c'est ce qui donne à CONTACT un filet de chaque côté sans
+             en poser un de trop. Elle suit le même attribut hidden que les 3
+             produits (totemNavbar.ts : visible en dock compact seulement,
+             cachée en lobby ET en sommaire, où sa carte d'île offre déjà le
+             voyage). -->
+        <span class="ui-navbar-totem__separateur" aria-hidden="true"></span>
+        <button type="button" id="fi-navbar-totem-contact" class="ui-navbar-totem__produit ui-navbar-totem__produit--contact" data-poi="contact" title="CONTACT, discuter de votre projet">
+          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/network.BumOhohk.png');mask-image:url('./assets/network.BumOhohk.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">CONTACT</span>
+        </button>
+      <!-- ⚠️ DÉMARRER occupe la PLACE des produits ET de CONTACT, il ne
+           s'ajoute pas à la rangée : les deux ne sont jamais visibles
+           ensemble. Et il garde l'id fi-lobby-cta, parce que la porte de
+           chargement le cherche par cet id et que le jalon 63a a décidé de ne
+           PAS toucher à la porte. -->
+      <button type="button" id="fi-lobby-cta" class="ui-bouton ui-navbar-totem__demarrer">
+        <span class="ui-navbar-totem__demarrer-remplissage" aria-hidden="true"></span>
+        <!-- Le rond de lecture reprend la composition du bouton de reprise
+             d'OpenFitWebXR : un picto rond, puis le mot. Il est aria-hidden,
+             le libellé disant deja tout. -->
+        <span class="ui-navbar-totem__demarrer-picto" aria-hidden="true">▶</span>
+        <!-- ⚠️ UN SEUL MOT, pas de sous-titre (24/08/2026). L'anatomie du
+             bouton de reprise d'OpenFitWebXR a bien deux lignes, mais elle
+             dispose de toute la largeur de l'ecran ; ici deux CTA se partagent
+             une forme de quelques centimetres, et deux lignes de consequence
+             cote a cote ecrasent les deux mots qui comptent. Le sous-titre du
+             son survit dans le DOM pour les aides techniques, masque. -->
+        <span class="ui-navbar-totem__demarrer-texte">
+          <strong class="ui-navbar-totem__demarrer-libelle">Démarrer</strong>
+        </span>
+      </button>
+        <span class="ui-navbar-totem__separateur" aria-hidden="true"></span>
+        <div class="ui-navbar-totem__commandes">
+        <button type="button" id="fi-navbar-totem-masque" class="ui-navbar-totem__masque" title="Revoir le cadrage téléphone" aria-label="Revoir le cadrage téléphone">
+          <span class="ui-navbar-totem__picto" aria-hidden="true">▮</span>
+        </button>
+        <!-- ⚠️ Jalon 64d — UN SEUL NŒUD DE SON, qui morphe. Le reglage de la
+             carte d'entree et la note du sommaire sont le meme bouton :
+             l'anatomie vient du socle (.ui-reglage-son, portee depuis
+             OpenFitWebXR), le totem ne fait que la resserrer en sommaire.
+             En ecrire un second pour le lobby aurait donne deux boutons a
+             tenir d'accord sur un etat qui vit dans un troisieme endroit. -->
+        <button type="button" id="fi-navbar-totem-son" class="ui-navbar-totem__son ui-reglage-son" data-niveau="doux" title="Régler le son">
+          <!-- ⚠️ Le picto est un SVG monochrome et non un emoji : les emoji
+               de niveau sont rendus EN COULEUR par le systeme, ce qui pose sur
+               la carte d'entree une teinte que la charte ne connait pas. Son
+               contenu est reecrit a chaque niveau par totemNavbar.ts ; celui
+               d'ici correspond au niveau servi statiquement (doux). -->
+          <span class="ui-navbar-totem__son-picto ui-navbar-totem__picto ui-reglage-son__picto" aria-hidden="true"><svg viewBox="0 0 24 24" width="100%" height="100%" focusable="false"><path d="M4 9h3l4.6-3.9v13.8L7 15H4z" fill="currentColor"/><path d="M14.4 9.7a3.4 3.4 0 0 1 0 4.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+          <span class="ui-reglage-son__texte">
+            <strong id="fi-navbar-totem-son-libelle" class="ui-navbar-totem__son-libelle">Son doux</strong>
+            <small id="fi-navbar-totem-son-detail" class="ui-navbar-totem__son-detail">Discret, par-dessus votre musique</small>
+          </span>
+          <span class="ui-reglage-son__onde" aria-hidden="true"><i></i><i></i><i></i></span>
+        </button>
+        <button type="button" id="fi-navbar-totem-bascule" class="ui-navbar-totem__burger" aria-expanded="false" aria-controls="fi-navbar-totem-panel" title="Explorer les 12 arrêts">
+          <span class="ui-navbar-totem__burger-ouvrir" aria-hidden="true">☰</span><span class="ui-navbar-totem__burger-fermer" aria-hidden="true">✕</span>
+        </button>
+        </div>
+      </div>
+    </div>
+  </nav>
 </body>
 </html>

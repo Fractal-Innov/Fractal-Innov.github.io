@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr" class="ui-fragment-racine">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Au Musée, la médiation dans la poche du visiteur</title>
+
+  <!-- ⚠️ noindex ET hors sitemap : voir l'en-tête du module. Ce document
+       redit, en moins complet, ce que la vraie page dit déjà. -->
+  <meta name="robots" content="noindex,nofollow" />
+
+  <link rel="stylesheet" href="../../charte.css" />
+  <script type="module" defer src="../../js/Needle/fractal-innov/src/offre/fragmentPublic.js"></script>
+</head>
+<body class="ui-fragment" data-arret="cas-musee" data-suivant="cas-configurateur">
+  <main class="ui-fragment__carte ui-verre-sombre">
+    <p class="ui-fragment__eyebrow">Arrêt 5 sur 13</p>
+    <h2 class="ui-fragment__titre">Au Musée, la médiation dans la poche du visiteur</h2>
+    <p class="ui-fragment__resume">Un cartel, un QR code, et le visiteur accède au scan 3D de l'objet, aux capsules audio et aux étapes de sa création. Aucun parc de tablettes à recharger, à désinfecter ou à remplacer dans trois ans.</p>
+    <ul class="ui-fragment__points">
+        <li class="ui-fragment__point">Des sessions mesurées objet par objet, jour par jour.</li>
+        <li class="ui-fragment__point">Un temps de médiation moyen par visiteur.</li>
+        <li class="ui-fragment__point">Plusieurs langues servies sans réenregistrer la médiation.</li>
+        <li class="ui-fragment__point"><strong>Une portée après la visite</strong> Le lien continue de circuler une fois le visiteur reparti.</li>
+        <li class="ui-fragment__point"><strong>REVEAL, le produit conseillé</strong> Le storytelling 3D et AR, pour mettre en scène une œuvre.</li>
+    </ul>
+
+    <!-- ⚠️ Ce bouton pilote la CAMÉRA de la scène parente, il ne navigue pas :
+         un lien ordinaire rechargerait le document dans le quad et ferait
+         sortir le visiteur de l'expérience. Voir fragmentPublic.ts. -->
+    <button type="button" id="fi-fragment-suivant" class="ui-bouton ui-fragment__suivant">
+      Arrêt suivant : Configurateur, du showroom au tunnel de commande
+    </button>
+  </main>
+</body>
+</html>

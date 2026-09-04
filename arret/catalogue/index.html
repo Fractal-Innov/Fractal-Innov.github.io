@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr" class="ui-fragment-racine">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Le catalogue de modules</title>
+
+  <!-- ⚠️ noindex ET hors sitemap : voir l'en-tête du module. Ce document
+       redit, en moins complet, ce que la vraie page dit déjà. -->
+  <meta name="robots" content="noindex,nofollow" />
+
+  <link rel="stylesheet" href="../../charte.css" />
+  <script type="module" defer src="../../js/Needle/fractal-innov/src/offre/fragmentPublic.js"></script>
+  <script type="module" defer src="../../js/Needle/fractal-innov/src/offre/configurateurPublic.js"></script>
+</head>
+<body class="ui-fragment" data-arret="catalogue" data-suivant="deploiement">
+  <main class="ui-fragment__carte ui-verre-sombre">
+    <p class="ui-fragment__eyebrow">Arrêt 9 sur 13</p>
+    <h2 class="ui-fragment__titre">Le catalogue de modules</h2>
+    <p class="ui-fragment__resume">Neuf modules s'ajoutent à n'importe quel produit sans redévelopper le socle, répartis en quatre familles : audience et portée, conversion et données, engagement, contenu et intégration.</p>
+    <ul class="ui-fragment__points">
+        <li class="ui-fragment__point"><strong>Audience et portée</strong> Langue supplémentaire, accessibilité renforcée.</li>
+        <li class="ui-fragment__point"><strong>Conversion et données</strong> Collecte de leads avec connexion CRM, analytics avancé.</li>
+        <li class="ui-fragment__point"><strong>Engagement</strong> Parcours gamifié, session multijoueur, agent conversationnel.</li>
+        <li class="ui-fragment__point"><strong>Contenu et intégration</strong> Optimisation d'assets 3D, connecteur vers votre tunnel de commande.</li>
+    </ul>
+
+    <!-- Même emplacement vide que sur le site : le script le remplit, il ne
+         réécrit rien. Les niveaux et les modules sont déjà lisibles ci-dessus. -->
+    <div id="configurateur" class="ui-fragment__configurateur"></div>
+
+    <!-- ⚠️ Ce bouton pilote la CAMÉRA de la scène parente, il ne navigue pas :
+         un lien ordinaire rechargerait le document dans le quad et ferait
+         sortir le visiteur de l'expérience. Voir fragmentPublic.ts. -->
+    <button type="button" id="fi-fragment-suivant" class="ui-bouton ui-fragment__suivant">
+      Arrêt suivant : Du QR code à votre système d'information
+    </button>
+  </main>
+</body>
+</html>

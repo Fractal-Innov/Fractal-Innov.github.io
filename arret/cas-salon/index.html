@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr" class="ui-fragment-racine">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sur un Salon, capter, mesurer, qualifier</title>
+
+  <!-- ⚠️ noindex ET hors sitemap : voir l'en-tête du module. Ce document
+       redit, en moins complet, ce que la vraie page dit déjà. -->
+  <meta name="robots" content="noindex,nofollow" />
+
+  <link rel="stylesheet" href="../../charte.css" />
+  <script type="module" defer src="../../js/Needle/fractal-innov/src/offre/fragmentPublic.js"></script>
+</head>
+<body class="ui-fragment" data-arret="cas-salon" data-suivant="cas-musee">
+  <main class="ui-fragment__carte ui-verre-sombre">
+    <p class="ui-fragment__eyebrow">Arrêt 4 sur 13</p>
+    <h2 class="ui-fragment__titre">Sur un Salon, capter, mesurer, qualifier</h2>
+    <p class="ui-fragment__resume">Sur un stand saturé, une borne unique ou un simple QR code lance l'expérience sur le téléphone du visiteur. Pas de file d'attente devant six casques, rien à désinfecter, et la démonstration continue après le salon puisque l'URL se partage.</p>
+    <ul class="ui-fragment__points">
+        <li class="ui-fragment__point">Des interactions sans multiplier les bornes.</li>
+        <li class="ui-fragment__point">Le temps passé, mesuré par session.</li>
+        <li class="ui-fragment__point">Des coordonnées recueillies dans l'expérience elle-même.</li>
+        <li class="ui-fragment__point"><strong>Un partage qui se fait seul</strong> Le lien circule sans qu'on le demande.</li>
+        <li class="ui-fragment__point"><strong>EXPLORE, le produit conseillé</strong> Le monde ouvert gamifié, pour parcourir un espace à plusieurs.</li>
+    </ul>
+
+    <!-- ⚠️ Ce bouton pilote la CAMÉRA de la scène parente, il ne navigue pas :
+         un lien ordinaire rechargerait le document dans le quad et ferait
+         sortir le visiteur de l'expérience. Voir fragmentPublic.ts. -->
+    <button type="button" id="fi-fragment-suivant" class="ui-bouton ui-fragment__suivant">
+      Arrêt suivant : Au Musée, la médiation dans la poche du visiteur
+    </button>
+  </main>
+</body>
+</html>

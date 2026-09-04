@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+
+# Robots des modèles de langage — autorisés délibérément.
+User-agent: GPTBot
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://www.fractal-innov.fr/sitemap.xml
