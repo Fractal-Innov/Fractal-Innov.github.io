@@ -1,0 +1,16 @@
+{
+  "name": "Fractal Innov",
+  "short_name": "Fractal Innov",
+  "description": "Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "icons": [
+    { "src": "/icones/fi-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icones/fi-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icones/fi-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
