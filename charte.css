@@ -3308,9 +3308,11 @@
     body[data-fi-hub="demos"] #fi-demos-scene {
       grid-column: 1;
       grid-row: span 3;
+      height: calc(100svh - var(--ui-bandeau-hauteur) - 2.5rem);
     }
     .fi-demos__cadre {
-      aspect-ratio: 16 / 10;
+      aspect-ratio: auto;
+      flex: 1 1 auto;
       min-height: 0;
       max-height: none;
     }
