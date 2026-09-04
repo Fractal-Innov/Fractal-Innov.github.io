@@ -20,7 +20,7 @@
   <meta name="og:description" content="WIP">
   <meta name="generator" content="Unity 2022.3.62f2, Needle Engine Integration @5.1.10">
   <meta name="needle-engine" content="5.1.10">
-  <meta name="needle:buildtime" content="2026-09-04T12:05:02.600Z">
+  <meta name="needle:buildtime" content="2026-09-04T12:16:37.469Z">
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -61,8 +61,8 @@
 }
   </script>
   <script defer src="https://cloud.umami.is/script.js" data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14"></script>
-  <script type="module" crossorigin src="./assets/index-BxDBhiO5.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index.Bqheum4R.css">
+  <script type="module" crossorigin src="./assets/index-BNoqsTxN.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index.eZCQ1HfR.css">
 </head>
 <body class="m-0 h-dvh overflow-hidden font-ui text-texte leading-relaxed bg-fond-haut
              bg-[radial-gradient(120%_80%_at_50%_-10%,var(--color-action)_0%,transparent_55%)]
@@ -206,6 +206,17 @@
                  contextuel et « copier l'adresse » marchent alors sans une ligne
                  de JavaScript. Son adresse est posée par `carrousel.ts`. -->
             <a id="fi-demos-ouvrir" class="ui-bouton ui-bouton--discret" target="_blank" rel="noopener">Ouvrir l'adresse</a>
+
+            <!-- ⚠️ **Les flèches et le compteur tiennent la MÊME ligne que les
+                 commandes.** Sur une seule rangée, la barre sous le cadre dit
+                 tout ce qu'on peut faire de la démo courante — l'agrandir,
+                 l'ouvrir, passer à la suivante — au lieu de dépenser deux
+                 rangées de hauteur d'écran pour la même chose. -->
+            <div class="fi-demos__pager">
+              <button type="button" id="fi-demos-precedent" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur précédent">←</button>
+              <button type="button" id="fi-demos-suivant" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur suivant">→</button>
+              <p id="fi-demos-compteur" class="fi-demos__compteur" aria-live="polite">1 / 4</p>
+            </div>
           </div>
           <button type="button" id="fi-demos-reduire" class="fi-demos__reduire ui-bouton ui-bouton--discret">Quitter le plein écran</button>
         </div>
@@ -219,20 +230,10 @@
         <div class="fi-demos__choix">
           <!-- Peinte par `carrousel.ts` depuis `demos.ts` : aucun titre ici. -->
           <nav id="fi-demos-liste" class="fi-demos__liste" aria-label="Choisir un démonstrateur"></nav>
-          <div class="fi-demos__pager">
-            <button type="button" id="fi-demos-precedent" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur précédent">←</button>
-            <button type="button" id="fi-demos-suivant" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur suivant">→</button>
-            <p id="fi-demos-compteur" class="fi-demos__compteur" aria-live="polite">1 / 4</p>
-          </div>
         </div>
 
 
         <div class="fi-demos__infos">
-          <!-- ⚠️ **Le titre de la démo n'est PAS répété ici.** Il est déjà
-               dans l'entrée sélectionnée de la liste, à trois centimètres
-               au-dessus, et deux fois le même titre sur un écran de téléphone
-               coûte une ligne pleine sans rien apprendre. -->
-          <p id="fi-demos-accroche" class="fi-demos__accroche">&nbsp;</p>
 
           <!-- ⚠️ Les points clés sont REPLIÉS par défaut : quatre lignes de
                détail poussaient le cadre hors de l'écran sur téléphone. Un
@@ -240,6 +241,12 @@
                tel, sans une ligne de JavaScript. -->
           <details class="ui-repli fi-demos__repli">
             <summary class="ui-repli__bouton">Ce que montre cette démo</summary>
+            <!-- ⚠️ **L'accroche est la PREMIÈRE ligne du repli, plus une ligne
+                 à part.** Dehors, elle occupait deux lignes pleines pour dire ce
+                 que le repli annonce déjà ; dedans, elle est la phrase qui
+                 introduit les puces. Le titre de la démo, lui, n'est toujours
+                 pas répété : il vit dans l'entrée sélectionnée juste au-dessus. -->
+            <p id="fi-demos-accroche" class="fi-demos__accroche">&nbsp;</p>
             <div id="fi-demos-points"></div>
           </details>
         </div>
