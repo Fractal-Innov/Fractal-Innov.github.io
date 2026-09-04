@@ -20,7 +20,7 @@
   <meta name="og:description" content="WIP">
   <meta name="generator" content="Unity 2022.3.62f2, Needle Engine Integration @5.1.10">
   <meta name="needle-engine" content="5.1.10">
-  <meta name="needle:buildtime" content="2026-09-04T12:22:12.178Z">
+  <meta name="needle:buildtime" content="2026-09-04T12:25:53.692Z">
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
@@ -184,7 +184,13 @@
              toute relecture devait tenir les deux dans sa tête. Mobile d'abord
              veut dire que le balisage part du téléphone ; c'est l'écran large
              qui s'écarte, en grille, et lui seul. -->
-        <h2 class="fi-demos__display">Les démonstrateurs</h2>
+        <!-- ⚠️ **Le titre « Les démonstrateurs » a été RETIRÉ de l'écran, pas
+             du document.** Le bandeau de retour, juste au-dessus, le porte déjà :
+             deux fois le même mot coûtait une rangée à un endroit où chaque
+             rangée est reprise au cadre. Le `h2` reste, en `sr-only` : un
+             lecteur d'écran a besoin de ce niveau de titre pour naviguer, et le
+             supprimer laisserait la section sans nom accessible. -->
+        <h2 class="fi-demos__display sr-only">Les démonstrateurs</h2>
         <!-- ⚠️ **Le cadre passe AVANT le reste, juste sous le titre.** Ce que
              le visiteur est venu voir doit occuper le haut de l'écran ; la
              liste, l'accroche et les points clés se lisent en descendant. Le
