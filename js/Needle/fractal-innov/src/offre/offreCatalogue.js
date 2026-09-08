@@ -51,7 +51,12 @@ export function texte(t, langue = "fr") {
 export function langueComplete(contenu, langue) {
     if (langue === "fr")
         return true;
-    return contenu.pages.every(p => [p.titre, p.description, p.h1, p.question].every(t => (t[langue] ?? "").trim().length > 0));
+    const pagesCompletes = contenu.pages.every(p => [p.titre, p.description, p.h1, p.question].every(t => (t[langue] ?? "").trim().length > 0));
+    // ⚠️ Les produits entrent dans la porte depuis PROD-01 : une page produit
+    // traduite dont le triptyque ne l'est pas serait une page à moitié anglaise.
+    const produitsComplets = contenu.produits.every(x => [x.douleur, x.promesse, x.note, ...x.besoin, ...x.livre, ...x.options.map(o => o.nom)]
+        .every(t => (t[langue] ?? "").trim().length > 0));
+    return pagesCompletes && produitsComplets;
 }
 /** Les arrêts d'une page, dans l'ordre déclaré par la page. */
 export function arretsDeLaPage(contenu, page) {
@@ -149,6 +154,43 @@ export function verifierContenu(contenu) {
         // long est tronqué au milieu d'une phrase.
         if (d < 70 || d > 320)
             soucis.push(`description hors fourchette (${d} car.) : ${page.slug}`);
+    }
+    // ── Les produits, et le lien page ↔ produit ─────────────────────────────
+    // ⚠️ Une page qui désigne un produit absent du manifeste se rendrait
+    // MUETTE, sans erreur : le triptyque ne s'écrirait tout simplement pas.
+    // C'est le genre de page qu'on découvre vide devant un client, en salon.
+    const idsProduitsDeclares = new Set(contenu.produits.map(x => x.id));
+    for (const page of contenu.pages) {
+        if (page.produit && !idsProduitsDeclares.has(page.produit)) {
+            soucis.push(`la page ${page.slug} désigne un produit inconnu : ${page.produit}`);
+        }
+    }
+    for (const arret of contenu.arrets) {
+        if (arret.produit && !idsProduitsDeclares.has(arret.produit)) {
+            soucis.push(`l'arrêt ${arret.id} désigne un produit inconnu : ${arret.produit}`);
+        }
+    }
+    // ⚠️ Le triptyque de la planche se vérifie bloc par bloc. Un produit sans
+    // `besoin` ne permet plus à personne de se reconnaître, un produit sans
+    // `livre` ne dit plus ce qu'on achète — et dans les deux cas la page se
+    // rend quand même, plus courte, ce que rien ne signale.
+    const rangs = new Set();
+    for (const produit of contenu.produits) {
+        if (!produit.douleur.fr.trim())
+            soucis.push(`produit sans la phrase du client : ${produit.id}`);
+        if (!produit.promesse.fr.trim())
+            soucis.push(`produit sans promesse : ${produit.id}`);
+        if (produit.besoin.length === 0)
+            soucis.push(`produit sans besoin : ${produit.id}`);
+        if (produit.livre.length === 0)
+            soucis.push(`produit sans livrable : ${produit.id}`);
+        if (produit.secteurs.length === 0)
+            soucis.push(`produit sans secteur : ${produit.id}`);
+        // ⚠️ Le rang EST l'ordre du codec de partage (`offreShareCode.ts`).
+        // Deux produits au même rang rendraient cet ordre indéterminé.
+        if (rangs.has(produit.rang))
+            soucis.push(`deux produits au rang ${produit.rang}`);
+        rangs.add(produit.rang);
     }
     // ── ⚠️ LA GARDE QUI COMPTE : aucun prix ne fuit ─────────────────────────
     // La seule erreur irrattrapable de ce jalon. On balaie TOUT le manifeste,

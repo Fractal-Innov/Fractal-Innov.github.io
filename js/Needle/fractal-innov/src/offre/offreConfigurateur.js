@@ -96,7 +96,7 @@ export function createConfigurateur(contenu, opts = {}) {
             const produit = contenu.produits.find(p => p.id === etat.produit);
             const niveau = contenu.niveaux.find(n => n.id === etat.niveau);
             const lignes = [
-                `Produit : ${produit.nom} — ${texte(produit.accroche)}`,
+                `Produit : ${produit.nom} — ${texte(produit.douleur)}`,
                 `Niveau : ${niveau.nom} — ${texte(niveau.delai)}`,
             ];
             if (modulesApplicables()) {

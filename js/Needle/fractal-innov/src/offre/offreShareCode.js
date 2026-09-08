@@ -51,9 +51,21 @@ export const OFFRE_SHARE_PREFIX = "FI";
  * changement acceptable : un code déjà dicté à un client vaut un devis en
  * cours. Le décodage branche donc sur l'octet de version, et ne devine jamais.
  */
-export const OFFRE_SHARE_VERSION = 2;
-/** L'ancienne version, encore décodée. Elle n'est plus jamais écrite. */
-const VERSION_UN_OCTET = 1;
+export const OFFRE_SHARE_VERSION = 3;
+/**
+ * ⚠️ **Les versions 1 et 2 ne se décodent plus, et c'est délibéré.**
+ *
+ * Jusqu'ici, une version périmée restait lisible : le format changeait, le sens
+ * des index ne changeait pas. Le jalon PROD-01 casse cette propriété — la table
+ * `PRODUITS` ne désigne plus les mêmes produits. L'index 1 valait « REVEAL », il
+ * vaut « ART ». Un vieux code se décoderait donc **sans erreur, en désignant
+ * autre chose** : c'est très exactement le défaut que l'en-tête de ce module
+ * décrit comme pire qu'un code refusé.
+ *
+ * Un code d'avant le 08/09/2026 est donc refusé proprement, et son porteur en
+ * recompose un. Le coût est nul : la capsule n'a jamais servi en production.
+ */
+const VERSIONS_PERIMEES = [1, 2];
 /**
  * Le nombre de modules que le format sait porter.
  *
@@ -76,7 +88,10 @@ export const PLAFOND_MODULES = 16;
  * se franchira pareil. C'est le mur du codec sportif au jalon 25, à cette
  * différence près qu'ici il était annoncé d'avance.
  */
-const PRODUITS = ["explore", "reveal", "configure"];
+// ⚠️ Quatre produits depuis PROD-01, et l'ORDRE EST LE FORMAT. Il suit le rang
+// déclaré dans `contenu.json` — un rang qui bougerait sans que cette table
+// bouge ferait un devis faux et muet.
+const PRODUITS = ["stand", "art", "configure", "learn"];
 const NIVEAUX = ["kit", "signature", "atelier"];
 const MODULES = [
     "langue", "accessibilite", "leads", "analytics",
@@ -132,13 +147,14 @@ export function decodeConfiguration(raw) {
     // un v1 : il rendrait une configuration amputée de ses modules du second
     // octet, et le devis partirait incomplet sans la moindre erreur.
     const version = bytes[0];
-    if (version === OFFRE_SHARE_VERSION) {
-        if (bytes.length < 5)
-            return null;
-    }
-    else if (version !== VERSION_UN_OCTET) {
+    // Un code d'un format retiré est refusé NOMMÉMENT, pour que la raison du
+    // refus reste lisible dans le code et pas seulement dans un historique.
+    if (VERSIONS_PERIMEES.includes(version))
         return null;
-    }
+    if (version !== OFFRE_SHARE_VERSION)
+        return null;
+    if (bytes.length < 5)
+        return null;
     const produit = PRODUITS[bytes[1]];
     const niveau = NIVEAUX[bytes[2]];
     // ⚠️ Un index hors table vient d'un code d'une version future ou corrompu.
@@ -146,11 +162,8 @@ export function decodeConfiguration(raw) {
     // chiffrer une configuration qu'il n'a pas composée.
     if (!produit || !niveau)
         return null;
-    // 📌 Un code v1 n'a qu'un octet de masque : ses modules sont les huit
-    // premiers, et l'agent conversationnel en est absent. C'est exact et non
-    // approximatif : quand ce code a été composé, le module n'existait pas et
-    // le visiteur ne pouvait pas le cocher.
-    const masque = version === VERSION_UN_OCTET ? bytes[3] : bytes[3] | (bytes[4] << 8);
+    // Le masque des modules tient sur deux octets depuis la version 2.
+    const masque = bytes[3] | (bytes[4] << 8);
     const modules = MODULES.filter((_, bit) => (masque & (1 << bit)) !== 0);
     return { produit, niveau, modules };
 }

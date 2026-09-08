@@ -97,7 +97,7 @@ export function monterConfigurateur(contenu, opts = {}) {
             <button class="ui-tuile" type="button" data-action="produit-${esc(p.id)}"
                     aria-pressed="${etat.produit === p.id}">
                 <span class="ui-tuile__titre">${esc(p.nom)}</span>
-                <span class="ui-tuile__detail">${esc(texte(p.accroche))}</span>
+                <span class="ui-tuile__detail">${esc(texte(p.douleur))}</span>
             </button>`).join("");
         const niveaux = contenu.niveaux.map(n => `
             <button class="ui-tuile" type="button" data-action="niveau-${esc(n.id)}"
