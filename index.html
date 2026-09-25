@@ -2446,39 +2446,52 @@
          repeint que soixante fois. */
       var liensNav = document.querySelectorAll('#mainNav .nav-link');
       var idsSections = ['fondateur', 'approche', 'offre', 'demos', 'partenaires'];
+      /* Les SEPT chapitres du parcours (le hero et le contact en plus des
+         liens de la nav). ⚠️ Même liste, même ordre que CHAPITRES dans le
+         script « LE PARCOURS » : ce sont aussi les `navItemId` que la
+         télécommande enverra. */
+      var idsChapitres = ['top', 'fondateur', 'approche', 'offre', 'demos', 'partenaires', 'contact'];
       var rafNav = 0;
       var dernierActif = null;
 
       function majLienActif() {
         rafNav = 0;
-        if (!liensNav.length) return;
         var hauteurBandeau = 96;
         var pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
         var ligne = window.scrollY + Math.max(hauteurBandeau + 28, pad + 2);
 
-        var actif = null;
-        var premiere = document.getElementById(idsSections[0]);
-        if (premiere && ligne >= premiere.getBoundingClientRect().top + window.scrollY) {
-          for (var i = 0; i < idsSections.length; i++) {
-            var el = document.getElementById(idsSections[i]);
-            if (!el) continue;
-            var haut = el.getBoundingClientRect().top + window.scrollY;
-            var suivante = document.getElementById(idsSections[i + 1]);
-            var hautSuivante = suivante
-              ? suivante.getBoundingClientRect().top + window.scrollY
-              : Infinity;
-            if (ligne >= haut && ligne < hautSuivante) { actif = idsSections[i]; break; }
-          }
+        /* Le chapitre courant : le dernier dont le haut a passé la ligne. */
+        var chapitre = idsChapitres[0];
+        for (var i = 1; i < idsChapitres.length; i++) {
+          var el = document.getElementById(idsChapitres[i]);
+          if (el && ligne >= el.getBoundingClientRect().top + window.scrollY) chapitre = idsChapitres[i];
+        }
+        /* En bas de page, le dernier chapitre gagne même s'il est trop court
+           pour que son haut atteigne la ligne : sinon le contact ne serait
+           jamais « atteint » sur un grand écran. */
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+          chapitre = idsChapitres[idsChapitres.length - 1];
         }
 
+        var actif = idsSections.indexOf(chapitre) >= 0 ? chapitre : null;
         liensNav.forEach(function (a) {
           var href = a.getAttribute('href') || '';
           var id = href.charAt(0) === '#' ? href.slice(1) : '';
           a.classList.toggle('active-link', id === actif && actif !== null);
         });
-        if (actif !== dernierActif) {
-          dernierActif = actif;
-          journal('section courante :', actif || '(le hero)');
+
+        /* ⚠️ Le parcours, le son et la télécommande lisent CE résultat, et
+           rien d'autre : une seconde ligne de lecture finirait par dire un
+           autre chapitre que la nav. L'attribut est posé dès le premier
+           appel, pour qui arrive après l'événement (arrivée par `/#demos`). */
+        if (chapitre !== dernierActif) {
+          var rang = idsChapitres.indexOf(chapitre) + 1;
+          journal('chapitre :', (dernierActif || '(départ)') + ' → ' + chapitre, '(' + rang + ' / ' + idsChapitres.length + ')');
+          dernierActif = chapitre;
+          document.body.setAttribute('data-chapitre', chapitre);
+          document.dispatchEvent(new CustomEvent('fi:chapitre', {
+            detail: { id: chapitre, rang: rang, total: idsChapitres.length }
+          }));
         }
       }
       function planifierNav() {
