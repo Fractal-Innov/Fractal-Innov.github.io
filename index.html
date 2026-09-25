@@ -40,6 +40,14 @@
   <link rel="apple-touch-icon" href="/icones/fi-180.png">
   <link rel="manifest" href="/site.webmanifest">
 
+  <!-- La mesure d'usage, comme sur les autres pages du site. Umami ne pose
+       aucun cookie : pas de bandeau de consentement. `data-domains` coupe
+       l'envoi hors production : les essais en local ne faussent pas les
+       chiffres (le script répond, mais n'envoie rien). -->
+  <script defer src="https://cloud.umami.is/script.js"
+          data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14"
+          data-domains="www.fractal-innov.fr,fractal-innov.fr"></script>
+
   <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
        d'envoyer l'adresse IP du visiteur à un tiers sans son consentement. -->
   <link rel="preload" href="/media/polices/outfit-latin-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -162,6 +170,11 @@
          `.masthead-inner`, comme chez /stand/, parce qu'elles changent de
          valeur selon la largeur d'écran. */
       --radius-card: 16px;
+      /* La courbe des transitions de la charte (`charte.css`, `socle/ui/theme.css`).
+         ⚠️ Elle était utilisée sans être définie : une `var()` sans valeur
+         annule toute la déclaration, et le zoom des images de carte ne
+         s'animait plus (saut sec au survol). */
+      --ease-morph: cubic-bezier(0.34, 1.2, 0.64, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -1073,7 +1086,7 @@
        ══════════════════════════════════════════════════════════════════════ */
     .offres {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
       gap: 1.5rem;
       margin-top: 2.5rem;
     }
@@ -1085,7 +1098,9 @@
       flex-direction: column;
       padding: 0;
       overflow: hidden;
-      border-radius: var(--radius-enveloppe);
+      /* ⚠️ `--radius-enveloppe` n'existe nulle part : la carte perdait son
+         arrondi (rayon 0) sans que rien ne le signale. */
+      border-radius: var(--radius-card);
     }
     /* Le média d'une carte, partagé par les offres et les démonstrateurs.
        ⚠️ Une seule définition pour les deux : c'est ce qui garantit qu'une
@@ -1581,6 +1596,256 @@
       100% { background-position: 95% 30%, 8% 70%, 45% 5%, 85% 75%, 65% 90%; }
     }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       PARCOURS : les trois usages, la situation, les gestes, le dock
+       (spec : docs/superpowers/specs/2026-09-25-parcours-interactif-design.md)
+
+       ⚠️ Tout ce qui s'allume se lit sur <body data-situation> : le script
+       n'écrit QUE cet attribut, le CSS fait le reste. Aucune couleur neuve.
+       ⚠️ `display` posé par l'auteur l'emporte sur l'attribut `hidden` : tout
+       élément qui porte `hidden` ET une classe à `display` reçoit sa règle
+       `[hidden] { display: none; }`, sinon il ne se masque jamais.
+       ══════════════════════════════════════════════════════════════════════ */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .pic {
+      width: 1.1em; height: 1.1em; flex-shrink: 0;
+      fill: none; stroke: currentColor; stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Le choix du hero : trois pilules, le même poids pour les trois. */
+    .situations { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+    .situations__question { margin: 0; font-size: 0.95rem; color: var(--text-soft); }
+    .situations__liste {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem;
+    }
+    .situation-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      min-height: 44px; padding: 0.6rem 1.1rem;
+      border-radius: 999px; border: 1px solid var(--glass-border-highlight);
+      background: var(--glass-bg); color: var(--text-main);
+      font-weight: 600; font-size: 0.95rem; text-decoration: none;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    }
+    .situation-btn:hover,
+    .situation-btn:focus-visible { background: var(--glass-bg-hover); border-color: var(--accent-blue); transform: translateY(-2px); }
+    .situation-btn[aria-current="true"] {
+      border-color: transparent;
+      background: linear-gradient(var(--bg-base-2), var(--bg-base-2)) padding-box,
+                  var(--brand-gradient) border-box;
+    }
+    .situations__regarder { font-size: 0.9rem; color: var(--text-muted); text-underline-offset: 3px; }
+    .situations__regarder:hover { color: var(--text-main); }
+
+    /* Les repères du fondateur. */
+    .reperes { list-style: none; margin: 0 0 1.5rem; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+    .repere {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.75rem 1rem; border-radius: 12px;
+      border: 1px solid var(--glass-border); background: var(--glass-bg);
+      color: var(--text-soft); font-size: 0.95rem;
+    }
+    .repere .pic { margin-top: 0.2em; color: var(--accent-blue-light); }
+    .repere strong { color: var(--text-main); }
+
+    /* Les cartes d'usage et les démos. */
+    .offre__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; }
+    .offre__preuve { margin: 0 0 1.25rem; font-size: 0.9rem; color: var(--text-muted); }
+    .offre__preuve a { color: var(--accent-blue-light); }
+    .badge-cas {
+      display: inline-flex; align-items: center; width: fit-content;
+      margin: 0 0 0.4rem; padding: 0.15rem 0.6rem; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+      color: #fff; background: var(--brand-gradient);
+    }
+    .badge-cas[hidden] { display: none; }
+
+    /* L'approche et le contact. */
+    .etapes__geste { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
+    .etapes__geste button { font: inherit; cursor: pointer; }
+    .etapes__geste [hidden] { display: none; }
+    .contact__atelier { margin: 0.75rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
+
+    /* ── Ce que la situation allume ─────────────────────────────────────
+       ⚠️ Rien n'est masqué ni réordonné dans les offres et les démos :
+       réordonner ferait sauter le contenu sous le doigt. On allume. */
+    body[data-situation="convaincre"] [data-usages~="convaincre"],
+    body[data-situation="former"] [data-usages~="former"],
+    body[data-situation="garder"] [data-usages~="garder"] {
+      border: 1px solid transparent;
+      background: linear-gradient(var(--bg-base-2), var(--bg-base-2)) padding-box,
+                  var(--brand-gradient) border-box;
+      box-shadow: 0 18px 48px -22px rgba(139, 92, 246, 0.6);
+    }
+    body[data-situation="convaincre"] [data-usages~="convaincre"] .badge-cas[hidden],
+    body[data-situation="former"] [data-usages~="former"] .badge-cas[hidden],
+    body[data-situation="garder"] [data-usages~="garder"] .badge-cas[hidden] { display: inline-flex; }
+    body[data-situation="convaincre"] [data-pour="convaincre"][hidden],
+    body[data-situation="former"] [data-pour="former"][hidden],
+    body[data-situation="garder"] [data-pour="garder"][hidden] { display: inline; }
+    body[data-situation] [data-pour="aucune"] { display: none; }
+    /* Le fondateur : le repère de la situation passe en tête de liste. */
+    body[data-situation="convaincre"] .repere[data-usages~="convaincre"],
+    body[data-situation="former"] .repere[data-usages~="former"],
+    body[data-situation="garder"] .repere[data-usages~="garder"] { order: -1; }
+
+    /* ── Les gestes ── */
+    /* ⚠️ On éteint les ENFANTS de l'étape, pas l'étape : elle porte déjà
+       l'opacité de `.reveal`, et deux règles d'opacité se battraient. */
+    .etapes[data-etape] .etape > * { transition: opacity 0.4s ease; }
+    .etapes[data-etape] .etape:not(.etape--allumee) > * { opacity: 0.38; }
+
+    .partenaires { position: relative; }
+    .partenaire { position: relative; z-index: 1; }
+    .constellation {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      overflow: visible; pointer-events: none; z-index: 0;
+    }
+    .constellation path {
+      fill: none; stroke: var(--accent-purple); stroke-width: 1.5; stroke-linecap: round;
+      stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
+      transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+    }
+    .partenaires.reliee .constellation path { stroke-dashoffset: 0; opacity: 0.55; }
+    .partenaire__logo { transition: opacity 0.4s ease, box-shadow 0.4s ease; }
+    .partenaires.reliee .partenaire__logo {
+      opacity: 1;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 26px rgba(139, 92, 246, 0.5);
+    }
+
+    /* ── Le dock ── */
+    .dock {
+      position: fixed;
+      left: 0; right: 0;
+      bottom: calc(1rem + env(safe-area-inset-bottom));
+      margin-inline: auto;
+      width: fit-content;
+      max-width: min(100% - 2rem, 1100px);
+      z-index: 90;      /* sous le bandeau (102) et son menu plein écran (150) */
+      transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .dock[data-visible="non"] { opacity: 0; transform: translateY(calc(100% + 1.5rem)); pointer-events: none; }
+    .dock__panneau {
+      display: flex; align-items: center; gap: 0.35rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(10, 11, 20, 0.72);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+      box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+    }
+    .dock button { font: inherit; color: var(--text-main); background: none; border: 0; cursor: pointer; }
+    .dock :focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }
+    .dock__btn { width: 44px; height: 44px; border-radius: 50%; font-size: 1.4rem; line-height: 1; }
+    .dock__btn:hover:not(:disabled),
+    .dock__choix:hover { background: var(--glass-bg-hover); }
+    .dock__btn:disabled { opacity: 0.3; cursor: default; }
+    .dock__position { min-width: 11.5rem; text-align: center; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+    .dock__sep { width: 1px; height: 24px; margin-inline: 0.25rem; background: var(--glass-border-highlight); }
+    .dock__situation { position: relative; }
+    .dock__choix { min-height: 44px; padding: 0 1rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+    /* Règle 9 : les boutons du menu partagent la largeur de la pile. */
+    .dock__menu {
+      position: absolute; bottom: calc(100% + 0.6rem); left: 50%; transform: translateX(-50%);
+      list-style: none; margin: 0; padding: 0.4rem; min-width: 15rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+      border-radius: 16px; background: rgba(10, 11, 20, 0.92);
+      border: 1px solid var(--glass-border); box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+    }
+    .dock__menu[hidden] { display: none; }
+    .dock__menu button {
+      width: 100%; min-height: 44px; padding: 0 0.9rem; border-radius: 10px;
+      display: flex; align-items: center; gap: 0.6rem; text-align: left; font-size: 0.9rem;
+    }
+    .dock__menu button:hover,
+    .dock__menu button[aria-current="true"] { background: var(--glass-bg-hover); }
+    .dock__pastille,
+    .dock__fermer { display: none; }
+
+    /* ── La pastille (< 768 px) : rôle `affordance` ── */
+    @media (max-width: 767px) {
+      .dock { bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
+      /* `.dock .dock__pastille` et non `.dock__pastille` : `.dock button`
+         (fond transparent) l'emporterait sinon. */
+      .dock .dock__pastille {
+        display: grid; place-items: center; position: relative;
+        width: 56px; height: 56px; padding: 0; border-radius: 50%;
+        background: rgba(10, 11, 20, 0.82);
+        box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--glass-border);
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* L'anneau : un dégradé conique rempli jusqu'à la progression, évidé
+         au centre par un masque radial. */
+      .dock__anneau {
+        position: absolute; inset: 0; border-radius: 50%;
+        background: conic-gradient(var(--accent-blue) 0deg,
+                    var(--accent-pink) calc(var(--progression, 0) * 360deg),
+                    rgba(255, 255, 255, 0.12) 0deg);
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+        mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+      }
+      .dock__centre { position: relative; font-size: 1.05rem; font-weight: 700; }
+      .dock__centre .pic { width: 22px; height: 22px; }
+      .dock__sep { display: none; }
+
+      .dock[data-etat="replie"] .dock__panneau { display: none; }
+      .dock[data-etat="deplie"] { left: 16px; right: 16px; width: auto; max-width: none; }
+      .dock[data-etat="deplie"] .dock__pastille { display: none; }
+      .dock[data-etat="deplie"] .dock__panneau {
+        display: grid;
+        grid-template-columns: 44px 1fr auto 44px;
+        grid-template-areas: "prec pos pos suiv" "sit sit fermer fermer";
+        gap: 0.25rem; padding: 0.5rem; border-radius: 20px;
+        transform-origin: 50% 100%;
+        animation: dockDeplie 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      #dockPrec { grid-area: prec; }
+      #dockPosition { grid-area: pos; min-width: 0; }
+      #dockSuiv { grid-area: suiv; }
+      .dock__situation { grid-area: sit; }
+      .dock__choix { width: 100%; }
+      .dock__menu { left: 0; transform: none; min-width: 0; width: min(18rem, calc(100vw - 48px)); }
+      .dock[data-etat="deplie"] .dock__fermer {
+        grid-area: fermer; display: inline-flex; align-items: center; justify-content: center;
+        min-height: 44px; padding: 0 1rem; border-radius: 999px; font-size: 0.9rem; color: var(--text-muted);
+      }
+
+      /* Les trois effets. ::before = le halo, ::after = le reflet. */
+      .dock__pastille::before,
+      .dock__pastille::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; opacity: 0; }
+      .dock__pastille::before { inset: -6px; border: 2px solid var(--accent-purple); }
+      .dock__pastille::after {
+        inset: 0;
+        background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+        background-size: 250% 100%;
+      }
+      .dock--entree .dock__pastille { animation: pastilleEntree 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+      .dock--entree .dock__pastille::after { animation: pastilleReflet 0.9s 0.35s ease-out both; }
+      .dock--bascule .dock__centre { animation: centreBascule 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+      .dock--bascule .dock__pastille::before { animation: pastilleHalo 0.6s ease-out; }
+      .dock--invite .dock__pastille { animation: pastilleInvite 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    }
+    @keyframes pastilleEntree { from { transform: translateY(140%) scale(0.6); } to { transform: none; } }
+    @keyframes pastilleReflet {
+      0% { opacity: 1; background-position: 120% 0; }
+      80% { opacity: 1; }
+      100% { opacity: 0; background-position: -30% 0; }
+    }
+    @keyframes centreBascule { from { transform: rotateX(90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes pastilleHalo { from { opacity: 0.9; transform: scale(0.85); } to { opacity: 0; transform: scale(1.35); } }
+    @keyframes pastilleInvite {
+      0%, 100% { transform: none; }
+      30% { transform: translateY(-10px); }
+      55% { transform: translateY(0); }
+      75% { transform: translateY(-4px); }
+    }
+    @keyframes dockDeplie { from { opacity: 0; transform: scale(0.4, 0.3); } to { opacity: 1; transform: none; } }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
@@ -1605,6 +1870,15 @@
       .contact__links a { animation: none; transition: none; }
       /* Le filet du contact reste déployé plutôt que de disparaître. */
       .contact::before { transform: translateX(-50%) scaleX(1); }
+      /* Le parcours : états finaux, aucun mouvement. L'anneau reste à jour. */
+      .dock,
+      .dock__panneau,
+      .dock__pastille,
+      .dock__pastille::before,
+      .dock__pastille::after,
+      .dock__centre,
+      .situation-btn,
+      .constellation path { animation: none !important; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
   </style>
@@ -1613,6 +1887,15 @@
 <body>
   <a class="saut-au-contenu" href="#contenu">Aller au contenu</a>
   <div class="aura" aria-hidden="true"></div>
+
+  <!-- Les pictogrammes des trois situations, dessinés une fois et repris par
+       <use>. ⚠️ Règle 6 de Needle5 : un pictogramme n'est jamais seul, le mot
+       l'accompagne toujours. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="pic-convaincre" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="m3 7 9 5 9-5M12 12v10"/></symbol>
+    <symbol id="pic-former" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
+    <symbol id="pic-garder" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
+  </svg>
 
   <!-- ══ NAVIGATION ══════════════════════════════════════════════════════
        ⚠️ L'ordre des éléments est celui de /stand/ et il compte : le fond
@@ -1648,6 +1931,46 @@
     </div>
   </header>
 
+  <!-- ══ LE DOCK : le fil du parcours ═════════════════════════════════════
+       Le reflet du dock de la borne STAND : où l'on en est, où l'on va, pour
+       quelle situation. ⚠️ `hidden` au départ : sans JavaScript il n'existe
+       pas. Centré dans la bande de contenu (règle 7 de Needle5).
+       ⚠️ Placé juste APRÈS la navigation, et non en fin de page : l'ordre du
+       DOM est l'ordre du clavier. En fin de page, on ne l'atteignait
+       qu'après tous les liens du pied de page. Sa position à l'écran ne
+       dépend pas de sa place (`position: fixed`). Les
+       emplacements du son et de la télécommande n'existent pas encore :
+       aucun bouton mort tant que leur sous-projet n'est pas livré. -->
+  <div class="dock" id="dock" data-etat="replie" data-visible="non" hidden>
+    <button class="dock__pastille" id="dockPastille" type="button"
+            aria-expanded="false" aria-controls="dockPanneau">
+      <span class="dock__anneau" aria-hidden="true"></span>
+      <span class="dock__centre" id="dockCentre" aria-hidden="true">1</span>
+      <span class="sr-only" id="dockPastilleLibelle">Chapitre 1 sur 7, Accueil. Ouvrir le guide</span>
+    </button>
+    <nav class="dock__panneau" id="dockPanneau" aria-label="Guide de la page">
+      <button class="dock__btn" id="dockPrec" type="button" aria-label="Chapitre précédent" title="Chapitre précédent">‹</button>
+      <span class="dock__position" id="dockPosition" aria-live="polite">1 / 7 · Accueil</span>
+      <button class="dock__btn" id="dockSuiv" type="button" aria-label="Chapitre suivant" title="Chapitre suivant">›</button>
+      <span class="dock__sep" aria-hidden="true"></span>
+      <div class="dock__situation">
+        <button class="dock__choix" id="dockChoix" type="button" aria-expanded="false" aria-controls="dockMenu">
+          <span id="dockChoixLibelle">Choisir</span><span aria-hidden="true"> ▾</span>
+        </button>
+        <ul class="dock__menu" id="dockMenu" hidden>
+          <li><button type="button" data-situation-choix="convaincre" data-origine="dock">
+            <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</button></li>
+          <li><button type="button" data-situation-choix="former" data-origine="dock">
+            <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</button></li>
+          <li><button type="button" data-situation-choix="garder" data-origine="dock">
+            <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</button></li>
+          <li><button type="button" data-situation-choix="aucune" data-origine="dock">Aucune</button></li>
+        </ul>
+      </div>
+      <button class="dock__fermer" id="dockFermer" type="button">Fermer</button>
+    </nav>
+  </div>
+
   <main id="contenu">
     <!-- ══ HERO ════════════════════════════════════════════════════════ -->
     <section class="hero" id="top">
@@ -1664,15 +1987,29 @@
           <span class="hero__accent">par l'expérience</span>
         </h1>
 
-        <p class="hero__lead">Des expériences 3D, AR et VR accessibles directement depuis un
-          navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation
-          scientifique.</p>
+        <p class="hero__lead">Votre savoir est mis en 3D une fois. Ensuite, il vend, il forme,
+          il reste. Dans le navigateur, sans application.</p>
+
+        <!-- Le premier geste du parcours. Sans JavaScript, chaque bouton est un
+             lien vers la carte de sa situation ; avec, il règle aussi toute la
+             page sur ce cas (script « LE PARCOURS », section LA SITUATION). -->
+        <div class="situations">
+          <p class="situations__question" id="situationsQuestion">Votre savoir doit d'abord :</p>
+          <ul class="situations__liste" aria-labelledby="situationsQuestion">
+            <li><a class="situation-btn" href="#usage-convaincre" data-situation-choix="convaincre">
+              <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</a></li>
+            <li><a class="situation-btn" href="#usage-former" data-situation-choix="former">
+              <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</a></li>
+            <li><a class="situation-btn" href="#usage-garder" data-situation-choix="garder">
+              <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</a></li>
+          </ul>
+          <a class="situations__regarder" href="#fondateur" data-situation-choix="aucune">Juste regarder</a>
+        </div>
 
         <div class="hero__actions">
           <a class="hero-cta__btn hero-cta__btn--primary"
              href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-             target="_blank" rel="noopener"><span>Prendre rendez-vous</span></a>
-          <a class="hero-cta__btn hero-cta__btn--secondary" href="#fondateur">Rencontrer le fondateur</a>
+             target="_blank" rel="noopener" data-rdv="hero"><span>Réserver 30 min</span></a>
         </div>
 
         <div class="hero__identite">
@@ -1698,11 +2035,10 @@
             <div class="portrait__cadre">
               <img src="/media/accueil/portrait.webp"
                    alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
-              <ul class="portrait__barre tag-liste" aria-label="Domaines d'intervention">
-                <li class="tag">Industrie</li>
-                <li class="tag">Formation</li>
-                <li class="tag">Art</li>
-                <li class="tag">Médiation scientifique</li>
+              <ul class="portrait__barre tag-liste" aria-label="Trois usages">
+                <li class="tag">Convaincre</li>
+                <li class="tag">Former</li>
+                <li class="tag">Garder</li>
               </ul>
             </div>
           </div>
@@ -1717,6 +2053,22 @@
               (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
               dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
               force de vente et réduire leurs coûts logistiques événementiels.</p>
+
+            <p class="bloc-titre reveal">Pour votre cas</p>
+            <ul class="reperes reveal">
+              <li class="repere" data-usages="convaincre">
+                <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
+                <span><strong>Convaincre</strong> : vos équipements lourds et encombrants,
+                  présentés sans le coût ni l'impact logistique du transport</span></li>
+              <li class="repere" data-usages="former">
+                <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>
+                <span><strong>Former</strong> : des parcours sur équipement qui mettent en valeur
+                  un savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)</span></li>
+              <li class="repere" data-usages="garder">
+                <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
+                <span><strong>Garder</strong> : processus de fabrication, savoir-faire, geste
+                  d'une artiste, rejouables étape par étape (Mathilde Thiennot)</span></li>
+            </ul>
 
             <p class="bloc-titre reveal">Compétences</p>
             <ul class="tag-liste reveal" aria-label="Compétences">
@@ -1749,10 +2101,11 @@
         <div class="etapes">
           <article class="carte etape reveal">
             <p class="etape__num" aria-hidden="true">01</p>
-            <h3>Exploration</h3>
-            <p class="etape__court">Comprendre ce qui doit être compris</p>
-            <p class="etape__texte">Nous partons de votre produit, de votre public et de ce qu'il
-              doit retenir. Vos fichiers 3D, photos et vidéos sont regardés ensemble.</p>
+            <h3>Partir de votre situation</h3>
+            <p class="etape__court">L'atelier de 30 min</p>
+            <p class="etape__texte">Nous partons de votre besoin et du socle qui tourne déjà. Vos
+              fichiers 3D, photos et vidéos sont regardés ensemble, et vous repartez en sachant
+              par quel usage commencer. C'est gratuit.</p>
             <ul class="tag-liste">
               <li class="tag">Recherche &amp; Innovation</li>
               <li class="tag">Ateliers</li>
@@ -1786,52 +2139,95 @@
             </ul>
           </article>
         </div>
+
+        <!-- Le geste de l'approche. « Étape suivante » est masqué sans
+             JavaScript : les trois temps sont alors tous visibles. -->
+        <div class="etapes__geste">
+          <button class="hero-cta__btn hero-cta__btn--secondary" id="etapeSuivante" type="button" hidden>Étape suivante</button>
+          <a class="hero-cta__btn hero-cta__btn--primary"
+             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+             target="_blank" rel="noopener" data-rdv="approche"><span>Réserver 30 min</span></a>
+        </div>
       </section>
 
-      <!-- ══ OFFRE ═══════════════════════════════════════════════════════ -->
+      <!-- ══ TROIS USAGES ════════════════════════════════════════════════
+           Un savoir, trois usages. Les trois cartes sont TOUJOURS dans le
+           HTML, ouvertes : c'est ce que lisent les moteurs et le visiteur
+           sans JavaScript. La situation choisie n'en masque aucune, elle
+           allume la sienne (`body[data-situation]` + `data-usages`). -->
       <section class="section" id="offre">
         <p class="section-number reveal">L'agence</p>
-        <h2 class="reveal">Faire comprendre votre produit, là où il ne peut pas être</h2>
-        <p class="reveal">Deux situations, un même objectif : que votre interlocuteur saisisse
-          l'essentiel sans attendre qu'on le lui explique.</p>
+        <h2 class="reveal">Un savoir, trois usages</h2>
+        <p class="reveal">Chaque usage part du même socle, qui tourne déjà dans cinq
+          démonstrateurs. L'atelier de 30 min sert à choisir par lequel commencer.</p>
 
         <div class="offres">
-          <article class="carte offre reveal">
+          <article class="carte offre reveal" id="usage-convaincre" data-usages="convaincre">
             <div class="media-16x9">
               <img src="/media/accueil/offre-stand.webp"
                    alt="La borne STAND sur un stand de salon, vue d'ensemble de la scène 3D"
                    width="1600" height="1063" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow">Sur un salon · STAND</p>
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur
+                <span class="badge-cas" hidden>Votre situation</span></p>
               <h3>Votre produit ne voyage pas ? Votre démo, si</h3>
-              <p class="offre__texte">Une borne tactile sur votre stand : chaque visiteur découvre
-                votre produit seul, à son rythme, même sans connexion. Vos commerciaux gardent
-                l'outil pour les salons suivants.</p>
+              <p class="offre__texte">Machines, équipements lourds, systèmes intégrés : leur jumeau
+                3D se présente sur une borne ou derrière un lien, sans transport, sans montage,
+                sans le coût ni l'impact logistique d'un convoi. Vos commerciaux gardent l'outil
+                d'un salon à l'autre.</p>
+              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-stand">STAND</a>,
+                <a href="#demo-midipile">Midipile</a></p>
               <div class="offre__actions">
-                <a class="hero-cta__btn hero-cta__btn--primary" href="/stand/"><span>Découvrir STAND</span></a>
+                <a class="hero-cta__btn hero-cta__btn--primary"
+                   href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
+                <a class="hero-cta__btn hero-cta__btn--secondary" href="/stand/" data-demo="stand">Découvrir STAND</a>
               </div>
             </div>
           </article>
 
-          <article class="carte offre reveal">
+          <article class="carte offre reveal" id="usage-former" data-usages="former">
             <div class="media-16x9">
-              <img src="/media/accueil/demos/midipile.webp"
-                   alt="Le démonstrateur Midipile : un utilitaire électrique en 3D, configurable dans le navigateur"
-                   width="1080" height="607" loading="lazy" decoding="async">
+              <img src="/media/accueil/demos/rayon-x.webp"
+                   alt="Rayon X : un échangeur thermique industriel en 3D, parcouru comme en formation"
+                   width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow">En ligne</p>
-              <h3>Vos clients ne se déplacent pas ? Allez vers eux</h3>
-              <p class="offre__texte">Un simple lien pour explorer votre produit sous tous les
-                angles, puis le poser chez soi à travers l'écran du téléphone. Rien à installer.
-                Deux démonstrateurs tournent déjà en ligne.</p>
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant
+                <span class="badge-cas" hidden>Votre situation</span></p>
+              <h3>Vos nouveaux arrivants apprennent sur l'équipement en production ?</h3>
+              <p class="offre__texte">Ils le démontent, le parcourent et recommencent en 3D, sans
+                arrêter la ligne ni prendre de risque. Le parcours met en valeur votre savoir-faire
+                et respecte vos accords de confidentialité.</p>
+              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-rayon-x">Rayon X</a></p>
               <div class="offre__actions">
-                <a class="hero-cta__btn hero-cta__btn--primary" href="/midipile/"
-                   target="_blank" rel="noopener"><span>Voir un exemple</span></a>
-                <a class="hero-cta__btn hero-cta__btn--secondary"
+                <a class="hero-cta__btn hero-cta__btn--primary"
                    href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-                   target="_blank" rel="noopener">Prendre rendez-vous</a>
+                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte offre reveal" id="usage-garder" data-usages="garder">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/moulage.webp"
+                   alt="À fleur d'écorce : le geste de l'artiste Mathilde Thiennot, rejouable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="offre__corps">
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire
+                <span class="badge-cas" hidden>Votre situation</span></p>
+              <h3>Vos savoir-faire partent avec ceux qui les ont ?</h3>
+              <p class="offre__texte">Un processus de fabrication, un tour de main, le geste d'une
+                artiste : capturés, découpés en étapes et rejouables sous tous les angles, aussi
+                souvent qu'il le faut. La captation se fait avec vous, ou avec un partenaire
+                spécialisé selon le besoin.</p>
+              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-moulage">À fleur d'écorce</a></p>
+              <div class="offre__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary"
+                   href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
               </div>
             </div>
           </article>
@@ -1847,12 +2243,13 @@
 
         <div class="demos">
 
-          <article class="carte demo reveal" id="demo-stand">
+          <article class="carte demo reveal" id="demo-stand" data-usages="convaincre">
             <div class="media-16x9">
               <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>STAND</h3>
               <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
               <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
@@ -1862,18 +2259,19 @@
               <li>Une télécommande pilote la borne depuis un téléphone</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/stand/">Voir la page
+                <a class="hero-cta__btn" href="/stand/" data-demo="stand">Voir la page
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
           </article>
 
-          <article class="carte demo reveal" id="demo-rayon-x">
+          <article class="carte demo reveal" id="demo-rayon-x" data-usages="former">
             <div class="media-16x9">
               <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>Rayon X</h3>
               <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
               <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
@@ -1883,18 +2281,19 @@
               <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener" data-demo="rayon-x">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
           </article>
 
-          <article class="carte demo reveal" id="demo-midipile">
+          <article class="carte demo reveal" id="demo-midipile" data-usages="convaincre">
             <div class="media-16x9">
               <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>Midipile</h3>
               <p class="demo__sous-titre">le démonstrateur produit</p>
               <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
@@ -1904,18 +2303,19 @@
               <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener" data-demo="midipile">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
           </article>
 
-          <article class="carte demo reveal" id="demo-moulage">
+          <article class="carte demo reveal" id="demo-moulage" data-usages="garder">
             <div class="media-16x9">
               <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>À fleur d'écorce</h3>
               <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
               <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
@@ -1925,7 +2325,7 @@
               <li>La caméra suit des points de vue composés, comme un storyboard</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener" data-demo="moulage">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
@@ -1946,7 +2346,7 @@
               <li>Français et anglais, au même endroit</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener" data-demo="village">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
@@ -2047,12 +2447,20 @@
           <figcaption><strong>Corentin Duboc</strong><span>Fondateur de Fractal Innov</span></figcaption>
         </figure>
 
-        <h2 class="reveal">Un projet ou une idée en tête ?</h2>
+        <!-- Les quatre titres sont dans le HTML (SEO) ; seul celui de la
+             situation choisie s'affiche, par CSS (`data-pour`). Sans JS :
+             le titre neutre. -->
+        <h2 class="reveal">
+          <span data-pour="aucune">Un projet ou une idée en tête ?</span>
+          <span data-pour="convaincre" hidden>Parlons de l'équipement qui ne voyage pas</span>
+          <span data-pour="former" hidden>Parlons de vos nouveaux arrivants</span>
+          <span data-pour="garder" hidden>Parlons du savoir-faire à garder</span>
+        </h2>
         <p class="contact__lead reveal">Décrivez votre produit et votre public : nous regardons
           ensemble ce qui existe et ce que l'expérience doit faire comprendre.</p>
 
         <div class="contact__actions reveal">
-          <a class="contact__primary" id="contactPrimary"
+          <a class="contact__primary" id="contactPrimary" data-rdv="contact"
              href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6" target="_blank" rel="noopener noreferrer">
             <svg class="contact__primary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2061,17 +2469,20 @@
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-            <span>Prendre rendez-vous</span>
+            <span>Réserver 30 min</span>
             <svg class="contact__primary-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6"></path>
             </svg>
           </a>
 
+          <p class="contact__atelier">L'atelier de cadrage, gratuit : nous partons de votre
+            situation et du socle existant.</p>
+
           <p class="contact__or">ou, si vous préférez</p>
 
           <div class="contact__links">
-            <a href="https://s.blinq.me/wEhJoOeZIrvGvSIe46Yy?bs=icl" target="_blank" rel="noopener noreferrer">
+            <a href="https://s.blinq.me/wEhJoOeZIrvGvSIe46Yy?bs=icl" data-canal="carte" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="2" y="5" width="20" height="14" rx="2"></rect>
@@ -2081,7 +2492,7 @@
               </svg>
               Carte de visite
             </a>
-            <a href="mailto:corentin.duboc@fractal-innov.fr" title="corentin.duboc@fractal-innov.fr">
+            <a href="mailto:corentin.duboc@fractal-innov.fr" data-canal="email" title="corentin.duboc@fractal-innov.fr">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -2089,13 +2500,13 @@
               </svg>
               E-mail
             </a>
-            <a href="https://www.linkedin.com/in/corentin-duboc/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/corentin-duboc/" data-canal="linkedin" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
               </svg>
               LinkedIn
             </a>
-            <a href="https://www.instagram.com/fractalinnov/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/fractalinnov/" data-canal="instagram" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -2268,39 +2679,52 @@
          repeint que soixante fois. */
       var liensNav = document.querySelectorAll('#mainNav .nav-link');
       var idsSections = ['fondateur', 'approche', 'offre', 'demos', 'partenaires'];
+      /* Les SEPT chapitres du parcours (le hero et le contact en plus des
+         liens de la nav). ⚠️ Même liste, même ordre que CHAPITRES dans le
+         script « LE PARCOURS » : ce sont aussi les `navItemId` que la
+         télécommande enverra. */
+      var idsChapitres = ['top', 'fondateur', 'approche', 'offre', 'demos', 'partenaires', 'contact'];
       var rafNav = 0;
       var dernierActif = null;
 
       function majLienActif() {
         rafNav = 0;
-        if (!liensNav.length) return;
         var hauteurBandeau = 96;
         var pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
         var ligne = window.scrollY + Math.max(hauteurBandeau + 28, pad + 2);
 
-        var actif = null;
-        var premiere = document.getElementById(idsSections[0]);
-        if (premiere && ligne >= premiere.getBoundingClientRect().top + window.scrollY) {
-          for (var i = 0; i < idsSections.length; i++) {
-            var el = document.getElementById(idsSections[i]);
-            if (!el) continue;
-            var haut = el.getBoundingClientRect().top + window.scrollY;
-            var suivante = document.getElementById(idsSections[i + 1]);
-            var hautSuivante = suivante
-              ? suivante.getBoundingClientRect().top + window.scrollY
-              : Infinity;
-            if (ligne >= haut && ligne < hautSuivante) { actif = idsSections[i]; break; }
-          }
+        /* Le chapitre courant : le dernier dont le haut a passé la ligne. */
+        var chapitre = idsChapitres[0];
+        for (var i = 1; i < idsChapitres.length; i++) {
+          var el = document.getElementById(idsChapitres[i]);
+          if (el && ligne >= el.getBoundingClientRect().top + window.scrollY) chapitre = idsChapitres[i];
+        }
+        /* En bas de page, le dernier chapitre gagne même s'il est trop court
+           pour que son haut atteigne la ligne : sinon le contact ne serait
+           jamais « atteint » sur un grand écran. */
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+          chapitre = idsChapitres[idsChapitres.length - 1];
         }
 
+        var actif = idsSections.indexOf(chapitre) >= 0 ? chapitre : null;
         liensNav.forEach(function (a) {
           var href = a.getAttribute('href') || '';
           var id = href.charAt(0) === '#' ? href.slice(1) : '';
           a.classList.toggle('active-link', id === actif && actif !== null);
         });
-        if (actif !== dernierActif) {
-          dernierActif = actif;
-          journal('section courante :', actif || '(le hero)');
+
+        /* ⚠️ Le parcours, le son et la télécommande lisent CE résultat, et
+           rien d'autre : une seconde ligne de lecture finirait par dire un
+           autre chapitre que la nav. L'attribut est posé dès le premier
+           appel, pour qui arrive après l'événement (arrivée par `/#demos`). */
+        if (chapitre !== dernierActif) {
+          var rang = idsChapitres.indexOf(chapitre) + 1;
+          journal('chapitre :', (dernierActif || '(départ)') + ' → ' + chapitre, '(' + rang + ' / ' + idsChapitres.length + ')');
+          dernierActif = chapitre;
+          document.body.setAttribute('data-chapitre', chapitre);
+          document.dispatchEvent(new CustomEvent('fi:chapitre', {
+            detail: { id: chapitre, rang: rang, total: idsChapitres.length }
+          }));
         }
       }
       function planifierNav() {
@@ -2400,6 +2824,484 @@
         sousLePli++;
       });
       journal(aReveler.length + ' éléments « reveal », dont ' + sousLePli + ' sous le pli');
+    })();
+  </script>
+  <script>
+    /* ══════════════════════════════════════════════════════════════════════
+       LE PARCOURS
+
+       Ce qu'il fait : il lit les sept sections comme les chapitres d'un même
+       récit, règle la page sur la situation du visiteur, joue un geste par
+       chapitre, tient le dock, et compte ce qui se passe (Umami).
+       Pourquoi un second script : le premier règle l'apparence et s'arrête
+       tôt (le `return` de l'apparition au défilement). Il ne dépend de lui
+       que par UN point : `fi:chapitre` et `body[data-chapitre]`.
+       ⚠️ Ce qui casse si on s'y trompe : la page doit rester lisible sans ce
+       script. Il n'injecte AUCUN texte ; il allume, masque et compte.
+
+       Le contrat (spec, § 8), pour le son et la télécommande :
+         émis    fi:chapitre {id, rang, total}   (par le premier script)
+                 fi:situation {id, origine}      fi:geste {chapitre, geste, etape}
+         écouté  fi:aller {chapitre} | {pas: 1 | -1}
+       ══════════════════════════════════════════════════════════════════════ */
+    (function () {
+      'use strict';
+
+      /* ── Le journal : même interrupteur que le premier script (?debug=1),
+         qui a déjà écrit la clé quand celui-ci s'exécute. ── */
+      var DEBUG = false;
+      try { DEBUG = localStorage.getItem('fi:debug') === '1'; } catch (e) {}
+      function journal() {
+        if (!DEBUG) return;
+        console.log.apply(console, ['%c[parcours]', 'color:#f472b6']
+          .concat(Array.prototype.slice.call(arguments)));
+      }
+      var sobre = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ── Le vocabulaire ────────────────────────────────────────────────
+         ⚠️ Les `id` sont ceux des sections ET les `navItemId` de la
+         télécommande (protocole du Salon) : les renommer casse le pilotage.
+         Même ordre que `idsChapitres` dans le premier script. */
+      var CHAPITRES = [
+        { id: 'top', titre: 'Accueil' },
+        { id: 'fondateur', titre: 'Le fondateur' },
+        { id: 'approche', titre: "L'approche" },
+        { id: 'offre', titre: 'Trois usages' },
+        { id: 'demos', titre: 'Ça tourne déjà' },
+        { id: 'partenaires', titre: 'Partenaires' },
+        { id: 'contact', titre: 'Contact' }
+      ];
+      var IDS = CHAPITRES.map(function (c) { return c.id; });
+      var SITUATIONS = { convaincre: 'Convaincre', former: 'Former', garder: 'Garder' };
+
+      function emettre(nom, detail) {
+        document.dispatchEvent(new CustomEvent(nom, { detail: detail }));
+      }
+      function situationActuelle() {
+        return document.body.getAttribute('data-situation') || 'aucune';
+      }
+
+      /* ── LA MESURE (Umami) ─────────────────────────────────────────────
+         Le contrat de `socle/mesure/analytique.ts`, porté en JS simple :
+         une mesure ne lève JAMAIS d'exception et ne fait rien sans le
+         script (bloqueur, hors ligne). Aucun geste n'appelle Umami : la
+         mesure ÉCOUTE le parcours, comme le feront le son et la télécommande.
+
+         ⚠️ Le script Umami est `defer` : il s'exécute APRÈS celui-ci. Ce qui
+         se mesure au démarrage (la situation d'un lien de relance, le
+         premier chapitre) attend donc l'événement `load` dans une file,
+         sinon la mesure la plus précieuse serait perdue. */
+      var MESURES = {
+        situationChoisie: 'situation-choisie',
+        chapitreAtteint: 'chapitre-atteint',
+        geste: 'geste',
+        guideOuvert: 'guide-ouvert',
+        rdvDemande: 'rdv-demande',
+        demoOuverte: 'demo-ouverte',
+        contactDirect: 'contact-direct'
+      };
+      var fileMesures = [];
+      function envoyer(nom, donnees) {
+        try {
+          var u = window.umami;
+          if (!u || typeof u.track !== 'function') {
+            journal('mesure ignorée (script absent) :', nom, donnees || '');
+            return;
+          }
+          if (donnees && Object.keys(donnees).length) u.track(nom, donnees);
+          else u.track(nom);
+          journal('mesure :', nom, donnees || '');
+        } catch (e) { /* une mesure ne casse jamais la page */ }
+      }
+      function mesurer(nom, donnees) {
+        if (fileMesures) { fileMesures.push([nom, donnees]); return; }
+        envoyer(nom, donnees);
+      }
+      window.addEventListener('load', function () {
+        var file = fileMesures;
+        fileMesures = null;
+        journal(file.length + ' mesure(s) du démarrage envoyée(s) après le chargement d\'Umami');
+        file.forEach(function (m) { envoyer(m[0], m[1]); });
+      });
+      var dejaMesure = {};
+      function mesurerUneFois(cle, nom, donnees) {
+        if (dejaMesure[cle]) return;
+        dejaMesure[cle] = true;
+        mesurer(nom, donnees);
+      }
+
+      document.addEventListener('fi:situation', function (e) {
+        mesurer(MESURES.situationChoisie, {
+          situation: e.detail.id || 'aucune',
+          origine: e.detail.origine || 'inconnue'
+        });
+      });
+      function mesurerChapitre(id) {
+        mesurerUneFois('chapitre:' + id, MESURES.chapitreAtteint, { chapitre: id, rang: IDS.indexOf(id) + 1 });
+      }
+      document.addEventListener('fi:chapitre', function (e) { mesurerChapitre(e.detail.id); });
+      /* Le premier chapitre a été annoncé AVANT que ce script n'écoute. */
+      mesurerChapitre(document.body.getAttribute('data-chapitre') || 'top');
+      document.addEventListener('fi:geste', function (e) {
+        var d = e.detail;
+        mesurerUneFois('geste:' + d.chapitre + ':' + d.geste, MESURES.geste, { chapitre: d.chapitre, geste: d.geste });
+      });
+
+      /* Les clics qui comptent : la réservation (LA conversion), une démo,
+         un autre canal. Une seule écoute, déléguée, lue sur les attributs
+         posés dans le HTML. */
+      document.addEventListener('click', function (e) {
+        if (!e.target.closest) return;
+        var rdv = e.target.closest('[data-rdv]');
+        if (rdv) {
+          mesurer(MESURES.rdvDemande, { situation: situationActuelle(), emplacement: rdv.getAttribute('data-rdv') });
+          return;
+        }
+        var demo = e.target.closest('[data-demo]');
+        if (demo) {
+          mesurer(MESURES.demoOuverte, { demo: demo.getAttribute('data-demo'), situation: situationActuelle() });
+          return;
+        }
+        var canal = e.target.closest('[data-canal]');
+        if (canal) mesurer(MESURES.contactDirect, { canal: canal.getAttribute('data-canal') });
+      });
+
+      /* ── LA SITUATION ──────────────────────────────────────────────────
+         Une seule variable, écrite de trois endroits : un bouton du hero,
+         le menu du dock, l'URL à l'arrivée (lien de relance).
+         ⚠️ L'URL n'est LUE qu'une fois, au démarrage ; ensuite c'est le
+         choix qui l'écrit, jamais l'inverse. Deux sources qui se lisent
+         l'une l'autre finissent par se contredire. */
+      var situation = null;
+      var boutonsSituation = document.querySelectorAll('[data-situation-choix]');
+
+      function choisirSituation(id, origine) {
+        if (id !== null && !SITUATIONS.hasOwnProperty(id)) {
+          journal('situation inconnue, ignorée :', id);
+          return;
+        }
+        if (id === situation) return;
+        var avant = situation;
+        situation = id;
+        if (id) document.body.setAttribute('data-situation', id);
+        else document.body.removeAttribute('data-situation');
+        boutonsSituation.forEach(function (b) {
+          if (b.getAttribute('data-situation-choix') === id) b.setAttribute('aria-current', 'true');
+          else b.removeAttribute('aria-current');
+        });
+        /* `replaceState` et non `pushState` : changer de situation ne doit
+           pas ajouter une page au bouton Précédent. */
+        try {
+          var url = new URL(location.href);
+          if (id) url.searchParams.set('situation', id);
+          else url.searchParams.delete('situation');
+          history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+        } catch (e) { /* file:// ou navigateur ancien : la page marche sans */ }
+        journal('situation :', (avant || 'aucune') + ' → ' + (id || 'aucune'), '(venue de : ' + origine + ')');
+        emettre('fi:situation', { id: id, origine: origine });
+      }
+
+      /* Le lien du hero garde son ancre : on choisit, PUIS le navigateur
+         descend à la carte, comme sans JavaScript. */
+      document.addEventListener('click', function (e) {
+        var cible = e.target.closest && e.target.closest('[data-situation-choix]');
+        if (!cible) return;
+        var v = cible.getAttribute('data-situation-choix');
+        choisirSituation(v === 'aucune' ? null : v, cible.getAttribute('data-origine') || 'hero');
+      });
+
+      /* ── ALLER À UN CHAPITRE (fi:aller) ────────────────────────────────
+         La porte d'entrée du dock et de la future télécommande.
+         ⚠️ Pendant un défilement doux, `data-chapitre` n'a pas encore
+         changé : deux « suivant » rapides viseraient deux fois le même
+         chapitre. On compte donc depuis la DERNIÈRE cible pendant 1 s. */
+      var derniereCible = -1;
+      var cibleViseeA = 0;
+      document.addEventListener('fi:aller', function (e) {
+        var d = e.detail || {};
+        var rang = IDS.indexOf(d.chapitre);
+        if (rang < 0 && (d.pas === 1 || d.pas === -1)) {
+          var depart = (derniereCible >= 0 && performance.now() - cibleViseeA < 1000)
+            ? derniereCible
+            : Math.max(0, IDS.indexOf(document.body.getAttribute('data-chapitre') || 'top'));
+          rang = depart + d.pas;
+          if (rang < 0 || rang >= IDS.length) { journal('fi:aller : déjà au bout du parcours'); return; }
+        }
+        if (rang < 0) { journal('fi:aller : chapitre inconnu', d); return; }
+        derniereCible = rang;
+        cibleViseeA = performance.now();
+        journal('fi:aller →', IDS[rang]);
+        document.getElementById(IDS[rang]).scrollIntoView({ behavior: sobre ? 'auto' : 'smooth', block: 'start' });
+      });
+
+      /* ── LES GESTES ────────────────────────────────────────────────────
+         Un geste par chapitre, qui se joue et ne se subit pas : aucun ne
+         fait défiler la page. Le fondateur, l'offre, les démos et le
+         contact sont « joués » par la situation (CSS) ; restent ces deux. */
+
+      /* L'approche : « Étape suivante » allume les trois temps l'un après
+         l'autre. Sans JS, le bouton reste `hidden` et tout est allumé. */
+      var boiteEtapes = document.querySelector('#approche .etapes');
+      var etapes = boiteEtapes ? boiteEtapes.querySelectorAll('.etape') : [];
+      var btnEtape = document.getElementById('etapeSuivante');
+      if (etapes.length && btnEtape) {
+        var allumees = 0;
+        var allumer = function (n) {
+          allumees = n;
+          etapes.forEach(function (el, i) {
+            el.classList.toggle('etape--allumee', i < n);
+            if (i === n - 1) el.setAttribute('aria-current', 'step');
+            else el.removeAttribute('aria-current');
+          });
+          btnEtape.textContent = n >= etapes.length ? 'Revoir depuis le début' : 'Étape suivante';
+        };
+        boiteEtapes.setAttribute('data-etape', '');
+        allumer(1);
+        btnEtape.hidden = false;
+        btnEtape.addEventListener('click', function () {
+          allumer(allumees >= etapes.length ? 1 : allumees + 1);
+          journal('approche : étape', allumees, 'allumée');
+          emettre('fi:geste', { chapitre: 'approche', geste: 'etape', etape: allumees });
+        });
+      }
+
+      /* Les partenaires : au survol ou au toucher, les monogrammes se
+         relient en constellation. Le tracé est recalculé à chaque fois, sur
+         la position réelle des logos : la grille change de colonnes avec la
+         largeur. ⚠️ Au toucher, `pointerleave` arrive dès que le doigt se
+         lève : on n'éteint alors qu'en quittant le chapitre. */
+      var grillePart = document.querySelector('#partenaires .partenaires');
+      if (grillePart) {
+        var ciel = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        ciel.setAttribute('class', 'constellation');
+        ciel.setAttribute('aria-hidden', 'true');
+        grillePart.appendChild(ciel);
+        var constellationVue = false;
+        var relier = function () {
+          var base = grillePart.getBoundingClientRect();
+          var d = Array.prototype.map.call(grillePart.querySelectorAll('.partenaire__logo'), function (logo, i) {
+            var r = logo.getBoundingClientRect();
+            return (i ? 'L' : 'M') + Math.round(r.left - base.left + r.width / 2) + ' ' + Math.round(r.top - base.top + r.height / 2);
+          }).join(' ');
+          ciel.setAttribute('viewBox', '0 0 ' + Math.round(base.width) + ' ' + Math.round(base.height));
+          ciel.innerHTML = '<path pathLength="1" d="' + d + '"></path>';
+        };
+        var allumerCiel = function () {
+          if (grillePart.classList.contains('reliee')) return;
+          relier();
+          ciel.getBoundingClientRect(); /* force le premier rendu : sans lui, pas de tracé animé */
+          grillePart.classList.add('reliee');
+          journal('partenaires : constellation reliée');
+          if (!constellationVue) {
+            constellationVue = true;
+            emettre('fi:geste', { chapitre: 'partenaires', geste: 'constellation', etape: 1 });
+          }
+        };
+        var eteindreCiel = function () { grillePart.classList.remove('reliee'); };
+        grillePart.addEventListener('pointerenter', allumerCiel);
+        grillePart.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') eteindreCiel(); });
+        document.addEventListener('fi:chapitre', function (e) { if (e.detail.id !== 'partenaires') eteindreCiel(); });
+        window.addEventListener('resize', function () { if (grillePart.classList.contains('reliee')) relier(); });
+      }
+
+      /* ── LE DOCK ───────────────────────────────────────────────────────
+         Il ne calcule rien : il AFFICHE le chapitre du premier script et
+         la situation, et ses flèches passent par fi:aller comme le fera la
+         télécommande. Invisible sur le hero (qui porte déjà le choix) et
+         quand le pied de page est à l'écran (il couvrirait le contact). */
+      var dock = document.getElementById('dock');
+      if (dock) {
+        var dockPrec = document.getElementById('dockPrec');
+        var dockSuiv = document.getElementById('dockSuiv');
+        var dockPosition = document.getElementById('dockPosition');
+        var dockChoix = document.getElementById('dockChoix');
+        var dockChoixLibelle = document.getElementById('dockChoixLibelle');
+        var dockMenu = document.getElementById('dockMenu');
+        /* ⚠️ Lu sur <body> et non attendu en événement : à l'arrivée par
+           `/#demos`, le premier `fi:chapitre` est parti avant ce script. */
+        var chapitreDock = document.body.getAttribute('data-chapitre') || 'top';
+        var footerVu = false;
+
+        var fermerMenuSituation = function () {
+          dockMenu.hidden = true;
+          dockChoix.setAttribute('aria-expanded', 'false');
+        };
+        var majFil = function () {
+          var i = Math.max(0, IDS.indexOf(chapitreDock));
+          dockPosition.textContent = (i + 1) + ' / ' + IDS.length + ' · ' + CHAPITRES[i].titre;
+          dockPrec.disabled = i === 0;
+          dockSuiv.disabled = i === IDS.length - 1;
+        };
+        var majVisibilite = function () {
+          var visible = chapitreDock !== 'top' && !footerVu;
+          if ((dock.getAttribute('data-visible') === 'oui') === visible) return;
+          dock.setAttribute('data-visible', visible ? 'oui' : 'non');
+          /* `inert` : un dock effacé ne doit pas voler le focus du clavier. */
+          dock.inert = !visible;
+          if (!visible) fermerMenuSituation();
+          journal('dock', visible ? 'visible' : 'effacé', '(' + chapitreDock + (footerVu ? ', pied de page à l\'écran' : '') + ')');
+          emettre('fi:dock', { visible: visible });
+        };
+
+        dockPrec.addEventListener('click', function () { emettre('fi:aller', { pas: -1 }); });
+        dockSuiv.addEventListener('click', function () { emettre('fi:aller', { pas: 1 }); });
+        dockChoix.addEventListener('click', function () {
+          var ouvre = dockMenu.hidden;
+          dockMenu.hidden = !ouvre;
+          dockChoix.setAttribute('aria-expanded', ouvre ? 'true' : 'false');
+          if (ouvre) dockMenu.querySelector('button').focus();
+        });
+        document.addEventListener('click', function (e) {
+          if (!dockMenu.hidden && !e.target.closest('.dock__situation')) fermerMenuSituation();
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !dockMenu.hidden) { fermerMenuSituation(); dockChoix.focus(); }
+        });
+        document.addEventListener('fi:situation', function (e) {
+          dockChoixLibelle.textContent = e.detail.id ? SITUATIONS[e.detail.id] : 'Choisir';
+          fermerMenuSituation();
+        });
+        document.addEventListener('fi:chapitre', function (e) {
+          chapitreDock = e.detail.id;
+          majFil();
+          majVisibilite();
+        });
+        var piedDePage = document.querySelector('.footer');
+        if (piedDePage && 'IntersectionObserver' in window) {
+          new IntersectionObserver(function (entrees) {
+            footerVu = entrees[0].isIntersecting;
+            majVisibilite();
+          }).observe(piedDePage);
+        }
+
+        dock.hidden = false;
+        dock.inert = true;
+        majFil();
+        majVisibilite();
+
+        /* ── La pastille (téléphone) ─────────────────────────────────────
+           Sous 768 px, le dock replié tient en 56 px : un anneau qui se
+           remplit avec la lecture, le numéro du chapitre (ou le
+           pictogramme de la situation) au centre.
+           Trois effets, un par intention, AUCUN en boucle : un appel qui ne
+           s'arrête jamais devient du bruit, et fatigue en rendez-vous.
+             entrée  : « je suis là »       (première apparition)
+             bascule : « vous avancez »     (changement de chapitre)
+             invite  : « touchez-moi »      (une fois par visite) */
+        var mobile = window.matchMedia('(max-width: 767px)');
+        var pastille = document.getElementById('dockPastille');
+        var centre = document.getElementById('dockCentre');
+        var pastilleLibelle = document.getElementById('dockPastilleLibelle');
+        var dejaApparu = false;
+        var guideOuvert = false;
+        var inviteFaite = false;
+        var chapitresSansOuvrir = 0;
+        var ignorerDefilementJusqua = 0;
+
+        /* Rejoue une classe d'animation, même si elle tournait déjà. */
+        var jouer = function (classe, duree) {
+          if (sobre) return;
+          dock.classList.remove(classe);
+          void dock.offsetWidth;
+          dock.classList.add(classe);
+          clearTimeout(jouer[classe]);
+          jouer[classe] = setTimeout(function () { dock.classList.remove(classe); }, duree);
+        };
+        var majPastille = function () {
+          var i = Math.max(0, IDS.indexOf(chapitreDock));
+          var s = document.body.getAttribute('data-situation');
+          /* `s` vient de SITUATIONS (liste fermée) : l'innerHTML est sûr. */
+          centre.innerHTML = s && SITUATIONS[s]
+            ? '<svg class="pic" aria-hidden="true"><use href="#pic-' + s + '"></use></svg>'
+            : String(i + 1);
+          pastilleLibelle.textContent = 'Chapitre ' + (i + 1) + ' sur ' + IDS.length + ', ' + CHAPITRES[i].titre
+            + (s ? ', situation ' + SITUATIONS[s] : '') + '. Ouvrir le guide';
+        };
+        var deplier = function () {
+          dock.setAttribute('data-etat', 'deplie');
+          pastille.setAttribute('aria-expanded', 'true');
+          ignorerDefilementJusqua = performance.now() + 400;
+          journal('dock déplié');
+          if (!guideOuvert) { guideOuvert = true; mesurerUneFois('guide', MESURES.guideOuvert); }
+          (dockSuiv.disabled ? dockPrec : dockSuiv).focus();
+        };
+        var replier = function (raison) {
+          if (dock.getAttribute('data-etat') !== 'deplie') return;
+          dock.setAttribute('data-etat', 'replie');
+          pastille.setAttribute('aria-expanded', 'false');
+          fermerMenuSituation();
+          journal('dock replié :', raison);
+        };
+
+        pastille.addEventListener('click', deplier);
+        document.getElementById('dockFermer').addEventListener('click', function () {
+          replier('bouton Fermer');
+          pastille.focus();
+        });
+        /* Les flèches font défiler en douceur : ce défilement-là ne doit
+           pas replier le dock qu'on est en train d'utiliser. */
+        [dockPrec, dockSuiv].forEach(function (b) {
+          b.addEventListener('click', function () { ignorerDefilementJusqua = performance.now() + 1200; });
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && dock.getAttribute('data-etat') === 'deplie') {
+            replier('Échap');
+            pastille.focus();
+          }
+        });
+        mobile.addEventListener('change', function () { replier('passage en grand écran'); });
+
+        /* L'anneau : une information, pas une décoration. Il reste à jour
+           en mouvement réduit. */
+        var rafProgression = 0;
+        var majProgression = function () {
+          rafProgression = 0;
+          var max = document.documentElement.scrollHeight - window.innerHeight;
+          var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+          dock.style.setProperty('--progression', p.toFixed(3));
+        };
+        window.addEventListener('scroll', function () {
+          if (!rafProgression) rafProgression = requestAnimationFrame(majProgression);
+          if (performance.now() > ignorerDefilementJusqua) replier('défilement');
+        }, { passive: true });
+
+        document.addEventListener('fi:dock', function (e) {
+          if (!e.detail.visible) { replier('dock effacé'); return; }
+          if (!dejaApparu) {
+            dejaApparu = true;
+            if (mobile.matches) { jouer('dock--entree', 1300); journal('pastille : première apparition'); }
+          }
+        });
+        document.addEventListener('fi:chapitre', function () {
+          majPastille();
+          if (!mobile.matches || dock.getAttribute('data-visible') !== 'oui') return;
+          if (!dock.classList.contains('dock--entree')) jouer('dock--bascule', 650);
+          if (!guideOuvert && !inviteFaite && ++chapitresSansOuvrir >= 2) {
+            inviteFaite = true;
+            setTimeout(function () { jouer('dock--invite', 750); }, 700);
+            journal('pastille : invitation (une fois par visite)');
+          }
+        });
+        document.addEventListener('fi:situation', function () {
+          majPastille();
+          replier('situation choisie');
+        });
+
+        majPastille();
+        majProgression();
+      }
+
+      /* ── AU DÉMARRAGE ──────────────────────────────────────────────────
+         ⚠️ Cette section reste la DERNIÈRE du script : tous les écouteurs
+         (mesure, dock) doivent être posés avant que la situation venue de
+         l'URL ne soit annoncée, sinon ils la manquent. */
+      var depuisUrl = null;
+      try { depuisUrl = new URLSearchParams(location.search).get('situation'); } catch (e) {}
+      if (depuisUrl !== null) {
+        if (SITUATIONS.hasOwnProperty(depuisUrl)) choisirSituation(depuisUrl, 'url');
+        else journal('?situation=' + depuisUrl + ' inconnue : la page reste neutre');
+      }
+      journal('parcours prêt, chapitre', document.body.getAttribute('data-chapitre') || 'top');
     })();
   </script>
 </body>
