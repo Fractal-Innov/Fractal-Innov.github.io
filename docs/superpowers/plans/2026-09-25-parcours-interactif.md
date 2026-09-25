@@ -1093,7 +1093,7 @@ git commit -m "feat(parcours): jouer les gestes de l'approche et des partenaires
 ### Task 6 : Le dock (grand écran)
 
 **Files :**
-- Modify : `index.html` : balisage du dock après `</footer>`, script « LE PARCOURS » (section LE DOCK, avant AU DÉMARRAGE), CSS (bloc PARCOURS)
+- Modify : `index.html` : balisage du dock après `</header>`, script « LE PARCOURS » (section LE DOCK, avant AU DÉMARRAGE), CSS (bloc PARCOURS)
 
 **Interfaces :**
 - Consumes : `journal`, `emettre`, `CHAPITRES`, `IDS`, `SITUATIONS` (tâche 3) ; `fi:chapitre`, `fi:situation` ; `fi:aller` (tâche 4) ; le délégué de `[data-situation-choix]` (tâche 4) prend en charge les boutons du menu.
@@ -1101,7 +1101,7 @@ git commit -m "feat(parcours): jouer les gestes de l'approche et des partenaires
 
 - [ ] **Step 1 : Le balisage**
 
-Entre `</footer>` et le premier `<script>` :
+Juste après `</header>` (l'ordre du DOM est l'ordre du clavier ; déplacé là le 25/09/2026, il était d'abord après `</footer>`) :
 
 ```html
   <!-- ══ LE DOCK : le fil du parcours ═════════════════════════════════════
