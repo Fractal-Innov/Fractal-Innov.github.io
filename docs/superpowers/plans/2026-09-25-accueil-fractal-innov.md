@@ -42,6 +42,36 @@ rouvrir le balisage.
 - `prefers-reduced-motion: reduce` coupe halos, radar, halo de page, apparitions
   et la lecture de la vidéo du hero.
 
+## ⚠️ Consigne du 25/09/2026 : la charte de /stand/ fait foi
+
+Relevé en cours de route : la page reprenait les valeurs du handoff là où
+`stand/index.html` en a d'autres, et les deux pages du domaine se mettaient à
+diverger. **Nouvelle règle, appliquée rétroactivement à la tâche 2** : quand une
+valeur existe dans `/stand/`, c'est elle qui gagne. Même discipline que le socle
+partagé des projets Needle, une seule source pour le vocabulaire visuel.
+
+Conséquence concrète : les **noms** de variables et de classes sont ceux de
+`/stand/` (`--bg-base`, `--text-muted`, `--glass-bg`, `--brand-gradient`,
+`.section`, `.section-number`, `.reveal`, `.page-rest`, `.burger`). Un bloc
+copié d'une page à l'autre fonctionne sans traduction.
+
+Les écarts tranchés en faveur de `/stand/` :
+
+| | handoff | /stand/, retenu |
+|---|---|---|
+| largeur de contenu | 75rem (1200px) | **1100px** |
+| titre de section | clamp jusqu'à 3rem, graisse 700 | **2.2rem, graisse 600, `-.01em`** |
+| sur-titre | .75rem / 700 / .12em | **.8rem / 600 / .2em, capitales** |
+| rayon de carte | 1.25rem | **16px** |
+| survol de carte | `translateY(-2px)`, bord bleu | **`translateY(-5px)`, bord blanc à 20 %** |
+| étiquettes | bord bleu à 40 % | **valeurs de `.level-tag`, bord blanc à 8 %** |
+
+Trois variables seulement n'existent pas dans `/stand/` et sont propres à cette
+page : `--text-soft` (le « 70 % » du handoff, pour le chapeau du hero et les
+paragraphes longs, `/stand/` n'ayant que le 55 %), `--radius-burger` et
+`--radius-pill-nav` (le rayon de la pilule DÉCOULE du burger, deux courbes
+parallèles).
+
 ## Décisions prises avec Corentin le 25/09/2026
 
 | question | réponse |
@@ -160,17 +190,18 @@ git -C /Users/coko/Documents/GitHub/Fractal-Innov.github.io add apercu/index.htm
 
 **Fichiers :** Modifier `apercu/index.html`
 
-- [ ] **3.1** Copier `stand/assets/cta-photo.webp` en
-      `assets/accueil/portrait.webp`.
-- [ ] **3.2** Section `#fondateur` : grille auto-fit, portrait 4:5 avec liseré
+- [x] **3.1** Portrait copié en `media/accueil/portrait.webp`.
+- [x] **3.2** Section `#fondateur` : grille auto-fit, portrait 4:5 avec liseré
       dégradé, barre de verre et pastilles d'usage (Industrie, Formation, Art,
       Médiation scientifique), eyebrow, H2, rôle, ligne mono, bio avec secteurs
       en gras, tuiles de compétences, carte « Ma boussole ».
-- [ ] **3.3** Section `#approche` : 3 cartes 01/02/03, numéro en mono avec le
+- [x] **3.3** Section `#approche` : 3 cartes 01/02/03, numéro en mono avec le
       dégradé de marque, titre, texte, pilules de points clés. Contenu repris
       **mot pour mot** de la maquette (`etapes` dans le script du handoff).
-- [ ] **Vérification** : apparition au défilement encore absente à ce stade,
-      c'est normal ; contrôler la grille à 768 px (la bascule 2 colonnes → 1).
+- [x] **Vérification** (relevée) : débordement horizontal **0 px** à 375 px et à
+      1280 px ; **aucune erreur console** ; les **15** éléments `.reveal` passent
+      bien à `.active` ; toutes les requêtes en **200**, poids total ≈ **156 Ko**
+      (47 Ko de HTML, 49 Ko de polices, 60 Ko d'images).
 - [ ] **3.4** Commit `feat(accueil): ajouter les sections fondateur et approche`
 
 ---
@@ -277,6 +308,13 @@ modifier `apercu/index.html`
 ---
 
 ## Tâche 8 : les interactions
+
+> ⚠️ **8.2 a été livrée en avance, à la tâche 3.** `.reveal` masque ses
+> éléments en CSS : les poser sans l'observateur qui les rallume aurait rendu
+> invisible la moitié de la page. Les deux vont ensemble, ils ont été écrits
+> ensemble. Le garde-fou qui va avec : le masquage est conditionné à une classe
+> `js` posée par un script en tête de `<head>`, donc **sans JavaScript rien
+> n'est masqué**.
 
 **Fichiers :** Modifier `apercu/index.html` (bloc `<script>` final)
 

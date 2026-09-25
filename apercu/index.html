@@ -4,6 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Marque la page comme pilotée par JavaScript AVANT le premier rendu : le
+       CSS ne masque les éléments « .reveal » que si cette classe est là. Sans
+       JavaScript, tout reste visible au lieu de disparaître pour toujours. -->
+  <script>document.documentElement.className += ' js';</script>
 
   <title>Fractal Innov : agence et conseil WebXR, des expériences 3D dans le navigateur</title>
   <meta name="description"
@@ -37,8 +41,7 @@
   <link rel="manifest" href="/site.webmanifest">
 
   <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
-       d'envoyer l'adresse IP du visiteur à un tiers sans son consentement.
-       Le préchargement des deux graisses d'Outfit évite le saut de texte. -->
+       d'envoyer l'adresse IP du visiteur à un tiers sans son consentement. -->
   <link rel="preload" href="/media/polices/outfit-latin-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/media/polices/outfit-latin-700.woff2" as="font" type="font/woff2" crossorigin>
 
@@ -65,6 +68,7 @@
         "@id": "https://www.fractal-innov.fr/#fondateur",
         "name": "Corentin Duboc",
         "jobTitle": "Architecte d'expériences WebXR et 3D temps réel",
+        "knowsAbout": ["WebXR", "Réalité augmentée", "3D temps réel", "Unity", "Blender"],
         "worksFor": { "@id": "https://www.fractal-innov.fr/#organisation" },
         "url": "https://www.fractal-innov.fr/",
         "sameAs": ["https://www.linkedin.com/in/corentin-duboc/"]
@@ -83,24 +87,25 @@
 
   <style>
     /* ══════════════════════════════════════════════════════════════════════
-       ACCUEIL FRACTAL INNOV — thème sombre « site »
+       ACCUEIL FRACTAL INNOV — la charte de /stand/, reprise telle quelle
 
-       Ce que fait cette feuille : elle reprend, au jeton près, le vocabulaire
-       visuel de /stand/ (`socle/ui/theme.css` côté Needle) pour que les deux
-       pages du domaine se ressemblent sans partager de fichier. Les valeurs
-       viennent du handoff de design, elles ne sont pas à réinventer.
+       ⚠️ LA RÈGLE DE CE FICHIER : quand une valeur existe dans
+       `stand/index.html`, c'est ELLE qui fait foi, pas le handoff de design.
+       Les deux pages vivent sur le même domaine et doivent se ressembler
+       comme deux écrans d'un même produit. C'est la même discipline que le
+       socle partagé des projets Needle : une seule source pour le vocabulaire
+       visuel, des variantes locales pour ce qui est propre à une page.
 
-       ⚠️ Ce qui casse si on s'y trompe :
-         · `--color-action` (#6ea8ff) porte un LIBELLÉ, pas un fond : c'est la
-           seule teinte de marque qui tienne le contraste sur du texte. Le
-           violet et le rose ne servent qu'aux dégradés et aux lueurs ;
-         · les rayons ne sont pas arbitraires : le rayon de la pilule de
-           navigation est celui du burger (42 × 0.35) plus la marge intérieure.
-           Deux courbes parallèles, c'est ce qui fait qu'elle a l'air taillée
-           dans un seul bloc. Changer l'un sans l'autre se voit tout de suite ;
-         · `[data-fi-anim]` est le marqueur des calques animés : c'est LUI que
-           `prefers-reduced-motion` éteint. Une animation posée ailleurs
-           échappe au réglage d'accessibilité en silence.
+       Les noms de variables et de classes sont donc ceux de /stand/
+       (`--bg-base`, `--text-muted`, `--glass-bg`, `.section`, `.reveal`,
+       `.page-rest`…). Un bloc copié d'une page à l'autre fonctionne sans
+       traduction, et c'est tout l'intérêt.
+
+       Les trois écarts relevés entre le handoff et /stand/, tranchés en
+       faveur de /stand/ :
+         · largeur de contenu : 1100px (handoff : 1200px) ;
+         · titres de section : 2.2rem / 600 (handoff : clamp jusqu'à 3rem / 700) ;
+         · sur-titre : .8rem / 600 / .2em (handoff : .75rem / 700 / .12em).
        ══════════════════════════════════════════════════════════════════════ */
 
     @font-face {
@@ -120,67 +125,46 @@
     }
 
     :root {
-      /* Marque */
-      --color-action: #6ea8ff;
-      --color-action-vive: #8b5cf6;
-      --color-action-claire: #a8c8ff;
-      --color-action-rose: #f472b6;
-      --color-action-sourde: #486da6;
-      --color-action-vive-sourde: #5a3ca0;
+      /* ── Jetons repris à l'identique de stand/index.html ────────────────
+         ⚠️ Valeurs exactes de la charte, ne pas approximer. */
+      --bg-base: #090b13;
+      --bg-base-2: #0f1220;
+      --text-main: #f0f0f0;
+      --text-muted: rgba(240, 240, 240, 0.55);
 
-      /* Fonds et surfaces */
-      --color-fond-haut: #090b13;
-      --color-fond-bas: #0f1220;
-      --color-fond-mid: #1a1f36;
-      --color-surface: rgba(255, 255, 255, 0.10);
-      --color-surface-douce: rgba(255, 255, 255, 0.04);
-      --color-surface-tenue: rgba(255, 255, 255, 0.03);
-      --color-surface-verre: rgba(15, 18, 32, 0.76);
+      --accent-blue: #6ea8ff;
+      --accent-blue-light: #a8c8ff;
+      --accent-purple: #8b5cf6;
+      --accent-pink: #f472b6;
+      --accent-blue-deep: #2859ff;
+      --accent-purple-deep: #7c3aed;
+      --accent-blue-muted: #486da6;
+      --accent-purple-muted: #5a3ca0;
 
-      /* Texte */
-      --color-texte: #f0f0f0;
-      --color-texte-second: rgba(240, 240, 240, 0.70);
-      --color-texte-efface: rgba(240, 240, 240, 0.55);
+      --surface: rgba(255, 255, 255, 0.10);
+      --brand-gradient: linear-gradient(100deg, var(--accent-blue) 0%, var(--accent-purple) 52%, var(--accent-pink) 100%);
 
-      /* Liserés */
-      --bord-verre: rgba(255, 255, 255, 0.08);
-      --bord-carte: rgba(255, 255, 255, 0.07);
-      --bord-nav: rgba(255, 255, 255, 0.12);
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-bg-hover: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-border-highlight: rgba(255, 255, 255, 0.2);
 
-      /* Dégradés */
-      --grad-marque: linear-gradient(100deg, #6ea8ff 0%, #8b5cf6 52%, #f472b6 100%);
-      --grad-fond: linear-gradient(180deg, #090b13 0%, #0f1220 100%);
+      --masthead-row-overlap: clamp(4.5rem, 11vw, 6rem);
 
-      /* Typographie */
-      --font-ui: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
-      --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-
-      /* Rayons. Le burger fixe toute la famille de la navigation. */
+      /* ── Les trois seuls ajouts propres à cette page ────────────────────
+         Ils n'existent pas dans /stand/ parce que celle-ci n'en a pas
+         l'usage, et ils suivent les mêmes familles de valeurs. */
+      /* Un cran de texte plus lisible que --text-muted, pour le chapeau du
+         hero et les paragraphes longs. C'est le « 70 % » du handoff. */
+      --text-soft: rgba(240, 240, 240, 0.70);
+      /* La navigation : le rayon de la pilule DÉCOULE du burger (42 × 0.35)
+         plus la marge intérieure. Deux courbes parallèles, sinon la pilule
+         n'a plus l'air taillée dans un seul bloc. */
       --burger: 42px;
-      --rayon-burger: calc(var(--burger) * 0.35);   /* 14.7px */
-      --rayon-pilule: calc(var(--rayon-burger) + 0.5rem);
-      --rayon-md: 12px;
-      --rayon-lg: 18px;
-      --rayon-panneau: 1.25rem;
-      --rayon-enveloppe: calc(14px + 0.65rem);
-      --rayon-pill: 999px;
-
-      /* Ombres */
-      --ombre-carte: 0 4px 24px rgba(0, 0, 0, 0.40);
-      --ombre-nav: 0 4px 24px rgba(0, 0, 0, 0.35);
-      --ombre-modal: 0 8px 48px rgba(0, 0, 0, 0.65);
-
-      /* Mouvement */
-      --ease-morph: cubic-bezier(0.34, 1.2, 0.64, 1);
-      --ease-sortie: cubic-bezier(0.16, 1, 0.3, 1);
-
-      /* Mise en page */
-      --largeur-contenu: 75rem;
-      --gouttiere: clamp(1.25rem, 4vw, 2.5rem);
-      --section-y: clamp(4.5rem, 9vw, 8rem);
-      /* Le hero passe SOUS la navigation : même valeur des deux côtés,
-         une remontée négative puis un rembourrage qui la compense. */
-      --recouvrement-nav: clamp(4.5rem, 11vw, 6rem);
+      --radius-burger: calc(var(--burger) * 0.35);
+      --radius-pill-nav: calc(var(--radius-burger) + 0.5rem);
+      /* Le rayon des cartes de /stand/ (.friction-card, .level-card). */
+      --radius-card: 16px;
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -189,40 +173,38 @@
 
     body {
       margin: 0;
-      background: var(--color-fond-haut);
-      color: var(--color-texte);
-      font-family: var(--font-ui);
+      background: linear-gradient(180deg, var(--bg-base) 0%, var(--bg-base-2) 100%);
+      color: var(--text-main);
+      font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
       font-size: 1rem;
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
-    a { color: var(--color-action-claire); text-decoration: none; }
+    a { color: var(--accent-blue-light); text-decoration: none; }
     img { max-width: 100%; display: block; }
 
     :focus-visible {
-      outline: 2px solid var(--color-action-claire);
+      outline: 2px solid var(--accent-blue-light);
       outline-offset: 3px;
       border-radius: 4px;
     }
 
-    /* ── Le lien d'évitement : premier élément focusable de la page ──────── */
     .saut-au-contenu {
       position: absolute;
       left: 0.75rem;
       top: -100%;
       z-index: 200;
       padding: 0.65rem 1.1rem;
-      border-radius: var(--rayon-md);
-      background: var(--color-fond-mid);
-      color: var(--color-texte);
+      border-radius: 12px;
+      background: #1a1f36;
+      color: var(--text-main);
       font-weight: 600;
       transition: top 0.2s ease;
     }
     .saut-au-contenu:focus { top: 0.75rem; }
 
-    /* ── L'aura du pointeur : une lueur qui suit la souris ───────────────── */
     .aura {
       position: fixed;
       inset: 0;
@@ -231,18 +213,131 @@
       opacity: 0;
       transition: opacity 600ms ease;
       background: radial-gradient(22rem 22rem at var(--ui-x, 50%) var(--ui-y, 40%),
-        color-mix(in oklab, #6ea8ff 9%, transparent), transparent 70%);
+        color-mix(in oklab, var(--accent-blue) 9%, transparent), transparent 70%);
     }
     .aura[data-vivante="oui"] { opacity: 1; }
 
-    .page {
+    /* ══════════════════════════════════════════════════════════════════════
+       PRIMITIVES PARTAGÉES AVEC /stand/ — ne pas diverger sans raison écrite
+       ══════════════════════════════════════════════════════════════════════ */
+
+    /* Le conteneur de toute section de contenu. */
+    .section {
+      padding: 5rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
       position: relative;
-      min-height: 100vh;
-      background: var(--grad-fond);
+    }
+    .section-number {
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent-blue-light);
+      margin-bottom: 1.5rem;
+    }
+    .section h2 {
+      font-weight: 600;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      color: var(--text-main);
+      margin: 0 0 1.25rem;
+      letter-spacing: -.01em;
+    }
+    .section p {
+      color: var(--text-muted);
+      margin: 0 0 0.675rem;
+      max-width: 680px;
+      font-size: 1.05rem;
+    }
+    @media (max-width: 767px) {
+      .section { padding: 4rem 1.5rem; }
+      .section-number { font-size: 0.74rem; margin-bottom: 1.25rem; }
+      .section h2 { font-size: 2.0rem; margin-bottom: 1.05rem; }
     }
 
+    /* La carte de verre : valeurs de .friction-card / .level-card. */
+    .carte {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+    .carte:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-highlight);
+      transform: translateY(-5px);
+    }
+
+    /* La pastille d'étiquette : valeurs de .level-tag. */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: .75rem;
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tag-liste {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Le halo global sous le hero : .page-rest de /stand/, cinq dégradés qui
+       dérivent lentement. ⚠️ Il est éteint sous 1024px (coût de peinture). */
+    .page-rest {
+      position: relative;
+      background-color: var(--bg-base);
+      isolation: isolate;
+      overflow-x: clip;
+    }
+    .page-rest::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 12vh, #000 32vh, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 12vh, #000 32vh, #000 100%);
+      background:
+        radial-gradient(ellipse 85% 50% at 12% 8%, rgba(59, 104, 255, 0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 75% 48% at 88% 22%, rgba(139, 92, 246, 0.12) 0%, transparent 52%),
+        radial-gradient(ellipse 70% 55% at 50% 95%, rgba(217, 70, 239, 0.09) 0%, transparent 54%),
+        radial-gradient(ellipse 50% 40% at 72% 55%, rgba(123, 156, 255, 0.08) 0%, transparent 48%),
+        radial-gradient(ellipse 45% 42% at 28% 62%, rgba(59, 104, 255, 0.07) 0%, transparent 46%);
+      background-size: 135% 125%, 125% 130%, 140% 120%, 150% 150%, 145% 135%;
+      background-position: 0% 5%, 100% 30%, 50% 100%, 70% 45%, 20% 75%;
+      animation: pageRestGlow 36s ease-in-out infinite alternate;
+    }
+    .page-rest > * { position: relative; z-index: 1; }
+    @media (max-width: 1024px) {
+      .page-rest::before {
+        animation: none;
+        background-position: 20% 10%, 80% 40%, 50% 90%, 60% 50%, 30% 60%;
+      }
+    }
+
+    /* L'apparition au défilement. ⚠️ Conditionnée à « .js » : sans
+       JavaScript, rien n'est masqué, donc rien ne peut rester invisible. */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .js .reveal.active { opacity: 1; transform: translateY(0); }
+
     /* ══════════════════════════════════════════════════════════════════════
-       NAVIGATION (.masthead) — la pilule flottante de /stand/
+       NAVIGATION (.masthead de /stand/)
        ══════════════════════════════════════════════════════════════════════ */
     .masthead {
       position: sticky;
@@ -253,7 +348,6 @@
       padding: 1rem 1rem 0.65rem;
       background: transparent;
     }
-
     .masthead-inner {
       position: relative;
       width: 100%;
@@ -263,12 +357,11 @@
       align-items: center;
       gap: clamp(0.75rem, 2vw, 1.75rem);
       padding: 0.5rem 0.5rem 0.5rem 0.65rem;
-      border-radius: var(--rayon-pilule);
-      border: 1px solid var(--bord-nav);
+      border-radius: var(--radius-pill-nav);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       isolation: isolate;
-      box-shadow: var(--ombre-nav), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
-
     /* Le fond est un calque séparé : `backdrop-filter` sur le conteneur
        lui-même créerait un contexte d'empilement qui rognerait le menu. */
     .masthead-bg {
@@ -281,13 +374,12 @@
       backdrop-filter: blur(14px) saturate(150%);
       -webkit-backdrop-filter: blur(14px) saturate(150%);
     }
-
     .masthead-brand {
       position: relative;
       z-index: 2;
       display: flex;
       align-items: center;
-      color: var(--color-texte);
+      color: var(--text-main);
       transition: opacity 0.2s ease;
     }
     .masthead-brand:hover { opacity: 0.92; }
@@ -298,7 +390,6 @@
       object-fit: contain;
       object-position: left center;
     }
-
     .main-nav {
       position: relative;
       z-index: 2;
@@ -306,19 +397,18 @@
       align-items: center;
       gap: clamp(1rem, 2vw, 1.75rem);
     }
-
     .nav-link {
       position: relative;
       display: inline-flex;
       align-items: center;
-      color: var(--color-texte-efface);
+      color: var(--text-muted);
       font-size: 0.95rem;
       font-weight: 500;
       line-height: 1.2;
       transition: color 0.3s ease;
     }
-    /* Le soulignement grandit depuis la gauche : une largeur animée, pas un
-       `transform`, pour que le trait reste net à toutes les étapes. */
+    /* Une largeur animée, pas un `transform` : le trait reste net à chaque
+       étape de la transition. */
     .nav-link::after {
       content: "";
       position: absolute;
@@ -327,11 +417,11 @@
       height: 2px;
       width: 0;
       border-radius: 2px;
-      background: var(--color-action);
+      background: var(--accent-blue);
       transition: width 0.3s ease;
     }
     .nav-link:hover,
-    .nav-link[data-actif="oui"] { color: var(--color-texte); }
+    .nav-link[data-actif="oui"] { color: var(--text-main); }
     .nav-link:hover::after,
     .nav-link[data-actif="oui"]::after { width: 100%; }
 
@@ -342,7 +432,6 @@
       align-items: center;
       gap: 0.5rem;
     }
-
     .masthead-cta {
       display: inline-flex;
       align-items: center;
@@ -354,21 +443,21 @@
       font-weight: 600;
       line-height: 1.2;
       letter-spacing: 0.04em;
-      color: var(--color-action);
+      color: var(--accent-blue);
       white-space: nowrap;
-      border-radius: var(--rayon-burger);
+      border-radius: var(--radius-burger);
       border: 1px solid rgba(110, 168, 255, 0.35);
-      background: var(--color-surface);
+      background: var(--surface);
       transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
     .masthead-cta:hover {
-      color: var(--color-action);
+      color: var(--accent-blue);
       transform: translateY(-1px);
-      border-color: var(--color-action);
+      border-color: var(--accent-blue);
       box-shadow: 0 8px 24px -8px rgba(110, 168, 255, 0.5);
     }
 
-    .masthead-burger {
+    .burger {
       position: relative;
       display: none;
       width: var(--burger);
@@ -376,35 +465,35 @@
       padding: 0;
       flex-shrink: 0;
       background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--bord-verre);
-      border-radius: var(--rayon-burger);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-burger);
       backdrop-filter: blur(16px) saturate(160%);
       -webkit-backdrop-filter: blur(16px) saturate(160%);
       cursor: pointer;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
       transition: background 0.2s ease, border-color 0.2s ease;
     }
-    .masthead-burger:hover {
+    .burger:hover {
       background: rgba(255, 255, 255, 0.1);
       border-color: rgba(255, 255, 255, 0.15);
     }
-    .masthead-burger span {
+    .burger span {
       position: absolute;
       left: 9px;
       width: 22px;
       height: 2px;
       border-radius: 2px;
-      background: var(--color-texte);
+      background: var(--text-main);
       transition: transform 0.3s ease, top 0.3s ease, opacity 0.3s ease;
     }
-    .masthead-burger span:nth-child(1) { top: 11px; }
-    .masthead-burger span:nth-child(2) { top: 19px; }
-    .masthead-burger span:nth-child(3) { top: 27px; }
+    .burger span:nth-child(1) { top: 11px; }
+    .burger span:nth-child(2) { top: 19px; }
+    .burger span:nth-child(3) { top: 27px; }
     /* Les deux barres extrêmes rejoignent la médiane puis pivotent : la croix
        se forme sans changer le nombre d'éléments. */
-    .masthead-burger[aria-expanded="true"] span:nth-child(1) { top: 19px; transform: rotate(45deg); }
-    .masthead-burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-    .masthead-burger[aria-expanded="true"] span:nth-child(3) { top: 19px; transform: rotate(-45deg); }
+    .burger[aria-expanded="true"] span:nth-child(1) { top: 19px; transform: rotate(45deg); }
+    .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .burger[aria-expanded="true"] span:nth-child(3) { top: 19px; transform: rotate(-45deg); }
 
     .menu-mobile {
       position: absolute;
@@ -416,10 +505,10 @@
       flex-direction: column;
       gap: 0.25rem;
       padding: 0.5rem;
-      border-radius: var(--rayon-pilule);
-      border: 1px solid var(--bord-nav);
+      border-radius: var(--radius-pill-nav);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       background: rgba(10, 11, 20, 0.96);
-      box-shadow: var(--ombre-nav);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
     }
     .menu-mobile[data-ouvert="oui"] { display: flex; }
     .menu-mobile a {
@@ -427,8 +516,8 @@
       align-items: center;
       min-height: 44px;
       padding: 0 0.9rem;
-      border-radius: var(--rayon-burger);
-      color: var(--color-texte);
+      border-radius: var(--radius-burger);
+      color: var(--text-main);
       font-size: 1rem;
       font-weight: 500;
     }
@@ -436,7 +525,46 @@
 
     @media (max-width: 950px) {
       .main-nav { display: none; }
-      .masthead-burger { display: block; }
+      .burger { display: block; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       BOUTONS (.hero-cta__btn de /stand/)
+       ══════════════════════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 44px;
+      padding: 0.65rem 1.35rem;
+      font-family: inherit;
+      font-size: clamp(0.95rem, 2.8vw, 1.05rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      border-radius: 12px;
+      cursor: pointer;
+      color: var(--accent-blue);
+      background: var(--surface);
+      border: 1px solid rgba(110, 168, 255, 0.35);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn:hover {
+      color: var(--accent-blue);
+      transform: translateY(-1px);
+      border-color: var(--accent-blue);
+      box-shadow: 0 10px 30px -12px rgba(110, 168, 255, 0.55);
+    }
+    .btn--secondaire {
+      color: #fff;
+      background: var(--accent-blue-muted);
+      border-color: transparent;
+    }
+    .btn--secondaire:hover {
+      color: #fff;
+      background: var(--accent-purple-muted);
+      box-shadow: none;
     }
 
     /* ══════════════════════════════════════════════════════════════════════
@@ -450,10 +578,9 @@
       align-items: center;
       /* Remonte sous la pilule, puis rend la hauteur en rembourrage : le halo
          passe derrière la navigation sans que le contenu s'y cache. */
-      margin-top: calc(-1 * var(--recouvrement-nav));
-      padding-top: var(--recouvrement-nav);
+      margin-top: calc(-1 * var(--masthead-row-overlap));
+      padding-top: var(--masthead-row-overlap);
     }
-
     .hero__halo {
       position: absolute;
       width: 78vmax;
@@ -466,36 +593,34 @@
       top: -34vmax;
       left: -26vmax;
       background: radial-gradient(circle closest-side,
-        color-mix(in oklab, var(--color-action-vive) 44%, transparent), transparent 100%);
-      animation: fi-halo-derive 18s ease-in-out infinite alternate;
+        color-mix(in oklab, var(--accent-purple) 44%, transparent), transparent 100%);
+      animation: haloDerive 18s ease-in-out infinite alternate;
     }
     .hero__halo--bas {
       bottom: -38vmax;
       right: -30vmax;
       background: radial-gradient(circle closest-side,
-        color-mix(in oklab, var(--color-action) 34%, transparent), transparent 100%);
-      animation: fi-halo-derive 24.7s ease-in-out infinite alternate-reverse;
+        color-mix(in oklab, var(--accent-blue) 34%, transparent), transparent 100%);
+      animation: haloDerive 24.7s ease-in-out infinite alternate-reverse;
     }
-
     .hero__contenu {
       position: relative;
       max-width: 62rem;
       margin: 0 auto;
-      padding: clamp(4rem, 9vw, 7rem) var(--gouttiere);
+      padding: clamp(4rem, 9vw, 7rem) 1.5rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 1.75rem;
     }
-
     .hero__pastille {
       display: inline-flex;
       align-items: center;
       gap: 0.6rem;
       padding: 0.4rem 0.9rem 0.4rem 0.7rem;
-      border-radius: var(--rayon-pill);
-      background: var(--color-surface-verre);
+      border-radius: 999px;
+      background: rgba(15, 18, 32, 0.76);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(110, 168, 255, 0.45);
@@ -506,18 +631,17 @@
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      background: var(--color-action);
-      box-shadow: 0 0 0 2px var(--color-fond-haut);
+      background: var(--accent-blue);
+      box-shadow: 0 0 0 2px var(--bg-base);
     }
     .hero__point::after {
       content: "";
       position: absolute;
       inset: -6px;
       border-radius: 50%;
-      border: 1px solid var(--color-action);
-      animation: fi-radar 2.4s ease-out infinite;
+      border: 1px solid var(--accent-blue);
+      animation: radar 2.4s ease-out infinite;
     }
-
     .hero__titre {
       margin: 0;
       font-size: clamp(2.8rem, 1.6rem + 5vw, 5.6rem);
@@ -530,28 +654,25 @@
        d'abord : un navigateur sans `background-clip: text` affiche du bleu
        lisible, jamais un titre transparent. */
     .hero__accent {
-      color: var(--color-action);
-      background-image: var(--grad-marque);
+      color: var(--accent-blue);
+      background-image: var(--brand-gradient);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
     .hero__lead {
       margin: 0;
       max-width: 38rem;
       font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem);
-      color: var(--color-texte-second);
+      color: var(--text-soft);
       text-wrap: pretty;
     }
-
     .hero__actions {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 0.75rem;
     }
-
     .hero__identite {
       display: flex;
       align-items: center;
@@ -569,66 +690,174 @@
     }
     .hero__avatar img { width: 100%; height: 100%; object-fit: cover; }
     .hero__nom { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
-    .hero__role { font-size: 0.85rem; color: var(--color-texte-efface); line-height: 1.3; }
+    .hero__role { font-size: 0.85rem; color: var(--text-muted); line-height: 1.3; }
 
     /* ══════════════════════════════════════════════════════════════════════
-       BOUTONS — repris de .hero-cta__btn (/stand/)
+       FONDATEUR
        ══════════════════════════════════════════════════════════════════════ */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      min-height: 44px;
-      padding: 0.65rem 1.35rem;
-      font-family: inherit;
-      font-size: clamp(0.95rem, 2.8vw, 1.05rem);
+    .fondateur__grille {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+      gap: clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+
+    /* Le liseré dégradé : un fond en dégradé, 1px de rembourrage, et la photo
+       posée par-dessus. `border-image` ne sait pas suivre un rayon, cette
+       méthode-ci si. */
+    .portrait {
+      position: relative;
+      border-radius: 1.25rem;
+      padding: 1px;
+      background: linear-gradient(160deg,
+        rgba(110, 168, 255, 0.6), rgba(139, 92, 246, 0.2) 50%, rgba(244, 114, 182, 0.5));
+    }
+    .portrait__cadre {
+      position: relative;
+      border-radius: calc(1.25rem - 1px);
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      background: #1a1f36;
+    }
+    .portrait__cadre img { width: 100%; height: 100%; object-fit: cover; }
+    /* La barre de verre flotte DANS la photo : elle reprend le vocabulaire
+       de la pilule de navigation, en plus discret. */
+    .portrait__barre {
+      position: absolute;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.6rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(10, 11, 20, 0.62);
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+    }
+    .portrait__barre .tag { color: var(--text-main); }
+
+    .fondateur__role {
+      margin: -0.75rem 0 0.4rem;
+      font-size: 1.05rem;
+      color: var(--text-soft);
+    }
+    /* La ligne technique en monospace : c'est le signal « fiche d'identité »
+       de la charte, réservé aux mentions factuelles. */
+    .ligne-mono {
+      font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      letter-spacing: 0.01em;
+      color: var(--accent-blue-light);
+      margin: 0 0 1.5rem;
+    }
+    .fondateur__bio { color: var(--text-soft) !important; }
+    .fondateur__bio strong { color: var(--text-main); font-weight: 700; }
+
+    .bloc-titre {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 2rem 0 0.75rem;
+    }
+
+    /* La boussole : la seule carte de la page à bord bleu. C'est une prise de
+       parole personnelle, pas un élément de grille, et le liseré le dit. */
+    .boussole {
+      margin-top: 2rem;
+      border-color: rgba(110, 168, 255, 0.35);
+    }
+    .boussole:hover { transform: none; border-color: rgba(110, 168, 255, 0.55); }
+    .boussole__titre {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-blue-light);
+      margin: 0 0 0.35rem;
+    }
+    .boussole__sous-titre {
+      font-size: 1.15rem;
       font-weight: 700;
-      letter-spacing: 0.03em;
-      white-space: nowrap;
-      border-radius: var(--rayon-md);
-      cursor: pointer;
-      color: var(--color-action);
-      background: var(--color-surface);
-      border: 1px solid rgba(110, 168, 255, 0.35);
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      margin: 0 0 1rem;
     }
-    .btn:hover {
-      color: var(--color-action);
-      transform: translateY(-1px);
-      border-color: var(--color-action);
-      box-shadow: 0 10px 30px -12px rgba(110, 168, 255, 0.55);
+    .boussole ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+    .boussole li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.7rem;
+      align-items: start;
+      color: var(--text-soft);
+      font-size: 1rem;
+      line-height: 1.5;
     }
-    .btn--secondaire {
-      color: #fff;
-      background: var(--color-action-sourde);
-      border-color: transparent;
-    }
-    .btn--secondaire:hover {
-      color: #fff;
-      background: var(--color-action-vive-sourde);
-      box-shadow: none;
+    .boussole li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-top: 0.55rem;
+      border-radius: 50%;
+      background: var(--accent-blue);
     }
 
     /* ══════════════════════════════════════════════════════════════════════
-       MOUVEMENT
+       APPROCHE
        ══════════════════════════════════════════════════════════════════════ */
-    @keyframes fi-halo-derive {
+    .etapes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .etape { display: flex; flex-direction: column; }
+    .etape__num {
+      font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 2.2rem;
+      line-height: 1;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      /* Même repli que le titre du hero : du bleu lisible si le navigateur
+         ne sait pas peindre un dégradé dans du texte. */
+      color: var(--accent-blue);
+      background-image: var(--brand-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .etape h3 { margin: 0 0 0.2rem; font-size: 1.35rem; font-weight: 700; line-height: 1.25; }
+    .etape__court { margin: 0 0 0.85rem; font-size: 0.95rem; color: var(--accent-blue-light); }
+    .etape__texte { color: var(--text-muted); font-size: 1rem; margin: 0 0 1.25rem; }
+    .etape .tag-liste { margin-top: auto; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       MOUVEMENT — ⚠️ le seul endroit qui l'éteint est le bloc « reduce »
+       ══════════════════════════════════════════════════════════════════════ */
+    @keyframes haloDerive {
       from { transform: translate3d(0, 0, 0) scale(1); }
       to   { transform: translate3d(9vmax, 6vmax, 0) scale(1.16); }
     }
-    @keyframes fi-radar {
+    @keyframes radar {
       from { transform: scale(0.5); opacity: 0.9; }
       to   { transform: scale(2.2); opacity: 0; }
     }
+    @keyframes pageRestGlow {
+      0%   { background-position: 5% 0%, 95% 25%, 48% 98%, 75% 40%, 15% 70%; }
+      50%  { background-position: 25% 15%, 75% 50%, 55% 85%, 45% 60%, 40% 35%; }
+      100% { background-position: 95% 30%, 8% 70%, 45% 5%, 85% 75%, 65% 90%; }
+    }
 
-    /* ⚠️ Le seul endroit qui éteint le mouvement. Toute animation ajoutée
-       plus tard doit être couverte ici, sinon elle échappe au réglage. */
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
-      .hero__point::after { animation: none; }
+      .hero__point::after,
+      .page-rest::before { animation: none; }
+      .page-rest::before { background-position: 20% 10%, 80% 40%, 50% 90%, 60% 50%, 30% 60%; }
       .aura { display: none; }
+      .js .reveal { opacity: 1; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
   </style>
@@ -636,105 +865,200 @@
 
 <body>
   <a class="saut-au-contenu" href="#contenu">Aller au contenu</a>
+  <div class="aura" aria-hidden="true"></div>
 
-  <div class="page">
-    <div class="aura" aria-hidden="true"></div>
+  <!-- ══ NAVIGATION ══════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="masthead-bg" aria-hidden="true"></div>
 
-    <!-- ══ NAVIGATION ══════════════════════════════════════════════════ -->
-    <header class="masthead">
-      <div class="masthead-inner">
-        <div class="masthead-bg" aria-hidden="true"></div>
+      <a class="masthead-brand" href="#top" aria-label="Fractal Innov, retour en haut">
+        <img src="/media/marque/fractalinnov-logo.webp" alt="Fractal Innov" width="770" height="142">
+      </a>
 
-        <a class="masthead-brand" href="#top" aria-label="Fractal Innov, retour en haut">
-          <img src="/media/marque/fractalinnov-logo.webp" alt="Fractal Innov" width="770" height="142">
-        </a>
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a class="nav-link" href="#fondateur" data-cible="fondateur">Fondateur</a>
+        <a class="nav-link" href="#approche" data-cible="approche">Approche</a>
+        <a class="nav-link" href="#offre" data-cible="offre">Agence WebXR</a>
+        <a class="nav-link" href="#demos" data-cible="demos">Démos</a>
+        <a class="nav-link" href="#partenaires" data-cible="partenaires">Partenaires</a>
+      </nav>
 
-        <nav class="main-nav" aria-label="Navigation principale">
-          <a class="nav-link" href="#fondateur" data-cible="fondateur">Fondateur</a>
-          <a class="nav-link" href="#approche" data-cible="approche">Approche</a>
-          <a class="nav-link" href="#offre" data-cible="offre">Agence WebXR</a>
-          <a class="nav-link" href="#demos" data-cible="demos">Démos</a>
-          <a class="nav-link" href="#partenaires" data-cible="partenaires">Partenaires</a>
-        </nav>
+      <div class="masthead-actions">
+        <a class="masthead-cta" href="#contact">Contact</a>
+        <button class="burger" type="button" aria-label="Ouvrir le menu"
+                aria-expanded="false" aria-controls="menu-mobile">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
 
-        <div class="masthead-actions">
-          <a class="masthead-cta" href="#contact">Contact</a>
-          <button class="masthead-burger" type="button" aria-label="Ouvrir le menu"
-                  aria-expanded="false" aria-controls="menu-mobile">
-            <span></span><span></span><span></span>
-          </button>
+      <nav class="menu-mobile" id="menu-mobile" data-ouvert="non" aria-label="Navigation mobile">
+        <a href="#fondateur">Fondateur</a>
+        <a href="#approche">Approche</a>
+        <a href="#offre">Agence WebXR</a>
+        <a href="#demos">Démos</a>
+        <a href="#partenaires">Partenaires</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="contenu">
+    <!-- ══ HERO ════════════════════════════════════════════════════════ -->
+    <section class="hero" id="top">
+      <div class="hero__halo hero__halo--haut" aria-hidden="true"></div>
+      <div class="hero__halo hero__halo--bas" aria-hidden="true"></div>
+
+      <div class="hero__contenu">
+        <span class="hero__pastille">
+          <span class="hero__point" aria-hidden="true"></span>
+          <span>Agence &amp; conseil WebXR</span>
+        </span>
+
+        <h1 class="hero__titre">Transmettre les savoirs
+          <span class="hero__accent">par l'expérience</span>
+        </h1>
+
+        <p class="hero__lead">Des expériences 3D, AR et VR accessibles directement depuis un
+          navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation
+          scientifique.</p>
+
+        <div class="hero__actions">
+          <a class="btn" href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+             target="_blank" rel="noopener">Prendre rendez-vous</a>
+          <a class="btn btn--secondaire" href="#fondateur">Rencontrer le fondateur</a>
         </div>
 
-        <nav class="menu-mobile" id="menu-mobile" data-ouvert="non" aria-label="Navigation mobile">
-          <a href="#fondateur">Fondateur</a>
-          <a href="#approche">Approche</a>
-          <a href="#offre">Agence WebXR</a>
-          <a href="#demos">Démos</a>
-          <a href="#partenaires">Partenaires</a>
-        </nav>
-      </div>
-    </header>
-
-    <main id="contenu">
-      <!-- ══ HERO ══════════════════════════════════════════════════════ -->
-      <section class="hero" id="top">
-        <div class="hero__halo hero__halo--haut" data-fi-anim aria-hidden="true"></div>
-        <div class="hero__halo hero__halo--bas" data-fi-anim aria-hidden="true"></div>
-
-        <div class="hero__contenu">
-          <span class="hero__pastille">
-            <span class="hero__point" data-fi-anim aria-hidden="true"></span>
-            <span>Agence &amp; conseil WebXR</span>
+        <div class="hero__identite">
+          <span class="hero__avatar">
+            <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
           </span>
+          <span>
+            <span class="hero__nom">Corentin Duboc</span><br>
+            <span class="hero__role">Architecte d'expériences WebXR &amp; 3D temps réel</span>
+          </span>
+        </div>
+      </div>
+    </section>
 
-          <h1 class="hero__titre">Transmettre les savoirs
-            <span class="hero__accent">par l'expérience</span>
-          </h1>
+    <!-- Tout ce qui suit le hero baigne dans le halo global de /stand/. -->
+    <div class="page-rest">
 
-          <p class="hero__lead">Des expériences 3D, AR et VR accessibles directement depuis un
-            navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation
-            scientifique.</p>
+      <!-- ══ FONDATEUR ═══════════════════════════════════════════════════ -->
+      <section class="section" id="fondateur">
+        <div class="fondateur__grille">
 
-          <div class="hero__actions">
-            <a class="btn" href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-               target="_blank" rel="noopener">Prendre rendez-vous</a>
-            <a class="btn btn--secondaire" href="#fondateur">Rencontrer le fondateur</a>
+          <div class="portrait reveal">
+            <div class="portrait__cadre">
+              <img src="/media/accueil/portrait.webp"
+                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
+              <ul class="portrait__barre tag-liste" aria-label="Domaines d'intervention">
+                <li class="tag">Industrie</li>
+                <li class="tag">Formation</li>
+                <li class="tag">Art</li>
+                <li class="tag">Médiation scientifique</li>
+              </ul>
+            </div>
           </div>
 
-          <div class="hero__identite">
-            <span class="hero__avatar">
-              <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
-            </span>
-            <span>
-              <span class="hero__nom">Corentin Duboc</span><br>
-              <span class="hero__role">Architecte d'expériences WebXR &amp; 3D temps réel</span>
-            </span>
+          <div>
+            <p class="section-number reveal">Le fondateur</p>
+            <h2 class="reveal">Corentin Duboc</h2>
+            <p class="fondateur__role reveal">Architecte d'expériences WebXR &amp; 3D temps réel</p>
+            <p class="ligne-mono reveal">Consultant 3D/WebXR B2B · Freelance · Catalyseur POLD</p>
+
+            <p class="fondateur__bio reveal">J'accompagne les industriels
+              (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
+              dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
+              force de vente et réduire leurs coûts logistiques événementiels.</p>
+
+            <p class="bloc-titre reveal">Compétences</p>
+            <ul class="tag-liste reveal" aria-label="Compétences">
+              <li class="tag">Unity</li>
+              <li class="tag">WebXR</li>
+              <li class="tag">AR/VR</li>
+              <li class="tag">Blender</li>
+              <li class="tag">Procreate</li>
+            </ul>
+
+            <div class="carte boussole reveal">
+              <p class="boussole__titre">Ma boussole</p>
+              <p class="boussole__sous-titre">Le design cognitif</p>
+              <ul>
+                <li>L'objectif n'est jamais la prouesse technologique, mais la clarté</li>
+                <li>Réduire la charge mentale, maximiser l'engagement par l'action</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- Les sections fondateur, approche, offre, démos, partenaires et
-           contact arrivent aux tâches 3 à 6 du plan. -->
-    </main>
-  </div>
+      <!-- ══ APPROCHE ════════════════════════════════════════════════════ -->
+      <section class="section" id="approche">
+        <p class="section-number reveal">L'approche</p>
+        <h2 class="reveal">Trois étapes, de l'idée à l'outil que vous gardez</h2>
+        <p class="reveal">Trois temps, trois livrables. Vous savez à chaque étape ce que vous
+          recevez, et ce qu'il vous reste à fournir.</p>
+
+        <div class="etapes">
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">01</p>
+            <h3>Exploration</h3>
+            <p class="etape__court">Comprendre ce qui doit être compris</p>
+            <p class="etape__texte">Nous partons de votre produit, de votre public et de ce qu'il
+              doit retenir. Vos fichiers 3D, photos et vidéos sont regardés ensemble.</p>
+            <ul class="tag-liste">
+              <li class="tag">Recherche &amp; Innovation</li>
+              <li class="tag">Ateliers</li>
+              <li class="tag">Charge cognitive</li>
+            </ul>
+          </article>
+
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">02</p>
+            <h3>Création</h3>
+            <p class="etape__court">La 3D au service de la clarté</p>
+            <p class="etape__texte">Scène 3D temps réel, parcours guidé, contenus au bon moment :
+              l'expérience se construit sur vos fichiers existants.</p>
+            <ul class="tag-liste">
+              <li class="tag">Contenus WebXR</li>
+              <li class="tag">3D temps réel</li>
+              <li class="tag">AR / VR</li>
+            </ul>
+          </article>
+
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">03</p>
+            <h3>Structuration</h3>
+            <p class="etape__court">Un outil qui vous reste</p>
+            <p class="etape__texte">L'expérience est livrée, documentée et mesurée. Vos équipes la
+              font vivre et la réutilisent, sans développeur.</p>
+            <ul class="tag-liste">
+              <li class="tag">Gestion de Projet</li>
+              <li class="tag">Déploiement</li>
+              <li class="tag">Mesure d'usage</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- Les sections offre, démos, partenaires et contact arrivent aux
+           tâches 4 à 6 du plan. -->
+    </div>
+  </main>
 
   <script>
     /* ══════════════════════════════════════════════════════════════════════
        LE COMPORTEMENT DE LA PAGE
 
-       Trois choses seulement à ce stade : le journal de mise au point, l'aura
-       du pointeur et le menu mobile. Le scroll-spy et les apparitions au
-       défilement arrivent à la tâche 8.
-
-       ⚠️ Rien ici n'est nécessaire à la lecture de la page : sans JavaScript,
-       le contenu, les liens et les ancres fonctionnent. Le menu mobile est la
-       seule exception, et le lien Contact reste atteignable à côté du burger.
+       ⚠️ Rien ici n'est nécessaire à la LECTURE : sans JavaScript, le contenu,
+       les liens et les ancres fonctionnent, et « .reveal » ne masque rien
+       (la classe « js » n'est jamais posée). Le menu mobile est la seule
+       exception, et le lien Contact reste atteignable à côté du burger.
        ══════════════════════════════════════════════════════════════════════ */
     (function () {
       'use strict';
 
-      /* ── Le journal. Ouvert par « ?debug=1 », retenu d'une visite à l'autre.
-         Il raconte le flux : ce qui s'allume, ce qui se ferme, et pourquoi. ── */
+      /* ── Le journal. Ouvert par « ?debug=1 », retenu d'une visite à l'autre. ── */
       var DEBUG = (function () {
         try {
           if (new URLSearchParams(location.search).get('debug') === '1') {
@@ -745,8 +1069,8 @@
       })();
       function journal() {
         if (!DEBUG) return;
-        var args = Array.prototype.slice.call(arguments);
-        console.log.apply(console, ['%c[accueil]', 'color:#6ea8ff', ].concat(args));
+        console.log.apply(console, ['%c[accueil]', 'color:#6ea8ff']
+          .concat(Array.prototype.slice.call(arguments)));
       }
       journal('journal actif. Pour l\'éteindre : localStorage.removeItem("fi:debug")');
 
@@ -755,7 +1079,7 @@
 
       /* ── L'aura du pointeur ────────────────────────────────────────────
          Elle ne s'allume qu'au premier mouvement de souris : sur un écran
-         tactile, il n'y en a jamais, et la lueur ne se fige pas au centre. */
+         tactile il n'y en a jamais, et la lueur ne se fige pas au centre. */
       var aura = document.querySelector('.aura');
       if (aura && !sobre) {
         window.addEventListener('pointermove', function (e) {
@@ -771,7 +1095,7 @@
       /* ── Le menu mobile ────────────────────────────────────────────────
          `aria-expanded` porte l'état : le CSS s'en sert pour la croix, le
          lecteur d'écran pour annoncer l'ouverture. Une seule source. */
-      var burger = document.querySelector('.masthead-burger');
+      var burger = document.querySelector('.burger');
       var menu = document.getElementById('menu-mobile');
       if (burger && menu) {
         var basculer = function (ouvrir) {
@@ -795,6 +1119,42 @@
           if (window.innerWidth > 950 && menu.dataset.ouvert === 'oui') basculer(false);
         });
       }
+
+      /* ── L'apparition au défilement (.reveal de /stand/) ────────────────
+         ⚠️ Ce qui est DÉJÀ visible au chargement n'est jamais masqué : sinon
+         le haut de page clignote à l'arrivée. On active ces éléments-là tout
+         de suite, et on n'observe que ce qui est sous le pli.
+         Le décalage de 0,1 s par frère donne la cascade. */
+      var aReveler = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+      if (!aReveler.length) return;
+      if (sobre || !('IntersectionObserver' in window)) {
+        aReveler.forEach(function (el) { el.classList.add('active'); });
+        journal('apparitions désactivées, tout est affiché immédiatement');
+        return;
+      }
+      var rangs = new Map();
+      var observateur = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('active');
+          observateur.unobserve(e.target);
+        });
+      }, { threshold: 0.12 });
+
+      var sousLePli = 0;
+      aReveler.forEach(function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.9) {
+          el.classList.add('active');
+          return;
+        }
+        var parent = el.parentElement;
+        var rang = rangs.get(parent) || 0;
+        rangs.set(parent, rang + 1);
+        el.style.transitionDelay = (rang * 0.1) + 's';
+        observateur.observe(el);
+        sousLePli++;
+      });
+      journal(aReveler.length + ' éléments « reveal », dont ' + sousLePli + ' sous le pli');
     })();
   </script>
 </body>
