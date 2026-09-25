@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Fractal Innov : agence et conseil WebXR, des expériences 3D dans le navigateur</title>
+  <meta name="description"
+    content="Fractal Innov conçoit des expériences 3D, AR et VR qui s'ouvrent dans un navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation scientifique.">
+  <link rel="canonical" href="https://www.fractal-innov.fr/">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#090b13">
+  <meta name="author" content="Corentin Duboc">
+
+  <!-- Aperçu de partage. ⚠️ URL ABSOLUES : les réseaux sociaux ne résolvent
+       pas les chemins relatifs, une image en « /media/… » ne s'affiche jamais. -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:url" content="https://www.fractal-innov.fr/">
+  <meta property="og:site_name" content="Fractal Innov">
+  <meta property="og:title" content="Transmettre les savoirs par l'expérience">
+  <meta property="og:description"
+    content="Des expériences 3D, AR et VR accessibles directement depuis un navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation scientifique.">
+  <meta property="og:image" content="https://www.fractal-innov.fr/media/accueil/og-accueil.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Fractal Innov, agence et conseil WebXR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Transmettre les savoirs par l'expérience">
+  <meta name="twitter:description"
+    content="Des expériences 3D, AR et VR accessibles directement depuis un navigateur, sans application.">
+  <meta name="twitter:image" content="https://www.fractal-innov.fr/media/accueil/og-accueil.jpg">
+
+  <link rel="icon" href="/icones/fi-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/icones/fi-180.png">
+  <link rel="manifest" href="/site.webmanifest">
+
+  <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
+       d'envoyer l'adresse IP du visiteur à un tiers sans son consentement.
+       Le préchargement des deux graisses d'Outfit évite le saut de texte. -->
+  <link rel="preload" href="/media/polices/outfit-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/media/polices/outfit-latin-700.woff2" as="font" type="font/woff2" crossorigin>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.fractal-innov.fr/#organisation",
+        "name": "Fractal Innov",
+        "url": "https://www.fractal-innov.fr/",
+        "email": "corentin.duboc@fractal-innov.fr",
+        "logo": "https://www.fractal-innov.fr/media/marque/fi-logo-252.webp",
+        "description": "Agence et conseil WebXR : des expériences 3D, AR et VR qui s'ouvrent dans un navigateur, sans application.",
+        "founder": { "@id": "https://www.fractal-innov.fr/#fondateur" },
+        "sameAs": [
+          "https://www.linkedin.com/in/corentin-duboc/",
+          "https://www.instagram.com/fractalinnov/"
+        ]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://www.fractal-innov.fr/#fondateur",
+        "name": "Corentin Duboc",
+        "jobTitle": "Architecte d'expériences WebXR et 3D temps réel",
+        "worksFor": { "@id": "https://www.fractal-innov.fr/#organisation" },
+        "url": "https://www.fractal-innov.fr/",
+        "sameAs": ["https://www.linkedin.com/in/corentin-duboc/"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.fractal-innov.fr/#site",
+        "url": "https://www.fractal-innov.fr/",
+        "name": "Fractal Innov",
+        "inLanguage": "fr-FR",
+        "publisher": { "@id": "https://www.fractal-innov.fr/#organisation" }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* ══════════════════════════════════════════════════════════════════════
+       ACCUEIL FRACTAL INNOV — thème sombre « site »
+
+       Ce que fait cette feuille : elle reprend, au jeton près, le vocabulaire
+       visuel de /stand/ (`socle/ui/theme.css` côté Needle) pour que les deux
+       pages du domaine se ressemblent sans partager de fichier. Les valeurs
+       viennent du handoff de design, elles ne sont pas à réinventer.
+
+       ⚠️ Ce qui casse si on s'y trompe :
+         · `--color-action` (#6ea8ff) porte un LIBELLÉ, pas un fond : c'est la
+           seule teinte de marque qui tienne le contraste sur du texte. Le
+           violet et le rose ne servent qu'aux dégradés et aux lueurs ;
+         · les rayons ne sont pas arbitraires : le rayon de la pilule de
+           navigation est celui du burger (42 × 0.35) plus la marge intérieure.
+           Deux courbes parallèles, c'est ce qui fait qu'elle a l'air taillée
+           dans un seul bloc. Changer l'un sans l'autre se voit tout de suite ;
+         · `[data-fi-anim]` est le marqueur des calques animés : c'est LUI que
+           `prefers-reduced-motion` éteint. Une animation posée ailleurs
+           échappe au réglage d'accessibilité en silence.
+       ══════════════════════════════════════════════════════════════════════ */
+
+    @font-face {
+      font-family: "Outfit";
+      src: url("/media/polices/outfit-latin-400.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Outfit";
+      src: url("/media/polices/outfit-latin-700.woff2") format("woff2");
+      font-weight: 700; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("/media/polices/jetbrains-mono-latin-400.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+
+    :root {
+      /* Marque */
+      --color-action: #6ea8ff;
+      --color-action-vive: #8b5cf6;
+      --color-action-claire: #a8c8ff;
+      --color-action-rose: #f472b6;
+      --color-action-sourde: #486da6;
+      --color-action-vive-sourde: #5a3ca0;
+
+      /* Fonds et surfaces */
+      --color-fond-haut: #090b13;
+      --color-fond-bas: #0f1220;
+      --color-fond-mid: #1a1f36;
+      --color-surface: rgba(255, 255, 255, 0.10);
+      --color-surface-douce: rgba(255, 255, 255, 0.04);
+      --color-surface-tenue: rgba(255, 255, 255, 0.03);
+      --color-surface-verre: rgba(15, 18, 32, 0.76);
+
+      /* Texte */
+      --color-texte: #f0f0f0;
+      --color-texte-second: rgba(240, 240, 240, 0.70);
+      --color-texte-efface: rgba(240, 240, 240, 0.55);
+
+      /* Liserés */
+      --bord-verre: rgba(255, 255, 255, 0.08);
+      --bord-carte: rgba(255, 255, 255, 0.07);
+      --bord-nav: rgba(255, 255, 255, 0.12);
+
+      /* Dégradés */
+      --grad-marque: linear-gradient(100deg, #6ea8ff 0%, #8b5cf6 52%, #f472b6 100%);
+      --grad-fond: linear-gradient(180deg, #090b13 0%, #0f1220 100%);
+
+      /* Typographie */
+      --font-ui: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+      /* Rayons. Le burger fixe toute la famille de la navigation. */
+      --burger: 42px;
+      --rayon-burger: calc(var(--burger) * 0.35);   /* 14.7px */
+      --rayon-pilule: calc(var(--rayon-burger) + 0.5rem);
+      --rayon-md: 12px;
+      --rayon-lg: 18px;
+      --rayon-panneau: 1.25rem;
+      --rayon-enveloppe: calc(14px + 0.65rem);
+      --rayon-pill: 999px;
+
+      /* Ombres */
+      --ombre-carte: 0 4px 24px rgba(0, 0, 0, 0.40);
+      --ombre-nav: 0 4px 24px rgba(0, 0, 0, 0.35);
+      --ombre-modal: 0 8px 48px rgba(0, 0, 0, 0.65);
+
+      /* Mouvement */
+      --ease-morph: cubic-bezier(0.34, 1.2, 0.64, 1);
+      --ease-sortie: cubic-bezier(0.16, 1, 0.3, 1);
+
+      /* Mise en page */
+      --largeur-contenu: 75rem;
+      --gouttiere: clamp(1.25rem, 4vw, 2.5rem);
+      --section-y: clamp(4.5rem, 9vw, 8rem);
+      /* Le hero passe SOUS la navigation : même valeur des deux côtés,
+         une remontée négative puis un rembourrage qui la compense. */
+      --recouvrement-nav: clamp(4.5rem, 11vw, 6rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: var(--color-fond-haut);
+      color: var(--color-texte);
+      font-family: var(--font-ui);
+      font-size: 1rem;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--color-action-claire); text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    :focus-visible {
+      outline: 2px solid var(--color-action-claire);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ── Le lien d'évitement : premier élément focusable de la page ──────── */
+    .saut-au-contenu {
+      position: absolute;
+      left: 0.75rem;
+      top: -100%;
+      z-index: 200;
+      padding: 0.65rem 1.1rem;
+      border-radius: var(--rayon-md);
+      background: var(--color-fond-mid);
+      color: var(--color-texte);
+      font-weight: 600;
+      transition: top 0.2s ease;
+    }
+    .saut-au-contenu:focus { top: 0.75rem; }
+
+    /* ── L'aura du pointeur : une lueur qui suit la souris ───────────────── */
+    .aura {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 600ms ease;
+      background: radial-gradient(22rem 22rem at var(--ui-x, 50%) var(--ui-y, 40%),
+        color-mix(in oklab, #6ea8ff 9%, transparent), transparent 70%);
+    }
+    .aura[data-vivante="oui"] { opacity: 1; }
+
+    .page {
+      position: relative;
+      min-height: 100vh;
+      background: var(--grad-fond);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       NAVIGATION (.masthead) — la pilule flottante de /stand/
+       ══════════════════════════════════════════════════════════════════════ */
+    .masthead {
+      position: sticky;
+      top: 0;
+      z-index: 102;
+      display: flex;
+      justify-content: center;
+      padding: 1rem 1rem 0.65rem;
+      background: transparent;
+    }
+
+    .masthead-inner {
+      position: relative;
+      width: 100%;
+      max-width: min(1100px, calc(100vw - 2rem));
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: clamp(0.75rem, 2vw, 1.75rem);
+      padding: 0.5rem 0.5rem 0.5rem 0.65rem;
+      border-radius: var(--rayon-pilule);
+      border: 1px solid var(--bord-nav);
+      isolation: isolate;
+      box-shadow: var(--ombre-nav), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    /* Le fond est un calque séparé : `backdrop-filter` sur le conteneur
+       lui-même créerait un contexte d'empilement qui rognerait le menu. */
+    .masthead-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background: rgba(10, 11, 20, 0.58);
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+    }
+
+    .masthead-brand {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      color: var(--color-texte);
+      transition: opacity 0.2s ease;
+    }
+    .masthead-brand:hover { opacity: 0.92; }
+    .masthead-brand img {
+      height: auto;
+      max-height: min(var(--burger), 2.5rem);
+      max-width: min(240px, 52vw);
+      object-fit: contain;
+      object-position: left center;
+    }
+
+    .main-nav {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 2vw, 1.75rem);
+    }
+
+    .nav-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      color: var(--color-texte-efface);
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.2;
+      transition: color 0.3s ease;
+    }
+    /* Le soulignement grandit depuis la gauche : une largeur animée, pas un
+       `transform`, pour que le trait reste net à toutes les étapes. */
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      height: 2px;
+      width: 0;
+      border-radius: 2px;
+      background: var(--color-action);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover,
+    .nav-link[data-actif="oui"] { color: var(--color-texte); }
+    .nav-link:hover::after,
+    .nav-link[data-actif="oui"]::after { width: 100%; }
+
+    .masthead-actions {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .masthead-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      height: var(--burger);
+      padding: 0 clamp(0.65rem, 1.15vw, 0.95rem);
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: 0.04em;
+      color: var(--color-action);
+      white-space: nowrap;
+      border-radius: var(--rayon-burger);
+      border: 1px solid rgba(110, 168, 255, 0.35);
+      background: var(--color-surface);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .masthead-cta:hover {
+      color: var(--color-action);
+      transform: translateY(-1px);
+      border-color: var(--color-action);
+      box-shadow: 0 8px 24px -8px rgba(110, 168, 255, 0.5);
+    }
+
+    .masthead-burger {
+      position: relative;
+      display: none;
+      width: var(--burger);
+      height: var(--burger);
+      padding: 0;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--bord-verre);
+      border-radius: var(--rayon-burger);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .masthead-burger:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .masthead-burger span {
+      position: absolute;
+      left: 9px;
+      width: 22px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--color-texte);
+      transition: transform 0.3s ease, top 0.3s ease, opacity 0.3s ease;
+    }
+    .masthead-burger span:nth-child(1) { top: 11px; }
+    .masthead-burger span:nth-child(2) { top: 19px; }
+    .masthead-burger span:nth-child(3) { top: 27px; }
+    /* Les deux barres extrêmes rejoignent la médiane puis pivotent : la croix
+       se forme sans changer le nombre d'éléments. */
+    .masthead-burger[aria-expanded="true"] span:nth-child(1) { top: 19px; transform: rotate(45deg); }
+    .masthead-burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+    .masthead-burger[aria-expanded="true"] span:nth-child(3) { top: 19px; transform: rotate(-45deg); }
+
+    .menu-mobile {
+      position: absolute;
+      z-index: 3;
+      top: calc(100% + 0.5rem);
+      left: 0;
+      right: 0;
+      display: none;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.5rem;
+      border-radius: var(--rayon-pilule);
+      border: 1px solid var(--bord-nav);
+      background: rgba(10, 11, 20, 0.96);
+      box-shadow: var(--ombre-nav);
+    }
+    .menu-mobile[data-ouvert="oui"] { display: flex; }
+    .menu-mobile a {
+      display: flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 0 0.9rem;
+      border-radius: var(--rayon-burger);
+      color: var(--color-texte);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .menu-mobile a:hover { background: rgba(255, 255, 255, 0.06); }
+
+    @media (max-width: 950px) {
+      .main-nav { display: none; }
+      .masthead-burger { display: block; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       HERO
+       ══════════════════════════════════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: min(56rem, 92vh);
+      display: flex;
+      align-items: center;
+      /* Remonte sous la pilule, puis rend la hauteur en rembourrage : le halo
+         passe derrière la navigation sans que le contenu s'y cache. */
+      margin-top: calc(-1 * var(--recouvrement-nav));
+      padding-top: var(--recouvrement-nav);
+    }
+
+    .hero__halo {
+      position: absolute;
+      width: 78vmax;
+      height: 78vmax;
+      border-radius: 50%;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .hero__halo--haut {
+      top: -34vmax;
+      left: -26vmax;
+      background: radial-gradient(circle closest-side,
+        color-mix(in oklab, var(--color-action-vive) 44%, transparent), transparent 100%);
+      animation: fi-halo-derive 18s ease-in-out infinite alternate;
+    }
+    .hero__halo--bas {
+      bottom: -38vmax;
+      right: -30vmax;
+      background: radial-gradient(circle closest-side,
+        color-mix(in oklab, var(--color-action) 34%, transparent), transparent 100%);
+      animation: fi-halo-derive 24.7s ease-in-out infinite alternate-reverse;
+    }
+
+    .hero__contenu {
+      position: relative;
+      max-width: 62rem;
+      margin: 0 auto;
+      padding: clamp(4rem, 9vw, 7rem) var(--gouttiere);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.75rem;
+    }
+
+    .hero__pastille {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+      border-radius: var(--rayon-pill);
+      background: var(--color-surface-verre);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(110, 168, 255, 0.45);
+      font-size: 0.85rem;
+    }
+    .hero__point {
+      position: relative;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--color-action);
+      box-shadow: 0 0 0 2px var(--color-fond-haut);
+    }
+    .hero__point::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid var(--color-action);
+      animation: fi-radar 2.4s ease-out infinite;
+    }
+
+    .hero__titre {
+      margin: 0;
+      font-size: clamp(2.8rem, 1.6rem + 5vw, 5.6rem);
+      font-weight: 700;
+      line-height: 1.04;
+      letter-spacing: -0.025em;
+      text-wrap: balance;
+    }
+    /* Le dégradé est peint DANS le texte. La couleur de repli est posée
+       d'abord : un navigateur sans `background-clip: text` affiche du bleu
+       lisible, jamais un titre transparent. */
+    .hero__accent {
+      color: var(--color-action);
+      background-image: var(--grad-marque);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero__lead {
+      margin: 0;
+      max-width: 38rem;
+      font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem);
+      color: var(--color-texte-second);
+      text-wrap: pretty;
+    }
+
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .hero__identite {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      text-align: left;
+    }
+    .hero__avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid rgba(110, 168, 255, 0.45);
+    }
+    .hero__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .hero__nom { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+    .hero__role { font-size: 0.85rem; color: var(--color-texte-efface); line-height: 1.3; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       BOUTONS — repris de .hero-cta__btn (/stand/)
+       ══════════════════════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 44px;
+      padding: 0.65rem 1.35rem;
+      font-family: inherit;
+      font-size: clamp(0.95rem, 2.8vw, 1.05rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      border-radius: var(--rayon-md);
+      cursor: pointer;
+      color: var(--color-action);
+      background: var(--color-surface);
+      border: 1px solid rgba(110, 168, 255, 0.35);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .btn:hover {
+      color: var(--color-action);
+      transform: translateY(-1px);
+      border-color: var(--color-action);
+      box-shadow: 0 10px 30px -12px rgba(110, 168, 255, 0.55);
+    }
+    .btn--secondaire {
+      color: #fff;
+      background: var(--color-action-sourde);
+      border-color: transparent;
+    }
+    .btn--secondaire:hover {
+      color: #fff;
+      background: var(--color-action-vive-sourde);
+      box-shadow: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       MOUVEMENT
+       ══════════════════════════════════════════════════════════════════════ */
+    @keyframes fi-halo-derive {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to   { transform: translate3d(9vmax, 6vmax, 0) scale(1.16); }
+    }
+    @keyframes fi-radar {
+      from { transform: scale(0.5); opacity: 0.9; }
+      to   { transform: scale(2.2); opacity: 0; }
+    }
+
+    /* ⚠️ Le seul endroit qui éteint le mouvement. Toute animation ajoutée
+       plus tard doit être couverte ici, sinon elle échappe au réglage. */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero__halo,
+      .hero__point::after { animation: none; }
+      .aura { display: none; }
+      * { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <a class="saut-au-contenu" href="#contenu">Aller au contenu</a>
+
+  <div class="page">
+    <div class="aura" aria-hidden="true"></div>
+
+    <!-- ══ NAVIGATION ══════════════════════════════════════════════════ -->
+    <header class="masthead">
+      <div class="masthead-inner">
+        <div class="masthead-bg" aria-hidden="true"></div>
+
+        <a class="masthead-brand" href="#top" aria-label="Fractal Innov, retour en haut">
+          <img src="/media/marque/fractalinnov-logo.webp" alt="Fractal Innov" width="770" height="142">
+        </a>
+
+        <nav class="main-nav" aria-label="Navigation principale">
+          <a class="nav-link" href="#fondateur" data-cible="fondateur">Fondateur</a>
+          <a class="nav-link" href="#approche" data-cible="approche">Approche</a>
+          <a class="nav-link" href="#offre" data-cible="offre">Agence WebXR</a>
+          <a class="nav-link" href="#demos" data-cible="demos">Démos</a>
+          <a class="nav-link" href="#partenaires" data-cible="partenaires">Partenaires</a>
+        </nav>
+
+        <div class="masthead-actions">
+          <a class="masthead-cta" href="#contact">Contact</a>
+          <button class="masthead-burger" type="button" aria-label="Ouvrir le menu"
+                  aria-expanded="false" aria-controls="menu-mobile">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+
+        <nav class="menu-mobile" id="menu-mobile" data-ouvert="non" aria-label="Navigation mobile">
+          <a href="#fondateur">Fondateur</a>
+          <a href="#approche">Approche</a>
+          <a href="#offre">Agence WebXR</a>
+          <a href="#demos">Démos</a>
+          <a href="#partenaires">Partenaires</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="contenu">
+      <!-- ══ HERO ══════════════════════════════════════════════════════ -->
+      <section class="hero" id="top">
+        <div class="hero__halo hero__halo--haut" data-fi-anim aria-hidden="true"></div>
+        <div class="hero__halo hero__halo--bas" data-fi-anim aria-hidden="true"></div>
+
+        <div class="hero__contenu">
+          <span class="hero__pastille">
+            <span class="hero__point" data-fi-anim aria-hidden="true"></span>
+            <span>Agence &amp; conseil WebXR</span>
+          </span>
+
+          <h1 class="hero__titre">Transmettre les savoirs
+            <span class="hero__accent">par l'expérience</span>
+          </h1>
+
+          <p class="hero__lead">Des expériences 3D, AR et VR accessibles directement depuis un
+            navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation
+            scientifique.</p>
+
+          <div class="hero__actions">
+            <a class="btn" href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+               target="_blank" rel="noopener">Prendre rendez-vous</a>
+            <a class="btn btn--secondaire" href="#fondateur">Rencontrer le fondateur</a>
+          </div>
+
+          <div class="hero__identite">
+            <span class="hero__avatar">
+              <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
+            </span>
+            <span>
+              <span class="hero__nom">Corentin Duboc</span><br>
+              <span class="hero__role">Architecte d'expériences WebXR &amp; 3D temps réel</span>
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Les sections fondateur, approche, offre, démos, partenaires et
+           contact arrivent aux tâches 3 à 6 du plan. -->
+    </main>
+  </div>
+
+  <script>
+    /* ══════════════════════════════════════════════════════════════════════
+       LE COMPORTEMENT DE LA PAGE
+
+       Trois choses seulement à ce stade : le journal de mise au point, l'aura
+       du pointeur et le menu mobile. Le scroll-spy et les apparitions au
+       défilement arrivent à la tâche 8.
+
+       ⚠️ Rien ici n'est nécessaire à la lecture de la page : sans JavaScript,
+       le contenu, les liens et les ancres fonctionnent. Le menu mobile est la
+       seule exception, et le lien Contact reste atteignable à côté du burger.
+       ══════════════════════════════════════════════════════════════════════ */
+    (function () {
+      'use strict';
+
+      /* ── Le journal. Ouvert par « ?debug=1 », retenu d'une visite à l'autre.
+         Il raconte le flux : ce qui s'allume, ce qui se ferme, et pourquoi. ── */
+      var DEBUG = (function () {
+        try {
+          if (new URLSearchParams(location.search).get('debug') === '1') {
+            localStorage.setItem('fi:debug', '1');
+          }
+          return localStorage.getItem('fi:debug') === '1';
+        } catch (e) { return false; }
+      })();
+      function journal() {
+        if (!DEBUG) return;
+        var args = Array.prototype.slice.call(arguments);
+        console.log.apply(console, ['%c[accueil]', 'color:#6ea8ff', ].concat(args));
+      }
+      journal('journal actif. Pour l\'éteindre : localStorage.removeItem("fi:debug")');
+
+      var sobre = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      journal('mouvement réduit demandé :', sobre);
+
+      /* ── L'aura du pointeur ────────────────────────────────────────────
+         Elle ne s'allume qu'au premier mouvement de souris : sur un écran
+         tactile, il n'y en a jamais, et la lueur ne se fige pas au centre. */
+      var aura = document.querySelector('.aura');
+      if (aura && !sobre) {
+        window.addEventListener('pointermove', function (e) {
+          aura.style.setProperty('--ui-x', e.clientX + 'px');
+          aura.style.setProperty('--ui-y', e.clientY + 'px');
+          if (aura.dataset.vivante !== 'oui') {
+            aura.dataset.vivante = 'oui';
+            journal('aura allumée au premier mouvement du pointeur');
+          }
+        }, { passive: true });
+      }
+
+      /* ── Le menu mobile ────────────────────────────────────────────────
+         `aria-expanded` porte l'état : le CSS s'en sert pour la croix, le
+         lecteur d'écran pour annoncer l'ouverture. Une seule source. */
+      var burger = document.querySelector('.masthead-burger');
+      var menu = document.getElementById('menu-mobile');
+      if (burger && menu) {
+        var basculer = function (ouvrir) {
+          burger.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
+          burger.setAttribute('aria-label', ouvrir ? 'Fermer le menu' : 'Ouvrir le menu');
+          menu.dataset.ouvert = ouvrir ? 'oui' : 'non';
+          journal('menu mobile', ouvrir ? 'ouvert' : 'fermé');
+        };
+        burger.addEventListener('click', function () {
+          basculer(burger.getAttribute('aria-expanded') !== 'true');
+        });
+        menu.addEventListener('click', function (e) {
+          if (e.target.closest('a')) basculer(false);
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && menu.dataset.ouvert === 'oui') { basculer(false); burger.focus(); }
+        });
+        /* Repasser en large avec le menu ouvert laisserait un panneau
+           fantôme sous une navigation redevenue horizontale. */
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 950 && menu.dataset.ouvert === 'oui') basculer(false);
+        });
+      }
+    })();
+  </script>
+</body>
+
+</html>
