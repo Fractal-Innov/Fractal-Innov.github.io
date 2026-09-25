@@ -1078,7 +1078,7 @@
        ══════════════════════════════════════════════════════════════════════ */
     .offres {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
       gap: 1.5rem;
       margin-top: 2.5rem;
     }
@@ -1588,6 +1588,80 @@
       100% { background-position: 95% 30%, 8% 70%, 45% 5%, 85% 75%, 65% 90%; }
     }
 
+    /* ══════════════════════════════════════════════════════════════════════
+       PARCOURS : les trois usages, la situation, les gestes, le dock
+       (spec : docs/superpowers/specs/2026-09-25-parcours-interactif-design.md)
+
+       ⚠️ Tout ce qui s'allume se lit sur <body data-situation> : le script
+       n'écrit QUE cet attribut, le CSS fait le reste. Aucune couleur neuve.
+       ⚠️ `display` posé par l'auteur l'emporte sur l'attribut `hidden` : tout
+       élément qui porte `hidden` ET une classe à `display` reçoit sa règle
+       `[hidden] { display: none; }`, sinon il ne se masque jamais.
+       ══════════════════════════════════════════════════════════════════════ */
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .pic {
+      width: 1.1em; height: 1.1em; flex-shrink: 0;
+      fill: none; stroke: currentColor; stroke-width: 2;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Le choix du hero : trois pilules, le même poids pour les trois. */
+    .situations { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
+    .situations__question { margin: 0; font-size: 0.95rem; color: var(--text-soft); }
+    .situations__liste {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem;
+    }
+    .situation-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      min-height: 44px; padding: 0.6rem 1.1rem;
+      border-radius: 999px; border: 1px solid var(--glass-border-highlight);
+      background: var(--glass-bg); color: var(--text-main);
+      font-weight: 600; font-size: 0.95rem; text-decoration: none;
+      transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+    }
+    .situation-btn:hover,
+    .situation-btn:focus-visible { background: var(--glass-bg-hover); border-color: var(--accent-blue); transform: translateY(-2px); }
+    .situation-btn[aria-current="true"] {
+      border-color: transparent;
+      background: linear-gradient(var(--bg-base-2), var(--bg-base-2)) padding-box,
+                  var(--brand-gradient) border-box;
+    }
+    .situations__regarder { font-size: 0.9rem; color: var(--text-muted); text-underline-offset: 3px; }
+    .situations__regarder:hover { color: var(--text-main); }
+
+    /* Les repères du fondateur. */
+    .reperes { list-style: none; margin: 0 0 1.5rem; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+    .repere {
+      display: flex; gap: 0.75rem; align-items: flex-start;
+      padding: 0.75rem 1rem; border-radius: 12px;
+      border: 1px solid var(--glass-border); background: var(--glass-bg);
+      color: var(--text-soft); font-size: 0.95rem;
+    }
+    .repere .pic { margin-top: 0.2em; color: var(--accent-blue-light); }
+    .repere strong { color: var(--text-main); }
+
+    /* Les cartes d'usage et les démos. */
+    .offre__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; }
+    .offre__preuve { margin: 0 0 1.25rem; font-size: 0.9rem; color: var(--text-muted); }
+    .offre__preuve a { color: var(--accent-blue-light); }
+    .badge-cas {
+      display: inline-flex; align-items: center; width: fit-content;
+      margin: 0 0 0.4rem; padding: 0.15rem 0.6rem; border-radius: 999px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em;
+      color: #fff; background: var(--brand-gradient);
+    }
+    .badge-cas[hidden] { display: none; }
+
+    /* L'approche et le contact. */
+    .etapes__geste { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
+    .etapes__geste button { font: inherit; cursor: pointer; }
+    .etapes__geste [hidden] { display: none; }
+    .contact__atelier { margin: 0.75rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
@@ -1620,6 +1694,15 @@
 <body>
   <a class="saut-au-contenu" href="#contenu">Aller au contenu</a>
   <div class="aura" aria-hidden="true"></div>
+
+  <!-- Les pictogrammes des trois situations, dessinés une fois et repris par
+       <use>. ⚠️ Règle 6 de Needle5 : un pictogramme n'est jamais seul, le mot
+       l'accompagne toujours. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="pic-convaincre" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="m3 7 9 5 9-5M12 12v10"/></symbol>
+    <symbol id="pic-former" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
+    <symbol id="pic-garder" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
+  </svg>
 
   <!-- ══ NAVIGATION ══════════════════════════════════════════════════════
        ⚠️ L'ordre des éléments est celui de /stand/ et il compte : le fond
@@ -1671,15 +1754,29 @@
           <span class="hero__accent">par l'expérience</span>
         </h1>
 
-        <p class="hero__lead">Des expériences 3D, AR et VR accessibles directement depuis un
-          navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation
-          scientifique.</p>
+        <p class="hero__lead">Votre savoir est mis en 3D une fois. Ensuite, il vend, il forme,
+          il reste. Dans le navigateur, sans application.</p>
+
+        <!-- Le premier geste du parcours. Sans JavaScript, chaque bouton est un
+             lien vers la carte de sa situation ; avec, il règle aussi toute la
+             page sur ce cas (script « LE PARCOURS », section LA SITUATION). -->
+        <div class="situations">
+          <p class="situations__question" id="situationsQuestion">Votre savoir doit d'abord :</p>
+          <ul class="situations__liste" aria-labelledby="situationsQuestion">
+            <li><a class="situation-btn" href="#usage-convaincre" data-situation-choix="convaincre">
+              <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</a></li>
+            <li><a class="situation-btn" href="#usage-former" data-situation-choix="former">
+              <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</a></li>
+            <li><a class="situation-btn" href="#usage-garder" data-situation-choix="garder">
+              <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</a></li>
+          </ul>
+          <a class="situations__regarder" href="#fondateur" data-situation-choix="aucune">Juste regarder</a>
+        </div>
 
         <div class="hero__actions">
           <a class="hero-cta__btn hero-cta__btn--primary"
              href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-             target="_blank" rel="noopener"><span>Prendre rendez-vous</span></a>
-          <a class="hero-cta__btn hero-cta__btn--secondary" href="#fondateur">Rencontrer le fondateur</a>
+             target="_blank" rel="noopener" data-rdv="hero"><span>Réserver 30 min</span></a>
         </div>
 
         <div class="hero__identite">
@@ -1705,11 +1802,10 @@
             <div class="portrait__cadre">
               <img src="/media/accueil/portrait.webp"
                    alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
-              <ul class="portrait__barre tag-liste" aria-label="Domaines d'intervention">
-                <li class="tag">Industrie</li>
-                <li class="tag">Formation</li>
-                <li class="tag">Art</li>
-                <li class="tag">Médiation scientifique</li>
+              <ul class="portrait__barre tag-liste" aria-label="Trois usages">
+                <li class="tag">Convaincre</li>
+                <li class="tag">Former</li>
+                <li class="tag">Garder</li>
               </ul>
             </div>
           </div>
@@ -1724,6 +1820,22 @@
               (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
               dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
               force de vente et réduire leurs coûts logistiques événementiels.</p>
+
+            <p class="bloc-titre reveal">Pour votre cas</p>
+            <ul class="reperes reveal">
+              <li class="repere" data-usages="convaincre">
+                <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
+                <span><strong>Convaincre</strong> : vos équipements lourds et encombrants,
+                  présentés sans le coût ni l'impact logistique du transport</span></li>
+              <li class="repere" data-usages="former">
+                <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>
+                <span><strong>Former</strong> : des parcours sur équipement qui mettent en valeur
+                  un savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)</span></li>
+              <li class="repere" data-usages="garder">
+                <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
+                <span><strong>Garder</strong> : processus de fabrication, savoir-faire, geste
+                  d'une artiste, rejouables étape par étape (Mathilde Thiennot)</span></li>
+            </ul>
 
             <p class="bloc-titre reveal">Compétences</p>
             <ul class="tag-liste reveal" aria-label="Compétences">
@@ -1756,10 +1868,11 @@
         <div class="etapes">
           <article class="carte etape reveal">
             <p class="etape__num" aria-hidden="true">01</p>
-            <h3>Exploration</h3>
-            <p class="etape__court">Comprendre ce qui doit être compris</p>
-            <p class="etape__texte">Nous partons de votre produit, de votre public et de ce qu'il
-              doit retenir. Vos fichiers 3D, photos et vidéos sont regardés ensemble.</p>
+            <h3>Partir de votre situation</h3>
+            <p class="etape__court">L'atelier de 30 min</p>
+            <p class="etape__texte">Nous partons de votre besoin et du socle qui tourne déjà. Vos
+              fichiers 3D, photos et vidéos sont regardés ensemble, et vous repartez en sachant
+              par quel usage commencer. C'est gratuit.</p>
             <ul class="tag-liste">
               <li class="tag">Recherche &amp; Innovation</li>
               <li class="tag">Ateliers</li>
@@ -1793,52 +1906,95 @@
             </ul>
           </article>
         </div>
+
+        <!-- Le geste de l'approche. « Étape suivante » est masqué sans
+             JavaScript : les trois temps sont alors tous visibles. -->
+        <div class="etapes__geste">
+          <button class="hero-cta__btn hero-cta__btn--secondary" id="etapeSuivante" type="button" hidden>Étape suivante</button>
+          <a class="hero-cta__btn hero-cta__btn--primary"
+             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+             target="_blank" rel="noopener" data-rdv="approche"><span>Réserver 30 min</span></a>
+        </div>
       </section>
 
-      <!-- ══ OFFRE ═══════════════════════════════════════════════════════ -->
+      <!-- ══ TROIS USAGES ════════════════════════════════════════════════
+           Un savoir, trois usages. Les trois cartes sont TOUJOURS dans le
+           HTML, ouvertes : c'est ce que lisent les moteurs et le visiteur
+           sans JavaScript. La situation choisie n'en masque aucune, elle
+           allume la sienne (`body[data-situation]` + `data-usages`). -->
       <section class="section" id="offre">
         <p class="section-number reveal">L'agence</p>
-        <h2 class="reveal">Faire comprendre votre produit, là où il ne peut pas être</h2>
-        <p class="reveal">Deux situations, un même objectif : que votre interlocuteur saisisse
-          l'essentiel sans attendre qu'on le lui explique.</p>
+        <h2 class="reveal">Un savoir, trois usages</h2>
+        <p class="reveal">Chaque usage part du même socle, qui tourne déjà dans cinq
+          démonstrateurs. L'atelier de 30 min sert à choisir par lequel commencer.</p>
 
         <div class="offres">
-          <article class="carte offre reveal">
+          <article class="carte offre reveal" id="usage-convaincre" data-usages="convaincre">
             <div class="media-16x9">
               <img src="/media/accueil/offre-stand.webp"
                    alt="La borne STAND sur un stand de salon, vue d'ensemble de la scène 3D"
                    width="1600" height="1063" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow">Sur un salon · STAND</p>
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur
+                <span class="badge-cas" hidden>Votre situation</span></p>
               <h3>Votre produit ne voyage pas ? Votre démo, si</h3>
-              <p class="offre__texte">Une borne tactile sur votre stand : chaque visiteur découvre
-                votre produit seul, à son rythme, même sans connexion. Vos commerciaux gardent
-                l'outil pour les salons suivants.</p>
+              <p class="offre__texte">Machines, équipements lourds, systèmes intégrés : leur jumeau
+                3D se présente sur une borne ou derrière un lien, sans transport, sans montage,
+                sans le coût ni l'impact logistique d'un convoi. Vos commerciaux gardent l'outil
+                d'un salon à l'autre.</p>
+              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-stand">STAND</a>,
+                <a href="#demo-midipile">Midipile</a></p>
               <div class="offre__actions">
-                <a class="hero-cta__btn hero-cta__btn--primary" href="/stand/"><span>Découvrir STAND</span></a>
+                <a class="hero-cta__btn hero-cta__btn--primary"
+                   href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
+                <a class="hero-cta__btn hero-cta__btn--secondary" href="/stand/" data-demo="stand">Découvrir STAND</a>
               </div>
             </div>
           </article>
 
-          <article class="carte offre reveal">
+          <article class="carte offre reveal" id="usage-former" data-usages="former">
             <div class="media-16x9">
-              <img src="/media/accueil/demos/midipile.webp"
-                   alt="Le démonstrateur Midipile : un utilitaire électrique en 3D, configurable dans le navigateur"
-                   width="1080" height="607" loading="lazy" decoding="async">
+              <img src="/media/accueil/demos/rayon-x.webp"
+                   alt="Rayon X : un échangeur thermique industriel en 3D, parcouru comme en formation"
+                   width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow">En ligne</p>
-              <h3>Vos clients ne se déplacent pas ? Allez vers eux</h3>
-              <p class="offre__texte">Un simple lien pour explorer votre produit sous tous les
-                angles, puis le poser chez soi à travers l'écran du téléphone. Rien à installer.
-                Deux démonstrateurs tournent déjà en ligne.</p>
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant
+                <span class="badge-cas" hidden>Votre situation</span></p>
+              <h3>Vos nouveaux arrivants apprennent sur l'équipement en production ?</h3>
+              <p class="offre__texte">Ils le démontent, le parcourent et recommencent en 3D, sans
+                arrêter la ligne ni prendre de risque. Le parcours met en valeur votre savoir-faire
+                et respecte vos accords de confidentialité.</p>
+              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-rayon-x">Rayon X</a></p>
               <div class="offre__actions">
-                <a class="hero-cta__btn hero-cta__btn--primary" href="/midipile/"
-                   target="_blank" rel="noopener"><span>Voir un exemple</span></a>
-                <a class="hero-cta__btn hero-cta__btn--secondary"
+                <a class="hero-cta__btn hero-cta__btn--primary"
                    href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-                   target="_blank" rel="noopener">Prendre rendez-vous</a>
+                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte offre reveal" id="usage-garder" data-usages="garder">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/moulage.webp"
+                   alt="À fleur d'écorce : le geste de l'artiste Mathilde Thiennot, rejouable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="offre__corps">
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire
+                <span class="badge-cas" hidden>Votre situation</span></p>
+              <h3>Vos savoir-faire partent avec ceux qui les ont ?</h3>
+              <p class="offre__texte">Un processus de fabrication, un tour de main, le geste d'une
+                artiste : capturés, découpés en étapes et rejouables sous tous les angles, aussi
+                souvent qu'il le faut. La captation se fait avec vous, ou avec un partenaire
+                spécialisé selon le besoin.</p>
+              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-moulage">À fleur d'écorce</a></p>
+              <div class="offre__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary"
+                   href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
               </div>
             </div>
           </article>
@@ -1854,12 +2010,13 @@
 
         <div class="demos">
 
-          <article class="carte demo reveal" id="demo-stand">
+          <article class="carte demo reveal" id="demo-stand" data-usages="convaincre">
             <div class="media-16x9">
               <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>STAND</h3>
               <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
               <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
@@ -1869,18 +2026,19 @@
               <li>Une télécommande pilote la borne depuis un téléphone</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/stand/">Voir la page
+                <a class="hero-cta__btn" href="/stand/" data-demo="stand">Voir la page
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
           </article>
 
-          <article class="carte demo reveal" id="demo-rayon-x">
+          <article class="carte demo reveal" id="demo-rayon-x" data-usages="former">
             <div class="media-16x9">
               <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>Rayon X</h3>
               <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
               <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
@@ -1890,18 +2048,19 @@
               <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener" data-demo="rayon-x">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
           </article>
 
-          <article class="carte demo reveal" id="demo-midipile">
+          <article class="carte demo reveal" id="demo-midipile" data-usages="convaincre">
             <div class="media-16x9">
               <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>Midipile</h3>
               <p class="demo__sous-titre">le démonstrateur produit</p>
               <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
@@ -1911,18 +2070,19 @@
               <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener" data-demo="midipile">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
           </article>
 
-          <article class="carte demo reveal" id="demo-moulage">
+          <article class="carte demo reveal" id="demo-moulage" data-usages="garder">
             <div class="media-16x9">
               <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
+              <p class="badge-cas" hidden>Pour votre cas</p>
               <h3>À fleur d'écorce</h3>
               <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
               <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
@@ -1932,7 +2092,7 @@
               <li>La caméra suit des points de vue composés, comme un storyboard</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener" data-demo="moulage">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
@@ -1953,7 +2113,7 @@
               <li>Français et anglais, au même endroit</li>
               </ul>
               <div class="demo__actions">
-                <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener">Ouvrir la démo
+                <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener" data-demo="village">Ouvrir la démo
                   <span aria-hidden="true">→</span></a>
               </div>
             </div>
@@ -2054,12 +2214,20 @@
           <figcaption><strong>Corentin Duboc</strong><span>Fondateur de Fractal Innov</span></figcaption>
         </figure>
 
-        <h2 class="reveal">Un projet ou une idée en tête ?</h2>
+        <!-- Les quatre titres sont dans le HTML (SEO) ; seul celui de la
+             situation choisie s'affiche, par CSS (`data-pour`). Sans JS :
+             le titre neutre. -->
+        <h2 class="reveal">
+          <span data-pour="aucune">Un projet ou une idée en tête ?</span>
+          <span data-pour="convaincre" hidden>Parlons de l'équipement qui ne voyage pas</span>
+          <span data-pour="former" hidden>Parlons de vos nouveaux arrivants</span>
+          <span data-pour="garder" hidden>Parlons du savoir-faire à garder</span>
+        </h2>
         <p class="contact__lead reveal">Décrivez votre produit et votre public : nous regardons
           ensemble ce qui existe et ce que l'expérience doit faire comprendre.</p>
 
         <div class="contact__actions reveal">
-          <a class="contact__primary" id="contactPrimary"
+          <a class="contact__primary" id="contactPrimary" data-rdv="contact"
              href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6" target="_blank" rel="noopener noreferrer">
             <svg class="contact__primary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -2068,17 +2236,20 @@
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-            <span>Prendre rendez-vous</span>
+            <span>Réserver 30 min</span>
             <svg class="contact__primary-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6"></path>
             </svg>
           </a>
 
+          <p class="contact__atelier">L'atelier de cadrage, gratuit : nous partons de votre
+            situation et du socle existant.</p>
+
           <p class="contact__or">ou, si vous préférez</p>
 
           <div class="contact__links">
-            <a href="https://s.blinq.me/wEhJoOeZIrvGvSIe46Yy?bs=icl" target="_blank" rel="noopener noreferrer">
+            <a href="https://s.blinq.me/wEhJoOeZIrvGvSIe46Yy?bs=icl" data-canal="carte" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="2" y="5" width="20" height="14" rx="2"></rect>
@@ -2088,7 +2259,7 @@
               </svg>
               Carte de visite
             </a>
-            <a href="mailto:corentin.duboc@fractal-innov.fr" title="corentin.duboc@fractal-innov.fr">
+            <a href="mailto:corentin.duboc@fractal-innov.fr" data-canal="email" title="corentin.duboc@fractal-innov.fr">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
@@ -2096,13 +2267,13 @@
               </svg>
               E-mail
             </a>
-            <a href="https://www.linkedin.com/in/corentin-duboc/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/corentin-duboc/" data-canal="linkedin" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
               </svg>
               LinkedIn
             </a>
-            <a href="https://www.instagram.com/fractalinnov/" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.instagram.com/fractalinnov/" data-canal="instagram" target="_blank" rel="noopener noreferrer">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
