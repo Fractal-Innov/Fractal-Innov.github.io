@@ -176,8 +176,8 @@
       scroll-padding-top: 7.75rem;
     }
     @media (max-width: 640px) { html { scroll-padding-top: 6.75rem; } }
-    @media (min-width: 641px) and (max-width: 1024px) { html { scroll-padding-top: 9rem; } }
-    @media (min-width: 951px) { html { scroll-padding-top: 8.25rem; } }
+    @media (min-width: 641px) and (max-width: 1060px) { html { scroll-padding-top: 9rem; } }
+    @media (min-width: 1061px) { html { scroll-padding-top: 8.25rem; } }
 
     body {
       margin: 0;
@@ -572,8 +572,16 @@
     .burger.active span:nth-child(2) { opacity: 0; }
     .burger.active span:nth-child(3) { top: 20px; transform: rotate(-45deg); }
 
-    /* ── Téléphone et tablette : le menu devient un plein écran ─────────── */
-    @media (max-width: 950px) {
+    /* ── Téléphone, tablette, petit portable : le menu devient un plein écran ──
+       ⚠️ Règle du 25/09/2026 : les liens de la navbar ne passent JAMAIS sur
+       deux lignes. Le point de rupture n'est donc pas celui de /stand/
+       (950 px) : c'est la largeur à partir de laquelle NOS libellés tiennent
+       sur une rangée, mesurée à 1030 px, plus 30 px de marge pour une barre
+       de défilement classique (17 px sous Windows, que la media query compte
+       et que la mise en page ne reçoit pas).
+       À remesurer à chaque changement de libellé (version EN comprise) : le
+       journal de debug (`?debug=1`) signale une nav sur deux rangées. */
+    @media (max-width: 1060px) {
       .burger { display: flex; }
 
       .main-nav {
@@ -639,7 +647,7 @@
     }
 
     /* ── Grand écran : la nav s'efface, ses enfants entrent dans la grille ── */
-    @media (min-width: 951px) {
+    @media (min-width: 1061px) {
       .masthead { padding: 1.1rem 1.25rem 0.75rem; }
       .masthead-inner {
         display: grid;
@@ -660,7 +668,12 @@
       .main-nav-links {
         grid-column: 2;
         display: flex;
-        flex-wrap: wrap;
+        /* `nowrap` et non `wrap` comme sur /stand/ : une seconde rangée est
+           interdite. Si les libellés ne tiennent plus, c'est le point de
+           rupture ci-dessus qu'il faut remonter, pas la pilule qu'on laisse
+           grandir. */
+        flex-wrap: nowrap;
+        white-space: nowrap;
         justify-content: center;
         align-items: center;
         gap: clamp(1rem, 2vw, 1.75rem);
@@ -2210,10 +2223,32 @@
           }
         });
         /* Repasser en grand écran avec le menu ouvert laisserait le corps
-           verrouillé et un panneau fantôme au-dessus de la page. */
+           verrouillé et un panneau fantôme au-dessus de la page.
+           ⚠️ La requête est la MÊME que celle du CSS (`min-width: 1061px`) :
+           un nombre recopié à la main en `innerWidth > …` divergeait déjà
+           (950 ici, 1060 là-bas), et `innerWidth` compte la barre de
+           défilement autrement que la media query. */
+        var grandEcran = window.matchMedia('(min-width: 1061px)');
         window.addEventListener('resize', function () {
-          if (window.innerWidth > 950 && mainNav.classList.contains('menu-open')) fermerMenu();
+          if (grandEcran.matches && mainNav.classList.contains('menu-open')) fermerMenu();
         });
+
+        /* Garde de la règle « jamais deux rangées ». Avec `flex-wrap: nowrap`
+           les liens ne descendent plus : quand ils ne tiennent pas, ils
+           DÉBORDENT de leur colonne. C'est donc le débordement qu'on mesure
+           (comparer les hauts des liens ne verrait rien). Il signale des
+           libellés qui ont grandi (nouvelle section, version EN) : le point
+           de rupture est à remonter. Muet hors `?debug=1`. */
+        var rangeeNav = mainNav.querySelector('.main-nav-links');
+        function verifierRangeeNav() {
+          if (!grandEcran.matches || !rangeeNav) return;
+          var manque = rangeeNav.scrollWidth - rangeeNav.clientWidth;
+          if (manque > 1) {
+            journal('⚠️ nav trop large de ' + manque + ' px à ' + window.innerWidth + ' px : remonter le point de rupture (1060/1061 px, CSS et JS)');
+          }
+        }
+        window.addEventListener('resize', verifierRangeeNav);
+        verifierRangeeNav();
       }
 
       /* ── Le lien de navigation de la section courante ──────────────────
