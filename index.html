@@ -1717,6 +1717,56 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 26px rgba(139, 92, 246, 0.5);
     }
 
+    /* ── Le dock ── */
+    .dock {
+      position: fixed;
+      left: 0; right: 0;
+      bottom: calc(1rem + env(safe-area-inset-bottom));
+      margin-inline: auto;
+      width: fit-content;
+      max-width: min(100% - 2rem, 1100px);
+      z-index: 90;      /* sous le bandeau (102) et son menu plein écran (150) */
+      transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .dock[data-visible="non"] { opacity: 0; transform: translateY(calc(100% + 1.5rem)); pointer-events: none; }
+    .dock__panneau {
+      display: flex; align-items: center; gap: 0.35rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(10, 11, 20, 0.72);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+      box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+    }
+    .dock button { font: inherit; color: var(--text-main); background: none; border: 0; cursor: pointer; }
+    .dock :focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }
+    .dock__btn { width: 44px; height: 44px; border-radius: 50%; font-size: 1.4rem; line-height: 1; }
+    .dock__btn:hover:not(:disabled),
+    .dock__choix:hover { background: var(--glass-bg-hover); }
+    .dock__btn:disabled { opacity: 0.3; cursor: default; }
+    .dock__position { min-width: 11.5rem; text-align: center; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+    .dock__sep { width: 1px; height: 24px; margin-inline: 0.25rem; background: var(--glass-border-highlight); }
+    .dock__situation { position: relative; }
+    .dock__choix { min-height: 44px; padding: 0 1rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
+    /* Règle 9 : les boutons du menu partagent la largeur de la pile. */
+    .dock__menu {
+      position: absolute; bottom: calc(100% + 0.6rem); left: 50%; transform: translateX(-50%);
+      list-style: none; margin: 0; padding: 0.4rem; min-width: 15rem;
+      display: flex; flex-direction: column; gap: 0.3rem;
+      border-radius: 16px; background: rgba(10, 11, 20, 0.92);
+      border: 1px solid var(--glass-border); box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+    }
+    .dock__menu[hidden] { display: none; }
+    .dock__menu button {
+      width: 100%; min-height: 44px; padding: 0 0.9rem; border-radius: 10px;
+      display: flex; align-items: center; gap: 0.6rem; text-align: left; font-size: 0.9rem;
+    }
+    .dock__menu button:hover,
+    .dock__menu button[aria-current="true"] { background: var(--glass-bg-hover); }
+    .dock__pastille,
+    .dock__fermer { display: none; }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
@@ -2367,6 +2417,42 @@
     <p class="footer__bas" id="footerCopyright"></p>
   </footer>
 
+  <!-- ══ LE DOCK : le fil du parcours ═════════════════════════════════════
+       Le reflet du dock de la borne STAND : où l'on en est, où l'on va, pour
+       quelle situation. ⚠️ `hidden` au départ : sans JavaScript il n'existe
+       pas. Centré dans la bande de contenu (règle 7 de Needle5). Les
+       emplacements du son et de la télécommande n'existent pas encore :
+       aucun bouton mort tant que leur sous-projet n'est pas livré. -->
+  <div class="dock" id="dock" data-etat="replie" data-visible="non" hidden>
+    <button class="dock__pastille" id="dockPastille" type="button"
+            aria-expanded="false" aria-controls="dockPanneau">
+      <span class="dock__anneau" aria-hidden="true"></span>
+      <span class="dock__centre" id="dockCentre" aria-hidden="true">1</span>
+      <span class="sr-only" id="dockPastilleLibelle">Chapitre 1 sur 7, Accueil. Ouvrir le guide</span>
+    </button>
+    <nav class="dock__panneau" id="dockPanneau" aria-label="Guide de la page">
+      <button class="dock__btn" id="dockPrec" type="button" aria-label="Chapitre précédent" title="Chapitre précédent">‹</button>
+      <span class="dock__position" id="dockPosition" aria-live="polite">1 / 7 · Accueil</span>
+      <button class="dock__btn" id="dockSuiv" type="button" aria-label="Chapitre suivant" title="Chapitre suivant">›</button>
+      <span class="dock__sep" aria-hidden="true"></span>
+      <div class="dock__situation">
+        <button class="dock__choix" id="dockChoix" type="button" aria-expanded="false" aria-controls="dockMenu">
+          <span id="dockChoixLibelle">Choisir</span><span aria-hidden="true"> ▾</span>
+        </button>
+        <ul class="dock__menu" id="dockMenu" hidden>
+          <li><button type="button" data-situation-choix="convaincre" data-origine="dock">
+            <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</button></li>
+          <li><button type="button" data-situation-choix="former" data-origine="dock">
+            <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</button></li>
+          <li><button type="button" data-situation-choix="garder" data-origine="dock">
+            <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</button></li>
+          <li><button type="button" data-situation-choix="aucune" data-origine="dock">Aucune</button></li>
+        </ul>
+      </div>
+      <button class="dock__fermer" id="dockFermer" type="button">Fermer</button>
+    </nav>
+  </div>
+
   <script>
     /* ══════════════════════════════════════════════════════════════════════
        LE COMPORTEMENT DE LA PAGE
@@ -2924,6 +3010,82 @@
         grillePart.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') eteindreCiel(); });
         document.addEventListener('fi:chapitre', function (e) { if (e.detail.id !== 'partenaires') eteindreCiel(); });
         window.addEventListener('resize', function () { if (grillePart.classList.contains('reliee')) relier(); });
+      }
+
+      /* ── LE DOCK ───────────────────────────────────────────────────────
+         Il ne calcule rien : il AFFICHE le chapitre du premier script et
+         la situation, et ses flèches passent par fi:aller comme le fera la
+         télécommande. Invisible sur le hero (qui porte déjà le choix) et
+         quand le pied de page est à l'écran (il couvrirait le contact). */
+      var dock = document.getElementById('dock');
+      if (dock) {
+        var dockPrec = document.getElementById('dockPrec');
+        var dockSuiv = document.getElementById('dockSuiv');
+        var dockPosition = document.getElementById('dockPosition');
+        var dockChoix = document.getElementById('dockChoix');
+        var dockChoixLibelle = document.getElementById('dockChoixLibelle');
+        var dockMenu = document.getElementById('dockMenu');
+        /* ⚠️ Lu sur <body> et non attendu en événement : à l'arrivée par
+           `/#demos`, le premier `fi:chapitre` est parti avant ce script. */
+        var chapitreDock = document.body.getAttribute('data-chapitre') || 'top';
+        var footerVu = false;
+
+        var fermerMenuSituation = function () {
+          dockMenu.hidden = true;
+          dockChoix.setAttribute('aria-expanded', 'false');
+        };
+        var majFil = function () {
+          var i = Math.max(0, IDS.indexOf(chapitreDock));
+          dockPosition.textContent = (i + 1) + ' / ' + IDS.length + ' · ' + CHAPITRES[i].titre;
+          dockPrec.disabled = i === 0;
+          dockSuiv.disabled = i === IDS.length - 1;
+        };
+        var majVisibilite = function () {
+          var visible = chapitreDock !== 'top' && !footerVu;
+          if ((dock.getAttribute('data-visible') === 'oui') === visible) return;
+          dock.setAttribute('data-visible', visible ? 'oui' : 'non');
+          /* `inert` : un dock effacé ne doit pas voler le focus du clavier. */
+          dock.inert = !visible;
+          if (!visible) fermerMenuSituation();
+          journal('dock', visible ? 'visible' : 'effacé', '(' + chapitreDock + (footerVu ? ', pied de page à l\'écran' : '') + ')');
+          emettre('fi:dock', { visible: visible });
+        };
+
+        dockPrec.addEventListener('click', function () { emettre('fi:aller', { pas: -1 }); });
+        dockSuiv.addEventListener('click', function () { emettre('fi:aller', { pas: 1 }); });
+        dockChoix.addEventListener('click', function () {
+          var ouvre = dockMenu.hidden;
+          dockMenu.hidden = !ouvre;
+          dockChoix.setAttribute('aria-expanded', ouvre ? 'true' : 'false');
+          if (ouvre) dockMenu.querySelector('button').focus();
+        });
+        document.addEventListener('click', function (e) {
+          if (!dockMenu.hidden && !e.target.closest('.dock__situation')) fermerMenuSituation();
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && !dockMenu.hidden) { fermerMenuSituation(); dockChoix.focus(); }
+        });
+        document.addEventListener('fi:situation', function (e) {
+          dockChoixLibelle.textContent = e.detail.id ? SITUATIONS[e.detail.id] : 'Choisir';
+          fermerMenuSituation();
+        });
+        document.addEventListener('fi:chapitre', function (e) {
+          chapitreDock = e.detail.id;
+          majFil();
+          majVisibilite();
+        });
+        var piedDePage = document.querySelector('.footer');
+        if (piedDePage && 'IntersectionObserver' in window) {
+          new IntersectionObserver(function (entrees) {
+            footerVu = entrees[0].isIntersecting;
+            majVisibilite();
+          }).observe(piedDePage);
+        }
+
+        dock.hidden = false;
+        dock.inert = true;
+        majFil();
+        majVisibilite();
       }
 
       /* ── AU DÉMARRAGE ──────────────────────────────────────────────────
