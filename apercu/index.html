@@ -1055,7 +1055,10 @@
       overflow: hidden;
       border-radius: var(--radius-enveloppe);
     }
-    .offre__media {
+    /* Le média d'une carte, partagé par les offres et les démonstrateurs.
+       ⚠️ Une seule définition pour les deux : c'est ce qui garantit qu'une
+       carte ajoutée demain ressemblera aux autres sans qu'on y pense. */
+    .media-16x9 {
       position: relative;
       aspect-ratio: 16 / 9;
       background: #1a1f36;
@@ -1063,17 +1066,17 @@
       /* Le liseré du bas sépare l'image du corps sans trait dur. */
       border-bottom: 1px solid var(--glass-border);
     }
-    .offre__media img {
+    .media-16x9 img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.45s var(--ease-morph, cubic-bezier(0.34, 1.2, 0.64, 1));
+      transition: transform 0.45s var(--ease-morph);
     }
-    .offre:hover .offre__media img { transform: scale(1.03); }
+    .carte:hover .media-16x9 img { transform: scale(1.03); }
     /* Un voile du haut vers le bas : le sur-titre du corps ne se cogne pas à
-       une image claire, et les deux cartes se ressemblent quelle que soit la
+       une image claire, et les cartes se ressemblent quelle que soit la
        luminosité de leur visuel. */
-    .offre__media::after {
+    .media-16x9::after {
       content: '';
       position: absolute;
       inset: 0;
@@ -1111,6 +1114,78 @@
       gap: 0.75rem;
       margin-top: auto;
     }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       CE QUI TOURNE DÉJÀ — le catalogue des démonstrateurs en ligne
+
+       Cette section n'était pas dans la maquette. Elle vient du site
+       existant, où elle est l'atout le plus fort : quatre expériences
+       ouvrables en trois secondes, sans rendez-vous. Une page d'agence WebXR
+       qui ne montre rien se raconte au lieu de se prouver.
+
+       ⚠️ Les textes sont ceux de `src/hub/demos.ts` (dépôt Needle5), et la
+       règle de ce catalogue vaut ici aussi : **la virgule du titre n'est pas
+       une ponctuation, c'est une structure**. Ce qui la précède est le nom,
+       ce qui la suit est le sous-texte. Un point clé dit ce que la démo
+       PERMET, jamais la technique employée.
+       ══════════════════════════════════════════════════════════════════════ */
+    .demos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .demo {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+    }
+    .demo__corps {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 1.5rem;
+    }
+    .demo h3 { margin: 0 0 0.15rem; font-size: 1.2rem; font-weight: 700; line-height: 1.25; }
+    .demo__sous-titre {
+      margin: 0 0 0.75rem;
+      font-size: 0.92rem;
+      line-height: 1.35;
+      color: var(--accent-blue-light);
+    }
+    .demo__accroche { margin: 0 0 1rem; font-size: 0.98rem; color: var(--text-muted); }
+    .demo__points {
+      list-style: none;
+      margin: 0 0 1.5rem;
+      padding: 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .demo__points li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.6rem;
+      align-items: start;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+    .demo__points li::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      margin-top: 0.5rem;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      opacity: 0.7;
+    }
+    .demo__actions { margin-top: auto; }
+    .demo .hero-cta__btn { width: 100%; }
+    /* La flèche accompagne le libellé, elle ne le remplace pas : lue seule,
+       elle ne dit rien. `aria-hidden` la retire de l'annonce vocale. */
+    .demo .hero-cta__btn span[aria-hidden] { transition: transform 0.2s ease; }
+    .demo .hero-cta__btn:hover span[aria-hidden] { transform: translateX(3px); }
 
     /* ══════════════════════════════════════════════════════════════════════
        MOUVEMENT — ⚠️ le seul endroit qui l'éteint est le bloc « reduce »
@@ -1334,7 +1409,7 @@
 
         <div class="offres">
           <article class="carte offre reveal">
-            <div class="offre__media">
+            <div class="media-16x9">
               <img src="/media/accueil/offre-stand.webp"
                    alt="La borne STAND sur un stand de salon, vue d'ensemble de la scène 3D"
                    width="1600" height="1063" loading="lazy" decoding="async">
@@ -1352,7 +1427,7 @@
           </article>
 
           <article class="carte offre reveal">
-            <div class="offre__media">
+            <div class="media-16x9">
               <img src="/media/accueil/demos/midipile.webp"
                    alt="Le démonstrateur Midipile : un utilitaire électrique en 3D, configurable dans le navigateur"
                    width="1080" height="607" loading="lazy" decoding="async">
@@ -1375,8 +1450,126 @@
         </div>
       </section>
 
-      <!-- Les sections démos, partenaires et contact arrivent aux tâches 5
-           et 6 du plan. -->
+      <!-- ══ CE QUI TOURNE DÉJÀ ══════════════════════════════════════════ -->
+      <section class="section" id="demos">
+        <p class="section-number reveal">Ce qui tourne déjà</p>
+        <h2 class="reveal">Ouvrez une démonstration, c'est plus court que de l'expliquer</h2>
+        <p class="reveal">Chacune tourne dans le navigateur, sans rien installer et sans casque.
+          Ce qu'on y voit fonctionner est ce qui est réalisable pour votre projet.</p>
+
+        <div class="demos">
+
+          <article class="carte demo reveal" id="demo-stand">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>STAND</h3>
+              <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
+              <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
+              <ul class="demo__points">
+              <li>Vos vidéos et vos fiches dans une interface soignée</li>
+              <li>Les médias se changent depuis un espace d'administration</li>
+              <li>Une télécommande pilote la borne depuis un téléphone</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/stand/">Voir la page
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte demo reveal" id="demo-rayon-x">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>Rayon X</h3>
+              <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
+              <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
+              <ul class="demo__points">
+              <li>Des points de vue guidés amènent le regard là où ça se passe</li>
+              <li>La silhouette d'un opérateur s'affiche ou se masque, pour l'échelle</li>
+              <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte demo reveal" id="demo-midipile">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>Midipile</h3>
+              <p class="demo__sous-titre">le démonstrateur produit</p>
+              <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
+              <ul class="demo__points">
+              <li>Trois carrosseries se comparent : plateau, pick-up, fourgonnette</li>
+              <li>Le véhicule se pose dans votre cour, à sa taille réelle</li>
+              <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte demo reveal" id="demo-moulage">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>À fleur d'écorce</h3>
+              <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
+              <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
+              <ul class="demo__points">
+              <li>Une roue temporelle remonte et redescend la performance</li>
+              <li>Le son fait partie de l'œuvre : un casque est recommandé</li>
+              <li>La caméra suit des points de vue composés, comme un storyboard</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+        <!-- ⚠️ Masquée tant que la tâche 9 n'a pas publié le village sur
+             /village/ : une carte qui mène à une 404 coûte plus cher
+             qu'une carte absente. Retirer `hidden` à ce moment-là. -->
+          <article class="carte demo reveal" id="demo-village" hidden>
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/village.webp" alt="Le village Fractal Innov : le site présenté comme un monde 3D à parcourir"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>Le village</h3>
+              <p class="demo__sous-titre">le site lui-même comme expérience 3D</p>
+              <p class="demo__accroche">Une visite guidée de l'offre, en douze arrêts dans un monde 3D.</p>
+              <ul class="demo__points">
+              <li>La caméra se déplace d'un arrêt à l'autre, comme un storyboard</li>
+              <li>Un configurateur compose votre projet et en sort un code court</li>
+              <li>Français et anglais, au même endroit</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Les sections partenaires et contact arrivent à la tâche 6 du plan. -->
     </div>
   </main>
 

@@ -260,7 +260,7 @@ C'est la brique qui manquait à la maquette : la preuve avant l'argument. Elle
 se place **entre Offre et Partenaires**, avec son ancre `#demos` et un cinquième
 lien dans la nav.
 
-- [ ] **5.1** Reprendre les textes depuis `src/hub/demos.ts` (français), en
+- [x] **5.1** Reprendre les textes depuis `src/hub/demos.ts` (français), en
       gardant la structure `{ id, titre, accroche, points, url }` dans l'objet
       de données JS, prête pour la colonne anglaise.
 
@@ -270,17 +270,33 @@ lien dans la nav.
 | `rayon-x` | Rayon X, la formation à l'échangeur thermique | `/rayon-x/` |
 | `midipile` | Midipile, le démonstrateur produit | `/midipile/` |
 | `moulage` | À fleur d'écorce, une performance de Mathilde Thiennot | `/moulage-mathilde-thiennot/` |
-| `village` | Le village, le site comme expérience 3D | `/village/` (tâche 9) |
+| `village` | Le village, le site lui-même comme expérience 3D | `/village/` (tâche 9, carte `hidden` d'ici là) |
 
-- [ ] **5.2** Capturer une image par démo (1600 px de large, webp) avec le
-      navigateur intégré, sauf STAND qui réutilise `vue-ensemble.webp`.
-- [ ] **5.3** Grille de cartes : visuel 16:9, titre coupé sur la virgule (nom en
+- [x] **5.2** Visuels pris sur **le poster que chaque démo publie déjà** en
+      `og:image`, plutôt que recapturés : déjà cadrés en 16:9, 5 à 18 Ko.
+      Le village réutilise `apercu-social-1200x630.webp`, qui EST son aperçu
+      de partage actuel. Total du dossier `media/` : **249 Ko**.
+- [x] **5.3** Grille de cartes : visuel 16:9, titre coupé sur la virgule (nom en
       titre, suite en sous-texte, règle de `demos.ts`), accroche, 3 points,
       lien « Ouvrir la démo » avec `target="_blank" rel="noopener"`.
-- [ ] **5.4** Ajouter `Démos` aux liens de nav et à l'IntersectionObserver de la
+- [x] **5.4** Ajouter `Démos` aux liens de nav et à l'IntersectionObserver de la
       tâche 8.
-- [ ] **Vérification** : les cinq adresses répondent 200 ; la carte `village`
-      reste masquée tant que la tâche 9 n'est pas faite (attribut `hidden`).
+- [x] **Vérification** (relevée) : **4 adresses sur 5 répondent 200** en
+      production (`/stand/`, `/rayon-x/`, `/midipile/`, `/moulage-mathilde-thiennot/`) ;
+      `/village/` répond **404**, ce qui est attendu, et sa carte porte donc
+      `hidden`. Les 5 cartes existent dans le DOM, **4 visibles**. Aucune image
+      cassée, débordement **0 px** à 375 px comme à 1200 px. Grille à **3
+      colonnes** en grand écran.
+
+      ⚠️ **En local, les liens des démos répondent 404** et c'est normal : ces
+      démonstrateurs sont des dépôts SÉPARÉS que GitHub Pages sert comme
+      sous-dossiers du domaine. Le serveur local ne voit que ce dépôt-ci. Ne
+      pas « corriger » ces liens.
+
+      📌 **À 3 colonnes, 4 cartes donnent 3 + 1.** La dernière reste seule sur
+      sa ligne jusqu'à ce que la tâche 9 publie le village : on passe alors à
+      5 cartes, donc 3 + 2. C'est l'état de sortie visé, pas un défaut à
+      corriger maintenant.
 - [ ] **5.5** Commit `feat(accueil): ajouter la section des demonstrateurs en ligne`
 
 ---
