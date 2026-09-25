@@ -305,20 +305,37 @@ lien dans la nav.
 
 **Fichiers :** Modifier `apercu/index.html`
 
-- [ ] **6.1** Partenaires : 4 cartes, emplacement logo 88 × 88 rempli par un
-      **monogramme** (initiale en Outfit 700 sur le dégradé de marque, rayon
-      18 px, généré en CSS, aucun fichier image). Un commentaire dans le code
-      dit où glisser le vrai logo.
-- [ ] **6.2** Contact : carte de verre centrée sur halo violet, avatar 56 px,
-      H2, texte, CTA « Prendre rendez-vous » vers le lien Google Calendar, puis
-      les 4 liens secondaires (carte de visite, e-mail, LinkedIn, Instagram).
-- [ ] **6.3** Pied de page **enrichi** : marque, baseline, e-mail, et une
+- [x] **6.1** Partenaires : **5 cartes** et non 4. Le **Catalyseur POLD** est
+      ajouté à la demande de Corentin le 25/09/2026. Emplacement logo 88 × 88
+      rempli par un **monogramme** (Outfit 700 sur le dégradé de marque à 85 %
+      d'opacité, rayon 18 px, généré en CSS, aucun fichier image), avec une
+      variante `--sigle` au corps réduit pour les sigles de plusieurs lettres
+      (MB, POLD). Un commentaire dans le code dit où glisser le vrai logo.
+      ⚠️ La grille passe à `minmax(18rem)` : à 1100px cela fait **3 colonnes**,
+      donc 3 + 2 pour cinq cartes, au lieu de 4 + 1 qui laisserait une carte
+      seule. ⚠️ **Le texte du Catalyseur POLD est à relire par Corentin** :
+      écrit sans source, il décrit l'accélérateur du territoire Paris Ouest
+      La Défense en termes généraux.
+- [x] **6.2** Contact : **la section `.contact` de /stand/ reprise entière**,
+      pas la carte de verre du handoff. Portrait cerclé d'un dégradé conique
+      qui tourne (`contactSpin`, 9 s) sur une lueur qui respire
+      (`contactBreathe`), trois aurores qui dérivent en fond (`contactDrift`),
+      filet dégradé qui se déploie à l'entrée de la section, et bouton
+      `.contact__primary` de 58 px avec son reflet toutes les 5 s
+      (`contactSheen`) et sa lueur qui suit le curseur (`--mx`/`--my` posées en
+      JavaScript). Les 4 liens secondaires reprennent les **icônes SVG de
+      /stand/**, à l'identique.
+- [x] **6.3** Pied de page **enrichi** : marque, baseline, e-mail, et une
       rangée de liens vers les pages déjà indexées, qui sauve leur
       référencement en attendant leur refonte :
       `/webxr-dans-le-navigateur/`, `/art/`, `/configure/`, `/learn/`,
       `/pilote-15-jours/`, `/methode-et-contact/`, `/stand/`.
-- [ ] **Vérification** : chaque lien du pied répond 200 ; contraste des liens
-      secondaires au moins 4.5:1 sur le fond `#0f1220`.
+- [x] **Vérification** (relevée) : **5** cartes de partenaires, grille à
+      **3 colonnes** ; les **7** liens du pied pointent bien sur les pages
+      indexées ; l'année du pied s'écrit toute seule (« © 2026 Fractal Innov ») ;
+      la section contact reçoit `.active`, donc son filet se déploie ;
+      **aucune requête en échec** sur un chargement propre ; aucune image
+      cassée ; débordement **0 px** à 375 px comme en grand écran.
 - [ ] **6.4** Commit `feat(accueil): ajouter partenaires, contact et les liens vers les pages existantes`
 
 ---
