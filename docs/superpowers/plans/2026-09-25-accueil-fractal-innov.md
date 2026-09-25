@@ -482,14 +482,45 @@ gh pr create --repo Fractal-Innov/Fractal-Innov.github.io --title "feat(accueil)
 
 ## Tâche 10 : vérification finale
 
-- [ ] **10.1** Les 11 adresses du sitemap répondent 200, plus `/village/`.
-- [ ] **10.2** `/stand/` sert toujours la landing du dépôt `stand`, pas la page
-      générée (contrôler le titre de la page).
-- [ ] **10.3** Rendu à 375 px, 768 px, 1440 px : aucun débordement horizontal.
-- [ ] **10.4** Parcours au clavier complet, focus visible partout.
-- [ ] **10.5** `prefers-reduced-motion: reduce` : plus aucun mouvement.
-- [ ] **10.6** Poids de la page hors vidéo sous 400 Ko.
-- [ ] **10.7** Aperçu de partage correct (OG absolu, image 1200 × 630).
+Mesuré le 25/09/2026, PR ouverte, avant fusion.
+
+- [x] **10.1** Les 12 adresses du sitemap répondent **200**, `/village/`
+      compris. Les 11 liens sortants de la page (démos et pied de page)
+      pointent tous vers une de ces adresses.
+- [x] **10.2** `/stand/` sert bien la landing du dépôt `stand` :
+      `<title>STAND - le kiosque d'exposition interactif | Fractal Innov</title>`,
+      et non la page générée du même nom qui dort dans ce dépôt.
+- [x] **10.3** Débordement horizontal **0 px** à 375, 768 et 1440 px. Les
+      éléments hors cadre relevés à 375 px sont le menu mobile garé à
+      `right: -375px`, ce qui est son état fermé.
+- [x] **10.4** 32 éléments focalisables, un lien d'évitement « Aller au
+      contenu » en tête, et une règle globale
+      `:focus-visible { outline: 2px solid var(--accent-blue-light); outline-offset: 3px }`.
+      Menu fermé : `visibility: hidden` retire ses 6 liens du parcours, ce
+      qui est le point que `right: -100%` seul aurait manqué.
+- [x] **10.5** 8 sélecteurs portent une `animation` ; les **8** sont coupés
+      nommément dans le bloc de réduction (ligne 1571, donc après leurs
+      déclarations, à spécificité égale). Les halos passent par `.hero__halo`,
+      que `--haut` et `--bas` portent tous deux. Un balai
+      `* { transition-duration: 0.01ms !important }` ferme le reste.
+      ⚠️ Ce balai ne couvre **que** les transitions : c'est pourquoi les
+      animations sont vérifiées une par une, et devront l'être à chaque ajout.
+- [x] **10.6** **337 Ko** page entièrement défilée, toutes images chargées
+      (document 101 Ko + 236 Ko de ressources). Servi en gzip par Pages, le
+      document tombe autour de 20 Ko. Aucune requête en échec, aucune image
+      cassée. La boucle vidéo du hero (tâche 7) s'ajoutera à ce total.
+- [x] **10.7** Balises Open Graph et Twitter en **URL absolues**, image
+      1200 × 630 déclarée et réelle, `canonical` vers la racine.
+
+📌 **Relevé, et volontairement non corrigé : la nav passe sur deux rangées
+entre 951 px et ~1010 px.** La rangée réclame 835 px et n'en a que 784 à
+960 px de viewport. Vérification faite sur `/stand/` **en production à la
+même largeur : deux rangées également**, avec cinq liens plus longs encore.
+C'est donc le comportement de la charte, pas un défaut de cette page, et
+`--masthead-row-overlap: clamp(4.5rem, 11vw, 6rem)` existe pour compenser la
+pilule plus haute ; la nouvelle page porte la même variable et les deux mêmes
+déclarations. Si ce repli déplaît, il se corrige **dans les deux pages**,
+comme toute règle du socle, jamais dans une seule.
 
 ---
 
