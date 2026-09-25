@@ -429,18 +429,45 @@ visuelle de `/apercu/` sur téléphone et sur écran.
 gh repo create Fractal-Innov/village --public --description "Le village 3D de Fractal Innov, ancienne page d'accueil, publie comme demonstrateur"
 ```
 
-- [ ] **9.2** Y déplacer `index.html` (l'actuel), `needle-app.js`,
-      `needle.buildinfo.json`, `charte.css`, `assets/`, `js/`, `include/`,
-      `arret/`, `produits/`, `cas-d-usage/`, `niveaux-et-modules/`,
-      `contenu.json`, `apercu-social-1200x630.webp`. Activer Pages sur `main`.
-- [ ] **9.3** Vérifier `https://www.fractal-innov.fr/village/` en 200 **avant**
-      de retirer quoi que ce soit de la racine.
+- [ ] **9.2** Y déplacer **seulement** `index.html` (l'actuel), `assets/`,
+      `needle-app.js`, `needle.buildinfo.json`, plus une **copie** de
+      `include/pictos/`. Activer Pages sur `main`.
+
+⚠️ **La liste écrite le 25/09/2026 au matin était fausse**, et l'appliquer
+aurait rendu les dix sous-pages générées inutilisables. L'inventaire mesuré
+le même jour dit ceci :
+
+| Fichier | Sort | Pourquoi, mesuré |
+| --- | --- | --- |
+| `index.html`, `assets/` (13 Mo), `needle-app.js`, `needle.buildinfo.json` | **part** | référencés par le seul village, et en **relatif** (`./assets/…`) |
+| `include/pictos/` (232 Ko) | **copié** | le bundle le demande en `./include/pictos/…`, donc relativement à la page : depuis `/village/` il cherche `/village/include/pictos/`. Aucune page restante ne l'utilise, mais une copie coûte moins qu'un chemin réécrit dans une build |
+| `charte.css`, `js/` | **reste** | les 10 sous-pages les chargent en `../charte.css` et `../js/…` |
+| `contenu.json`, `include/poster.webp`, `include/polices/`, `icones/`, `site.webmanifest` | **reste** | demandés en **absolu** (`/contenu.json`, `/include/poster.webp`) des deux côtés : ils continuent de répondre depuis `/village/` |
+| `arret/` (13 pages), `art/`, `produits/`, `cas-d-usage/`, `niveaux-et-modules/`, `configure/`, `learn/`, `methode-et-contact/`, `pilote-15-jours/`, `webxr-dans-le-navigateur/` | **reste** | ce sont les sous-pages elles-mêmes ; `fragmentPublic.js` les adresse en `/arret/<id>/` |
+| `apercu-social-1200x630.webp` | **reste** | image de partage de **8** pages qui restent |
+| `CNAME` | **reste** | le domaine est porté par le dépôt d'organisation ; un `CNAME` dans `village` détournerait `www.fractal-innov.fr` |
+
+📌 **Poids mort relevé au passage, non traité ici** : `include/marque/` (3,3 Mo)
+et `include/EnergieFlow01.JPG` (1,4 Mo) ne sont référencés par aucun HTML, CSS
+ni JS du site. À supprimer dans un commit `chore` séparé, pas dans la bascule.
+
+- [ ] **9.3** Vérifier `https://www.fractal-innov.fr/village/` en 200 **avant
+      de fusionner la PR**. Les retraits vivent dans la branche, donc rien
+      n'est public tant que la PR n'est pas fusionnée : c'est l'ordre
+      « village en ligne, puis fusion » qui tient le filet, pas l'ordre des
+      commits.
 - [ ] **9.4** Promouvoir la page : `apercu/index.html` devient `index.html`,
       le dossier `apercu/` disparaît, la carte `village` perd son `hidden`.
-- [ ] **9.5** Mettre à jour `sitemap.xml` (ajouter `/village/`, garder les
-      pages existantes) et `robots.txt`.
-- [ ] **9.6** Produire `assets/accueil/og-accueil.jpg` (1200 × 630) et pointer
-      les balises Open Graph dessus.
+- [x] **9.5** `sitemap.xml` : `/village/` ajouté, 12 adresses. `robots.txt`
+      n'a **rien** à changer (il autorise tout et pointe le même sitemap) :
+      l'étape était de trop dans le plan d'origine.
+- [x] **9.6** `media/accueil/og-accueil.jpg` produit (1200 × 630, 17 Ko) :
+      fond `#090b13`, les deux halos de la charte (bleu en haut à gauche,
+      violet en bas à droite, composés en `geq` sous ffmpeg) et le logotype
+      `fractalinnov-logo.webp` centré. Les balises Open Graph pointaient déjà
+      dessus. Pas de texte incrusté : Outfit n'existe en local qu'en `woff2`,
+      que `drawtext` ne sait pas lire, et un texte dans une autre police
+      aurait été hors charte pour rien (le titre voyage dans `og:title`).
 - [ ] **9.7** Commit puis pousser la branche et ouvrir la PR
 
 ```bash

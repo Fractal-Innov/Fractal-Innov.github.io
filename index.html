@@ -1,616 +1,2372 @@
 <!DOCTYPE html>
-<html lang="fr" class="js">
+<html lang="fr">
+
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Marque la page comme pilotée par JavaScript AVANT le premier rendu : le
+       CSS ne masque les éléments « .reveal » que si cette classe est là. Sans
+       JavaScript, tout reste visible au lieu de disparaître pour toujours. -->
+  <script>document.documentElement.className += ' js';</script>
 
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://www.gstatic.com">
-  <link rel="preconnect" href="https://cdn.needle.tools">
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" crossorigin="" onload="this.rel='stylesheet'">
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=block" crossorigin="" onload="this.rel='stylesheet'">
+  <title>Fractal Innov : agence et conseil WebXR, des expériences 3D dans le navigateur</title>
+  <meta name="description"
+    content="Fractal Innov conçoit des expériences 3D, AR et VR qui s'ouvrent dans un navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation scientifique.">
+  <link rel="canonical" href="https://www.fractal-innov.fr/">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#090b13">
+  <meta name="author" content="Corentin Duboc">
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>Fractal Innov : expériences 3D et AR dans le navigateur, sans application</title>
-  
-  <link rel="canonical" href="https://www.fractal-innov.fr/" />
-  <meta name="robots" content="index,follow" />
+  <!-- Aperçu de partage. ⚠️ URL ABSOLUES : les réseaux sociaux ne résolvent
+       pas les chemins relatifs, une image en « /media/… » ne s'affiche jamais. -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:url" content="https://www.fractal-innov.fr/">
+  <meta property="og:site_name" content="Fractal Innov">
+  <meta property="og:title" content="Transmettre les savoirs par l'expérience">
+  <meta property="og:description"
+    content="Des expériences 3D, AR et VR accessibles directement depuis un navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation scientifique.">
+  <meta property="og:image" content="https://www.fractal-innov.fr/media/accueil/og-accueil.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Fractal Innov, agence et conseil WebXR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Transmettre les savoirs par l'expérience">
+  <meta name="twitter:description"
+    content="Des expériences 3D, AR et VR accessibles directement depuis un navigateur, sans application.">
+  <meta name="twitter:image" content="https://www.fractal-innov.fr/media/accueil/og-accueil.jpg">
 
-  <meta property="og:type" content="website" />
-  
-  
-  <meta property="og:url" content="https://www.fractal-innov.fr/" />
+  <link rel="icon" href="/icones/fi-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/icones/fi-180.png">
+  <link rel="manifest" href="/site.webmanifest">
 
+  <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
+       d'envoyer l'adresse IP du visiteur à un tiers sans son consentement. -->
+  <link rel="preload" href="/media/polices/outfit-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/media/polices/outfit-latin-700.woff2" as="font" type="font/woff2" crossorigin>
 
   <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": "https://www.fractal-innov.fr/#organisation",
-      "name": "Fractal Innov",
-      "url": "https://www.fractal-innov.fr",
-      "email": "contact@fractal-innov.fr",
-      "description": "Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque."
-    },
-    {
-      "@type": "WebPage",
-      "@id": "https://www.fractal-innov.fr/",
-      "url": "https://www.fractal-innov.fr/",
-      "name": "Fractal Innov : expériences 3D et AR dans le navigateur, sans application",
-      "description": "Un site où l'on voit ce qui tourne déjà, où l'on comprend ce que cela donne dans son métier, où l'on compose son projet en quelques choix, et d'où l'on repart avec un message prêt à envoyer.",
-      "isPartOf": {
-        "@id": "https://www.fractal-innov.fr/#organisation"
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://www.fractal-innov.fr/#organisation",
+        "name": "Fractal Innov",
+        "url": "https://www.fractal-innov.fr/",
+        "email": "corentin.duboc@fractal-innov.fr",
+        "logo": "https://www.fractal-innov.fr/media/marque/fi-logo-252.webp",
+        "description": "Agence et conseil WebXR : des expériences 3D, AR et VR qui s'ouvrent dans un navigateur, sans application.",
+        "founder": { "@id": "https://www.fractal-innov.fr/#fondateur" },
+        "sameAs": [
+          "https://www.linkedin.com/in/corentin-duboc/",
+          "https://www.instagram.com/fractalinnov/"
+        ]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://www.fractal-innov.fr/#fondateur",
+        "name": "Corentin Duboc",
+        "jobTitle": "Architecte d'expériences WebXR et 3D temps réel",
+        "knowsAbout": ["WebXR", "Réalité augmentée", "3D temps réel", "Unity", "Blender"],
+        "worksFor": { "@id": "https://www.fractal-innov.fr/#organisation" },
+        "url": "https://www.fractal-innov.fr/",
+        "sameAs": ["https://www.linkedin.com/in/corentin-duboc/"]
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://www.fractal-innov.fr/#site",
+        "url": "https://www.fractal-innov.fr/",
+        "name": "Fractal Innov",
+        "inLanguage": "fr-FR",
+        "publisher": { "@id": "https://www.fractal-innov.fr/#organisation" }
+      }
+    ]
+  }
+  </script>
+
+  <style>
+    /* ══════════════════════════════════════════════════════════════════════
+       ACCUEIL FRACTAL INNOV — la charte de /stand/, reprise telle quelle
+
+       ⚠️ LA RÈGLE DE CE FICHIER : quand une valeur existe dans
+       `stand/index.html`, c'est ELLE qui fait foi, pas le handoff de design.
+       Les deux pages vivent sur le même domaine et doivent se ressembler
+       comme deux écrans d'un même produit. C'est la même discipline que le
+       socle partagé des projets Needle : une seule source pour le vocabulaire
+       visuel, des variantes locales pour ce qui est propre à une page.
+
+       Les noms de variables et de classes sont donc ceux de /stand/
+       (`--bg-base`, `--text-muted`, `--glass-bg`, `.section`, `.reveal`,
+       `.page-rest`…). Un bloc copié d'une page à l'autre fonctionne sans
+       traduction, et c'est tout l'intérêt.
+
+       Les trois écarts relevés entre le handoff et /stand/, tranchés en
+       faveur de /stand/ :
+         · largeur de contenu : 1100px (handoff : 1200px) ;
+         · titres de section : 2.2rem / 600 (handoff : clamp jusqu'à 3rem / 700) ;
+         · sur-titre : .8rem / 600 / .2em (handoff : .75rem / 700 / .12em).
+       ══════════════════════════════════════════════════════════════════════ */
+
+    @font-face {
+      font-family: "Outfit";
+      src: url("/media/polices/outfit-latin-400.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "Outfit";
+      src: url("/media/polices/outfit-latin-700.woff2") format("woff2");
+      font-weight: 700; font-style: normal; font-display: swap;
+    }
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("/media/polices/jetbrains-mono-latin-400.woff2") format("woff2");
+      font-weight: 400; font-style: normal; font-display: swap;
+    }
+
+    :root {
+      /* ── Jetons repris à l'identique de stand/index.html ────────────────
+         ⚠️ Valeurs exactes de la charte, ne pas approximer. */
+      --bg-base: #090b13;
+      --bg-base-2: #0f1220;
+      --text-main: #f0f0f0;
+      --text-muted: rgba(240, 240, 240, 0.55);
+
+      --accent-blue: #6ea8ff;
+      --accent-blue-light: #a8c8ff;
+      --accent-purple: #8b5cf6;
+      --accent-pink: #f472b6;
+      --accent-blue-deep: #2859ff;
+      --accent-purple-deep: #7c3aed;
+      --accent-blue-muted: #486da6;
+      --accent-purple-muted: #5a3ca0;
+
+      --surface: rgba(255, 255, 255, 0.10);
+      --brand-gradient: linear-gradient(100deg, var(--accent-blue) 0%, var(--accent-purple) 52%, var(--accent-pink) 100%);
+
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-bg-hover: rgba(255, 255, 255, 0.06);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-border-highlight: rgba(255, 255, 255, 0.2);
+
+      --masthead-row-overlap: clamp(4.5rem, 11vw, 6rem);
+
+      /* ── Les trois seuls ajouts propres à cette page ────────────────────
+         Elles n'existent pas dans /stand/ parce que celle-ci n'en a pas
+         l'usage, et elles suivent les mêmes familles de valeurs. */
+      /* Un cran de texte plus lisible que --text-muted, pour le chapeau du
+         hero et les paragraphes longs. C'est le « 70 % » du handoff. */
+      --text-soft: rgba(240, 240, 240, 0.70);
+      /* Le rayon des cartes de /stand/ (.friction-card, .level-card).
+         ⚠️ Les dimensions de la navigation ne sont PAS ici : elles vivent sur
+         `.masthead-inner`, comme chez /stand/, parce qu'elles changent de
+         valeur selon la largeur d'écran. */
+      --radius-card: 16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    /* ⚠️ `scroll-padding-top` est ce qui empêche un titre de section d'arriver
+       SOUS la pilule de navigation quand on clique une ancre. Sans lui, le
+       visiteur atterrit sur un titre à moitié caché et croit avoir raté le
+       lien. Les quatre paliers sont ceux de /stand/, mesurés sur la hauteur
+       réelle du bandeau à chaque largeur. */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 7.75rem;
+    }
+    @media (max-width: 640px) { html { scroll-padding-top: 6.75rem; } }
+    @media (min-width: 641px) and (max-width: 1024px) { html { scroll-padding-top: 9rem; } }
+    @media (min-width: 951px) { html { scroll-padding-top: 8.25rem; } }
+
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, var(--bg-base) 0%, var(--bg-base-2) 100%);
+      color: var(--text-main);
+      font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--accent-blue-light); text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    :focus-visible {
+      outline: 2px solid var(--accent-blue-light);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .saut-au-contenu {
+      position: absolute;
+      left: 0.75rem;
+      top: -100%;
+      z-index: 200;
+      padding: 0.65rem 1.1rem;
+      border-radius: 12px;
+      background: #1a1f36;
+      color: var(--text-main);
+      font-weight: 600;
+      transition: top 0.2s ease;
+    }
+    .saut-au-contenu:focus { top: 0.75rem; }
+
+    .aura {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 600ms ease;
+      background: radial-gradient(22rem 22rem at var(--ui-x, 50%) var(--ui-y, 40%),
+        color-mix(in oklab, var(--accent-blue) 9%, transparent), transparent 70%);
+    }
+    .aura[data-vivante="oui"] { opacity: 1; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       PRIMITIVES PARTAGÉES AVEC /stand/ — ne pas diverger sans raison écrite
+       ══════════════════════════════════════════════════════════════════════ */
+
+    /* Le conteneur de toute section de contenu. */
+    .section {
+      padding: 5rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .section-number {
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent-blue-light);
+      margin-bottom: 1.5rem;
+    }
+    .section h2 {
+      font-weight: 600;
+      font-size: 2.2rem;
+      line-height: 1.2;
+      color: var(--text-main);
+      margin: 0 0 1.25rem;
+      letter-spacing: -.01em;
+    }
+    .section p {
+      color: var(--text-muted);
+      margin: 0 0 0.675rem;
+      max-width: 680px;
+      font-size: 1.05rem;
+    }
+    @media (max-width: 767px) {
+      .section { padding: 4rem 1.5rem; }
+      .section-number { font-size: 0.74rem; margin-bottom: 1.25rem; }
+      .section h2 { font-size: 2.0rem; margin-bottom: 1.05rem; }
+    }
+
+    /* La carte de verre : valeurs de .friction-card / .level-card. */
+    .carte {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-card);
+      padding: 2rem;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: background 0.3s, border-color 0.3s, transform 0.3s;
+    }
+    .carte:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-highlight);
+      transform: translateY(-5px);
+    }
+
+    /* La pastille d'étiquette : valeurs de .level-tag. */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: .75rem;
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      border-radius: 100px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tag-liste {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Le halo global sous le hero : .page-rest de /stand/, cinq dégradés qui
+       dérivent lentement. ⚠️ Il est éteint sous 1024px (coût de peinture). */
+    .page-rest {
+      /* Réglé en JavaScript entre 0 et 1 selon ce qui reste du hero à
+         l'écran. Valeur de repli : 1, donc le halo est entier si le script
+         ne tourne pas. */
+      --page-rest-glow-mix: 1;
+      position: relative;
+      background-color: var(--bg-base);
+      isolation: isolate;
+      overflow-x: clip;
+    }
+    .page-rest::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      /* Plancher haut : le halo reste lisible même quand le mélange est à 0,
+         c'est-à-dire quand le bas du hero est encore visible. */
+      opacity: calc(0.55 + 0.45 * var(--page-rest-glow-mix));
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 12vh, #000 32vh, #000 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 12vh, #000 32vh, #000 100%);
+      background:
+        radial-gradient(ellipse 85% 50% at 12% 8%, rgba(59, 104, 255, 0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 75% 48% at 88% 22%, rgba(139, 92, 246, 0.12) 0%, transparent 52%),
+        radial-gradient(ellipse 70% 55% at 50% 95%, rgba(217, 70, 239, 0.09) 0%, transparent 54%),
+        radial-gradient(ellipse 50% 40% at 72% 55%, rgba(123, 156, 255, 0.08) 0%, transparent 48%),
+        radial-gradient(ellipse 45% 42% at 28% 62%, rgba(59, 104, 255, 0.07) 0%, transparent 46%);
+      background-size: 135% 125%, 125% 130%, 140% 120%, 150% 150%, 145% 135%;
+      background-position: 0% 5%, 100% 30%, 50% 100%, 70% 45%, 20% 75%;
+      animation: pageRestGlow 36s ease-in-out infinite alternate;
+    }
+    .page-rest > * { position: relative; z-index: 1; }
+    @media (max-width: 1024px) {
+      .page-rest::before {
+        animation: none;
+        background-position: 20% 10%, 80% 40%, 50% 90%, 60% 50%, 30% 60%;
+      }
+      .page-rest { --page-rest-glow-mix: 1; }
+    }
+
+    /* L'apparition au défilement. ⚠️ Conditionnée à « .js » : sans
+       JavaScript, rien n'est masqué, donc rien ne peut rester invisible. */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .js .reveal.active { opacity: 1; transform: translateY(0); }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       NAVIGATION — l'état FINAL de .masthead dans /stand/
+
+       ⚠️ La feuille de /stand/ surcharge ses propres règles plus bas : il faut
+       lire la DERNIÈRE version, pas la première. Deux pièges relevés le
+       25/09/2026, tous deux corrigés ici :
+         · le CTA n'est pas un bouton fantôme bleu mais un bouton PLEIN en
+           dégradé profond, qui révèle un second dégradé plus clair au survol ;
+         · le menu mobile n'est pas un panneau déroulant sous la pilule, c'est
+           un PLEIN ÉCRAN qui glisse depuis la droite, et le CTA Contact entre
+           dedans. C'est la même balise `nav` dans les deux cas : en grand
+           écran elle passe en `display: contents` et ses enfants se posent
+           directement dans la grille de la pilule.
+
+       Les dimensions vivent sur `.masthead-inner`, en variables, comme chez
+       /stand/ : le rayon de la pilule DÉCOULE de celui du burger.
+       ══════════════════════════════════════════════════════════════════════ */
+    .masthead {
+      position: sticky;
+      top: 0;
+      z-index: 102;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem 1rem 0.65rem;
+      background: transparent;
+      border: none;
+    }
+
+    .masthead-inner {
+      --masthead-burger-size: 42px;
+      --masthead-text-size: 0.95rem;
+      --masthead-pad-trb: 0.5rem;
+      /* La courbe gauche de la pilule mange de l'espace : un léger surplus
+         rend l'écart visuellement égal sur les quatre côtés. */
+      --masthead-pad-x-start: calc(var(--masthead-pad-trb) + 0.15rem);
+      --masthead-icon-squircle: 0.35;
+      --masthead-burger-radius: calc(var(--masthead-burger-size) * var(--masthead-icon-squircle));
+      --masthead-shell-radius: calc(var(--masthead-burger-radius) + var(--masthead-pad-trb));
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: clamp(0.75rem, 2vw, 1.75rem);
+      width: 100%;
+      max-width: min(1100px, calc(100vw - 2rem));
+      padding: var(--masthead-pad-trb) var(--masthead-pad-trb) var(--masthead-pad-trb) var(--masthead-pad-x-start);
+      border-radius: var(--masthead-shell-radius);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      /* Pas d'`overflow: hidden` : il rognerait le menu en `position: fixed`. */
+      isolation: isolate;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    /* Le fond est un calque séparé : `backdrop-filter` posé sur le conteneur
+       lui-même créerait un contexte d'empilement qui piégerait le menu. */
+    .masthead-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      background: rgba(10, 11, 20, 0.58);
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+    }
+
+    .masthead-brand {
+      display: flex;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+    .masthead-brand:hover { opacity: 0.92; }
+    .masthead-brand:focus-visible {
+      outline: 2px solid var(--accent-blue-light);
+      outline-offset: 4px;
+      border-radius: 8px;
+    }
+    .masthead-logo-img {
+      display: block;
+      width: auto;
+      height: auto;
+      max-height: min(var(--masthead-burger-size), calc(var(--masthead-text-size) * 2.65));
+      max-width: min(280px, 52vw);
+      object-fit: contain;
+      object-position: left center;
+      flex-shrink: 0;
+    }
+
+    .main-nav {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: clamp(1rem, 2vw, 1.75rem);
+    }
+    .main-nav .nav-link {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: var(--masthead-text-size);
+      font-weight: 500;
+      line-height: 1.2;
+      transition: color 0.3s ease;
+    }
+    /* Une largeur animée, pas un `transform` : le trait reste net à chaque
+       étape de la transition. */
+    .main-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--accent-blue);
+      transition: width 0.3s ease;
+    }
+    .main-nav .nav-link:hover,
+    .main-nav .nav-link.active-link { color: var(--text-main); }
+    .main-nav .nav-link:hover::after,
+    .main-nav .nav-link.active-link::after { width: 100%; }
+
+    /* Le CTA de la pilule : bouton PLEIN, dégradé profond, avec un second
+       dégradé plus clair qui monte en opacité au survol (le `::before`). */
+    .masthead-cta {
+      position: relative;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      min-height: var(--masthead-burger-size);
+      height: var(--masthead-burger-size);
+      padding: 0 clamp(0.65rem, 1.15vw, 0.95rem);
+      font-size: var(--masthead-text-size);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.03em;
+      color: #fff;
+      text-decoration: none;
+      white-space: nowrap;
+      border-radius: var(--masthead-burger-radius);
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, var(--accent-blue-deep) 0%, var(--accent-purple-deep) 100%);
+      box-shadow: 0 10px 26px -10px rgba(40, 89, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .masthead-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 55%, var(--accent-pink) 100%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .masthead-cta:hover {
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px -12px rgba(110, 168, 255, 0.75);
+    }
+    .masthead-cta:hover::before { opacity: 1; }
+    .masthead-cta:focus-visible {
+      outline: 2px solid var(--accent-blue-light);
+      outline-offset: 3px;
+    }
+
+    .burger {
+      display: none;
+      position: relative;
+      width: var(--masthead-burger-size);
+      height: var(--masthead-burger-size);
+      aspect-ratio: 1;
+      padding: 0;
+      flex-shrink: 0;
+      box-sizing: border-box;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--masthead-burger-radius);
+      cursor: pointer;
+      /* ⚠️ Au-dessus du menu plein écran (z-index 150) : c'est ce qui permet
+         de refermer avec le même bouton qu'on a ouvert. */
+      z-index: 200;
+      box-shadow: none;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+    .burger:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-1px);
+    }
+    .burger span {
+      position: absolute;
+      left: 10px;
+      width: 22px;
+      height: 2px;
+      background-color: #fff;
+      border-radius: 2px;
+      transform-origin: center;
+      transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
+    }
+    .burger span:nth-child(1) { top: 12px; }
+    .burger span:nth-child(2) { top: 20px; }
+    .burger span:nth-child(3) { top: 28px; }
+    /* Les deux barres extrêmes rejoignent la médiane puis pivotent : la croix
+       se forme sans changer le nombre d'éléments. */
+    .burger.active span:nth-child(1) { top: 20px; transform: rotate(45deg); }
+    .burger.active span:nth-child(2) { opacity: 0; }
+    .burger.active span:nth-child(3) { top: 20px; transform: rotate(-45deg); }
+
+    /* ── Téléphone et tablette : le menu devient un plein écran ─────────── */
+    @media (max-width: 950px) {
+      .burger { display: flex; }
+
+      .main-nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        margin: 0;
+        padding: 2rem 1.5rem;
+        box-sizing: border-box;
+        background: transparent;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+        z-index: 150;
+        isolation: isolate;
+        /* `visibility` en `step-end` : le panneau reste atteignable au clavier
+           pendant qu'il glisse, et disparaît d'un coup une fois sorti. */
+        visibility: hidden;
+        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.4s step-end;
+      }
+      .main-nav::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: rgba(10, 11, 20, 0.88);
+        backdrop-filter: blur(22px) saturate(150%);
+        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        transform: translateZ(0);
+      }
+      .main-nav.menu-open {
+        right: 0;
+        visibility: visible;
+        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s;
+      }
+      .main-nav-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .main-nav .nav-link,
+      .main-nav .masthead-cta { font-size: 1.05rem; line-height: 1.25; }
+      .main-nav .nav-link { position: relative; z-index: 1; font-weight: 600; }
+      .main-nav .masthead-cta {
+        position: relative;
+        z-index: 1;
+        height: auto;
+        min-height: 44px;
+        letter-spacing: 0.06em;
+        padding: 0.9rem 1.75rem;
+        margin-top: 0.25rem;
+        border-radius: 12px;
+      }
+      .main-nav .nav-link::after,
+      .main-nav .masthead-cta::after { display: none; }
+    }
+
+    /* ── Grand écran : la nav s'efface, ses enfants entrent dans la grille ── */
+    @media (min-width: 951px) {
+      .masthead { padding: 1.1rem 1.25rem 0.75rem; }
+      .masthead-inner {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: clamp(0.75rem, 2vw, 1.75rem);
+        max-width: min(1120px, calc(85vw - 2rem));
+        --masthead-burger-size: 46px;
+        --masthead-text-size: 0.98rem;
+        --masthead-pad-trb: 0.72rem;
+        --masthead-pad-x-start: calc(var(--masthead-pad-trb) + 0.2rem);
+      }
+      .masthead-brand { grid-column: 1; }
+      /* `display: contents` fait disparaître la nav de la mise en page sans
+         la retirer du DOM : ses deux enfants deviennent directement les
+         colonnes 2 et 3 de la pilule. */
+      .main-nav { display: contents; }
+      .main-nav-links {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(1rem, 2vw, 1.75rem);
+        min-width: 0;
+        position: relative;
+        z-index: 2;
+      }
+      .main-nav .masthead-cta { grid-column: 3; }
+    }
+
+    /* ── Tablette : le flou coûte cher, on l'allège puis on le retire ────── */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .masthead { padding-top: calc(1rem + 1px); }
+      .masthead-bg {
+        backdrop-filter: blur(8px) saturate(130%);
+        -webkit-backdrop-filter: blur(8px) saturate(130%);
       }
     }
-  ]
-}
-  </script>
-  <script defer src="https://cloud.umami.is/script.js" data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14"></script>
-  <script type="module" crossorigin src="./assets/index-L5A5VODq.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index.6fc8lyDo.css">
+    @media (max-width: 767px) {
+      .masthead { padding: 1rem 1rem 0.5rem; }
+      .masthead-inner { --masthead-text-size: 0.9rem; }
+      .masthead-bg {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(10, 11, 20, 0.96);
+      }
+    }
 
-  <meta name="description" content="Un site où l'on voit ce qui tourne déjà, où l'on comprend ce que cela donne dans son métier, où l'on compose son projet en quelques choix, et d'où l'on repart avec un message prêt à envoyer." />
-  <meta property="og:title" content="Fractal Innov : expériences 3D et AR dans le navigateur, sans application" />
-  <meta property="og:description" content="Un site où l'on voit ce qui tourne déjà, où l'on comprend ce que cela donne dans son métier, où l'on compose son projet en quelques choix, et d'où l'on repart avec un message prêt à envoyer." />
-  <!-- Bloc posé par scripts/metas-publiques.mjs — ne pas éditer dans dist/. -->
-  <link rel="icon" type="image/png" sizes="32x32" href="https://www.fractal-innov.fr/icones/fi-32.png" />
-  <link rel="icon" type="image/png" sizes="192x192" href="https://www.fractal-innov.fr/icones/fi-192.png" />
-  <link rel="apple-touch-icon" sizes="180x180" href="https://www.fractal-innov.fr/icones/fi-180.png" />
-  <link rel="manifest" href="https://www.fractal-innov.fr/site.webmanifest" />
-  <meta name="theme-color" content="#0b0e14" />
-  <meta name="author" content="Corentin DUBOC" />
+    /* ══════════════════════════════════════════════════════════════════════
+       BOUTONS — la famille .hero-cta__btn de /stand/, ses QUATRE variantes
 
-  <meta property="og:site_name" content="Fractal Innov" />
-  <meta property="og:locale" content="fr_FR" />
-  <meta property="og:image" content="https://www.fractal-innov.fr/apercu-social-1200x630.webp" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Fractal Innov : une expérience 3D qui tourne dans le navigateur, sans application." />
+       ⚠️ Le bouton de base est le fantôme bleu. Le bouton PRINCIPAL est
+       `--primary`, plein, en dégradé : c'est lui qui porte l'action qui
+       rapporte. Le handoff décrivait le fantôme comme « principal », ce qui
+       ne correspond plus à ce que fait /stand/.
+       ══════════════════════════════════════════════════════════════════════ */
+    .hero-cta__btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 44px;
+      padding: 0.65rem 1.35rem;
+      font-family: inherit;
+      font-size: clamp(0.95rem, 2.8vw, 1.05rem);
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--accent-blue);
+      text-decoration: none;
+      white-space: nowrap;
+      border-radius: 12px;
+      cursor: pointer;
+      background: var(--surface);
+      border: 1px solid rgba(110, 168, 255, 0.35);
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hero-cta__btn:hover {
+      color: var(--accent-blue);
+      transform: translateY(-1px);
+      border-color: var(--accent-blue);
+      box-shadow: 0 10px 30px -12px rgba(110, 168, 255, 0.55);
+    }
+    .hero-cta__btn:focus-visible {
+      outline: 2px solid var(--accent-blue-light);
+      outline-offset: 3px;
+    }
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Fractal Innov : expériences 3D et AR dans le navigateur, sans application" />
-  <meta name="twitter:description" content="Un site où l'on voit ce qui tourne déjà, où l'on comprend ce que cela donne dans son métier, où l'on compose son projet en quelques choix, et d'où l'on repart avec un message prêt à envoyer." />
-  <meta name="twitter:image" content="https://www.fractal-innov.fr/apercu-social-1200x630.webp" />
-  <meta name="twitter:image:alt" content="Fractal Innov : une expérience 3D qui tourne dans le navigateur, sans application." />
+    .hero-cta__btn--primary {
+      position: relative;
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent-blue-deep) 0%, var(--accent-purple-deep) 100%);
+      box-shadow: 0 10px 26px -10px rgba(40, 89, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+    }
+    .hero-cta__btn--primary > * { position: relative; z-index: 1; }
+    .hero-cta__btn--primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 55%, var(--accent-pink) 100%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .hero-cta__btn--primary:hover {
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px -12px rgba(110, 168, 255, 0.75);
+    }
+    .hero-cta__btn--primary:hover::before { opacity: 1; }
+    .hero-cta__btn--primary:active { transform: translateY(0) scale(0.98); }
 
-  <link rel="alternate" hreflang="fr" href="https://www.fractal-innov.fr/" />
-  <link rel="alternate" hreflang="x-default" href="https://www.fractal-innov.fr/" />
+    .hero-cta__btn--secondary {
+      color: #fff;
+      background: var(--accent-blue-muted);
+      border-color: transparent;
+    }
+    .hero-cta__btn--secondary:hover {
+      color: #fff;
+      background: var(--accent-purple-muted);
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    .hero-cta__btn--ghost {
+      color: #fff;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+    }
+    .hero-cta__btn--ghost:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: none;
+    }
+
+    /* Un bouton désactivé : présent, lisible, non cliquable. */
+    .hero-cta__btn[aria-disabled="true"] {
+      color: var(--text-muted);
+      background: transparent;
+      border-style: dashed;
+      border-color: rgba(255, 255, 255, 0.18);
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       HERO
+       ══════════════════════════════════════════════════════════════════════ */
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: min(56rem, 92vh);
+      display: flex;
+      align-items: center;
+      /* Remonte sous la pilule, puis rend la hauteur en rembourrage : le halo
+         passe derrière la navigation sans que le contenu s'y cache. */
+      margin-top: calc(-1 * var(--masthead-row-overlap));
+      padding-top: var(--masthead-row-overlap);
+    }
+    .hero__halo {
+      position: absolute;
+      width: 78vmax;
+      height: 78vmax;
+      border-radius: 50%;
+      pointer-events: none;
+      will-change: transform;
+    }
+    .hero__halo--haut {
+      top: -34vmax;
+      left: -26vmax;
+      background: radial-gradient(circle closest-side,
+        color-mix(in oklab, var(--accent-purple) 44%, transparent), transparent 100%);
+      animation: haloDerive 18s ease-in-out infinite alternate;
+    }
+    .hero__halo--bas {
+      bottom: -38vmax;
+      right: -30vmax;
+      background: radial-gradient(circle closest-side,
+        color-mix(in oklab, var(--accent-blue) 34%, transparent), transparent 100%);
+      animation: haloDerive 24.7s ease-in-out infinite alternate-reverse;
+    }
+    .hero__contenu {
+      position: relative;
+      max-width: 62rem;
+      margin: 0 auto;
+      padding: clamp(4rem, 9vw, 7rem) 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.75rem;
+    }
+    .hero__pastille {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.4rem 0.9rem 0.4rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(15, 18, 32, 0.76);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(110, 168, 255, 0.45);
+      font-size: 0.85rem;
+    }
+    .hero__point {
+      position: relative;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 0 2px var(--bg-base);
+    }
+    .hero__point::after {
+      content: "";
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1px solid var(--accent-blue);
+      animation: radar 2.4s ease-out infinite;
+    }
+    .hero__titre {
+      margin: 0;
+      font-size: clamp(2.8rem, 1.6rem + 5vw, 5.6rem);
+      font-weight: 700;
+      line-height: 1.04;
+      letter-spacing: -0.025em;
+      text-wrap: balance;
+    }
+    /* Le dégradé est peint DANS le texte. La couleur de repli est posée
+       d'abord : un navigateur sans `background-clip: text` affiche du bleu
+       lisible, jamais un titre transparent. */
+    .hero__accent {
+      color: var(--accent-blue);
+      background-image: var(--brand-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero__lead {
+      margin: 0;
+      max-width: 38rem;
+      font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem);
+      color: var(--text-soft);
+      text-wrap: pretty;
+    }
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .hero__identite {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+      text-align: left;
+    }
+    .hero__avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      flex-shrink: 0;
+      border: 1px solid rgba(110, 168, 255, 0.45);
+    }
+    .hero__avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .hero__nom { font-weight: 700; font-size: 0.95rem; line-height: 1.3; }
+    .hero__role { font-size: 0.85rem; color: var(--text-muted); line-height: 1.3; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       FONDATEUR
+       ══════════════════════════════════════════════════════════════════════ */
+    .fondateur__grille {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+      gap: clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+
+    /* Le liseré dégradé : un fond en dégradé, 1px de rembourrage, et la photo
+       posée par-dessus. `border-image` ne sait pas suivre un rayon, cette
+       méthode-ci si. */
+    .portrait {
+      position: relative;
+      border-radius: 1.25rem;
+      padding: 1px;
+      background: linear-gradient(160deg,
+        rgba(110, 168, 255, 0.6), rgba(139, 92, 246, 0.2) 50%, rgba(244, 114, 182, 0.5));
+    }
+    .portrait__cadre {
+      position: relative;
+      border-radius: calc(1.25rem - 1px);
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      background: #1a1f36;
+    }
+    .portrait__cadre img { width: 100%; height: 100%; object-fit: cover; }
+    /* La barre de verre flotte DANS la photo : elle reprend le vocabulaire
+       de la pilule de navigation, en plus discret. */
+    .portrait__barre {
+      position: absolute;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      padding: 0.6rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(10, 11, 20, 0.62);
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+    }
+    .portrait__barre .tag { color: var(--text-main); }
+
+    .fondateur__role {
+      margin: -0.75rem 0 0.4rem;
+      font-size: 1.05rem;
+      color: var(--text-soft);
+    }
+    /* La ligne technique en monospace : c'est le signal « fiche d'identité »
+       de la charte, réservé aux mentions factuelles. */
+    .ligne-mono {
+      font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      letter-spacing: 0.01em;
+      color: var(--accent-blue-light);
+      margin: 0 0 1.5rem;
+    }
+    .fondateur__bio { color: var(--text-soft) !important; }
+    .fondateur__bio strong { color: var(--text-main); font-weight: 700; }
+
+    .bloc-titre {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 2rem 0 0.75rem;
+    }
+
+    /* La boussole : la seule carte de la page à bord bleu. C'est une prise de
+       parole personnelle, pas un élément de grille, et le liseré le dit. */
+    .boussole {
+      margin-top: 2rem;
+      border-color: rgba(110, 168, 255, 0.35);
+    }
+    .boussole:hover { transform: none; border-color: rgba(110, 168, 255, 0.55); }
+    .boussole__titre {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-blue-light);
+      margin: 0 0 0.35rem;
+    }
+    .boussole__sous-titre {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0 0 1rem;
+    }
+    .boussole ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+    .boussole li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.7rem;
+      align-items: start;
+      color: var(--text-soft);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .boussole li::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      margin-top: 0.55rem;
+      border-radius: 50%;
+      background: var(--accent-blue);
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       APPROCHE
+       ══════════════════════════════════════════════════════════════════════ */
+    .etapes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .etape { display: flex; flex-direction: column; }
+    .etape__num {
+      font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+      font-size: 2.2rem;
+      line-height: 1;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      /* Même repli que le titre du hero : du bleu lisible si le navigateur
+         ne sait pas peindre un dégradé dans du texte. */
+      color: var(--accent-blue);
+      background-image: var(--brand-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .etape h3 { margin: 0 0 0.2rem; font-size: 1.35rem; font-weight: 700; line-height: 1.25; }
+    .etape__court { margin: 0 0 0.85rem; font-size: 0.95rem; color: var(--accent-blue-light); }
+    .etape__texte { color: var(--text-muted); font-size: 1rem; margin: 0 0 1.25rem; }
+    .etape .tag-liste { margin-top: auto; }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       OFFRE — deux cartes à média, titrées par le problème du client
+       ══════════════════════════════════════════════════════════════════════ */
+    .offres {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    /* La carte à média ne porte pas le rembourrage : c'est son corps qui l'a,
+       sinon l'image ne pourrait pas toucher les bords. */
+    .offre {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+      border-radius: var(--radius-enveloppe);
+    }
+    /* Le média d'une carte, partagé par les offres et les démonstrateurs.
+       ⚠️ Une seule définition pour les deux : c'est ce qui garantit qu'une
+       carte ajoutée demain ressemblera aux autres sans qu'on y pense. */
+    .media-16x9 {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #1a1f36;
+      overflow: hidden;
+      /* Le liseré du bas sépare l'image du corps sans trait dur. */
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .media-16x9 img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s var(--ease-morph);
+    }
+    .carte:hover .media-16x9 img { transform: scale(1.03); }
+    /* Un voile du haut vers le bas : le sur-titre du corps ne se cogne pas à
+       une image claire, et les cartes se ressemblent quelle que soit la
+       luminosité de leur visuel. */
+    .media-16x9::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(9, 11, 19, 0) 45%, rgba(9, 11, 19, 0.55) 100%);
+      pointer-events: none;
+    }
+    .offre__corps {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 2rem;
+    }
+    .offre__eyebrow {
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent-blue-light);
+      margin: 0 0 0.9rem;
+    }
+    .offre h3 {
+      margin: 0 0 0.9rem;
+      font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -.01em;
+      text-wrap: balance;
+    }
+    .offre__texte { color: var(--text-muted); font-size: 1.05rem; margin: 0 0 1.5rem; }
+    /* `margin-top: auto` colle les boutons en bas : les deux cartes alignent
+       leurs actions même quand leurs textes n'ont pas la même longueur. */
+    .offre__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       CE QUI TOURNE DÉJÀ — le catalogue des démonstrateurs en ligne
+
+       Cette section n'était pas dans la maquette. Elle vient du site
+       existant, où elle est l'atout le plus fort : quatre expériences
+       ouvrables en trois secondes, sans rendez-vous. Une page d'agence WebXR
+       qui ne montre rien se raconte au lieu de se prouver.
+
+       ⚠️ Les textes sont ceux de `src/hub/demos.ts` (dépôt Needle5), et la
+       règle de ce catalogue vaut ici aussi : **la virgule du titre n'est pas
+       une ponctuation, c'est une structure**. Ce qui la précède est le nom,
+       ce qui la suit est le sous-texte. Un point clé dit ce que la démo
+       PERMET, jamais la technique employée.
+       ══════════════════════════════════════════════════════════════════════ */
+    .demos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .demo {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+    }
+    .demo__corps {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 1.5rem;
+    }
+    .demo h3 { margin: 0 0 0.15rem; font-size: 1.2rem; font-weight: 700; line-height: 1.25; }
+    .demo__sous-titre {
+      margin: 0 0 0.75rem;
+      font-size: 0.92rem;
+      line-height: 1.35;
+      color: var(--accent-blue-light);
+    }
+    .demo__accroche { margin: 0 0 1rem; font-size: 0.98rem; color: var(--text-muted); }
+    .demo__points {
+      list-style: none;
+      margin: 0 0 1.5rem;
+      padding: 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .demo__points li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.6rem;
+      align-items: start;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+    .demo__points li::before {
+      content: "";
+      width: 5px;
+      height: 5px;
+      margin-top: 0.5rem;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      opacity: 0.7;
+    }
+    .demo__actions { margin-top: auto; }
+    .demo .hero-cta__btn { width: 100%; }
+    /* La flèche accompagne le libellé, elle ne le remplace pas : lue seule,
+       elle ne dit rien. `aria-hidden` la retire de l'annonce vocale. */
+    .demo .hero-cta__btn span[aria-hidden] { transition: transform 0.2s ease; }
+    .demo .hero-cta__btn:hover span[aria-hidden] { transform: translateX(3px); }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       PARTENAIRES
+       ══════════════════════════════════════════════════════════════════════ */
+    .partenaires {
+      display: grid;
+      /* 18rem donne 3 colonnes à 1100px : cinq cartes tombent en 3 + 2, et
+         non en 4 + 1 qui laisserait une carte seule sur sa ligne. */
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+      gap: 1.25rem;
+      margin-top: 2.5rem;
+    }
+    .partenaire { padding: 1.75rem; }
+
+    /* L'emplacement du logo, rempli par un MONOGRAMME en attendant les vrais
+       fichiers. ⚠️ Pour poser un vrai logo : remplacer le contenu du span par
+       une <img> de 88 × 88 et retirer `background`. Rien d'autre ne bouge. */
+    .partenaire__logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 88px;
+      height: 88px;
+      margin-bottom: 1.25rem;
+      border-radius: var(--radius-lg, 18px);
+      background: var(--brand-gradient);
+      color: #fff;
+      font-size: 2.1rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      /* Le dégradé de marque à pleine force ferait quatre pavés criards dans
+         une grille sobre : on le rentre d'un cran, le liseré fait le reste. */
+      opacity: 0.85;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    /* Un sigle de plusieurs lettres ne tient pas au corps d'une initiale. */
+    .partenaire__logo--sigle { font-size: 1.15rem; letter-spacing: 0.06em; }
+    .partenaire__logo img { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; }
+    .partenaire h3 { margin: 0 0 0.15rem; font-size: 1.1rem; font-weight: 700; line-height: 1.25; }
+    .partenaire__role { margin: 0 0 0.75rem; font-size: 0.9rem; color: var(--accent-blue-light); }
+    .partenaire__texte { margin: 0 0 1.25rem; font-size: 0.95rem; color: var(--text-muted); }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       CONTACT — la section .contact de /stand/, reprise entière
+
+       Le portrait est cerclé d'un dégradé conique qui tourne, posé sur une
+       lueur qui respire. Le bouton principal porte un reflet qui passe toutes
+       les cinq secondes et une lueur qui suit le curseur.
+
+       ⚠️ Tout ce mouvement s'éteint dans le bloc `prefers-reduced-motion`,
+       nommément : une animation oubliée là-bas continue de tourner chez
+       quelqu'un qui a demandé le calme.
+       ══════════════════════════════════════════════════════════════════════ */
+    .contact {
+      position: relative;
+      z-index: 2;
+      padding: clamp(4.5rem, 11vw, 8rem) 1.5rem clamp(4rem, 9vw, 6rem);
+      overflow: hidden;
+      isolation: isolate;
+      text-align: center;
+      background: var(--bg-base);
+    }
+    /* Le filet dégradé du haut se déploie quand la section entre à l'écran :
+       c'est le seul élément de la page qui s'anime sur sa propre largeur. */
+    .contact::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: min(720px, 80%);
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-blue) 30%,
+        var(--accent-purple) 55%, var(--accent-pink) 80%, transparent);
+      transform: translateX(-50%) scaleX(0);
+      transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+      opacity: 0.8;
+    }
+    .contact.active::before { transform: translateX(-50%) scaleX(1); }
+
+    .contact__aurora { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+    .contact__aurora span {
+      position: absolute;
+      width: 70vmax;
+      height: 70vmax;
+      border-radius: 50%;
+      opacity: 0.8;
+      will-change: transform;
+      animation: contactDrift 22s ease-in-out infinite alternate;
+    }
+    .contact__aurora span:nth-child(1) {
+      left: -20vmax; top: -10vmax;
+      background: radial-gradient(circle, rgba(40, 89, 255, 0.28) 0%, transparent 60%);
+    }
+    .contact__aurora span:nth-child(2) {
+      right: -25vmax; top: 0;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.26) 0%, transparent 60%);
+      animation-duration: 27s; animation-delay: -9s;
+    }
+    .contact__aurora span:nth-child(3) {
+      left: 25%; bottom: -45vmax;
+      background: radial-gradient(circle, rgba(244, 114, 182, 0.2) 0%, transparent 60%);
+      animation-duration: 31s; animation-delay: -17s;
+    }
+
+    .contact__inner {
+      position: relative;
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .contact__who {
+      margin: 0 0 1.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .contact__ring {
+      position: relative;
+      display: block;
+      width: clamp(120px, 14vw, 150px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      padding: 4px;
+      isolation: isolate;
+    }
+    .contact__ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, var(--accent-blue), var(--accent-purple),
+        var(--accent-pink), var(--accent-blue));
+      animation: contactSpin 9s linear infinite;
+    }
+    .contact__ring::after {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      z-index: -2;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.45) 0%, transparent 70%);
+      animation: contactBreathe 4s ease-in-out infinite;
+    }
+    .contact__ring img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--bg-base);
+      box-sizing: border-box;
+    }
+    .contact__who figcaption { display: grid; gap: 0.15rem; line-height: 1.3; }
+    .contact__who strong { font-size: 1.02rem; font-weight: 700; color: #fff; }
+    .contact__who span { font-size: 0.84rem; color: rgba(255, 255, 255, 0.62); }
+
+    .contact h2 {
+      margin: 0 0 1rem;
+      font-size: clamp(2rem, 4.2vw, 2.9rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+      color: #fff;
+      text-wrap: balance;
+    }
+    .contact__lead {
+      margin: 0 0 1.6rem;
+      max-width: 560px;
+      font-size: 1.08rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.78);
+      text-wrap: pretty;
+    }
+    .contact__actions { display: flex; flex-direction: column; align-items: center; gap: 0.9rem; }
+
+    .contact__primary {
+      --mx: 50%;
+      --my: 50%;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      height: 58px;
+      padding: 0 1.7rem 0 1.5rem;
+      border-radius: 14px;
+      color: #fff;
+      font-size: 1.08rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--accent-blue-deep) 0%, var(--accent-purple-deep) 100%);
+      box-shadow: 0 18px 40px -14px rgba(40, 89, 255, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      isolation: isolate;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+    }
+    /* La lueur suit le curseur : `--mx` et `--my` sont posées en JavaScript. */
+    .contact__primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(160px circle at var(--mx) var(--my), rgba(255, 255, 255, 0.28), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .contact__primary:hover::before,
+    .contact__primary:focus-visible::before { opacity: 1; }
+    /* Le reflet qui balaie le bouton toutes les cinq secondes. */
+    .contact__primary::after {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: -60%;
+      width: 40%;
+      height: 140%;
+      z-index: -1;
+      background: linear-gradient(105deg, transparent 0%, rgba(255, 255, 255, 0.28) 50%, transparent 100%);
+      transform: skewX(-18deg) translateX(0);
+      animation: contactSheen 5s ease-in-out infinite;
+    }
+    .contact__primary:hover,
+    .contact__primary:focus-visible {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 24px 50px -14px rgba(110, 168, 255, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    .contact__primary:active { transform: translateY(0) scale(0.99); }
+    .contact__primary:focus-visible { outline: 2px solid var(--accent-blue-light); outline-offset: 4px; }
+    .contact__primary-icon,
+    .contact__primary-arrow { width: 20px; height: 20px; flex-shrink: 0; }
+    .contact__primary-arrow { width: 18px; height: 18px; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+    .contact__primary:hover .contact__primary-arrow { transform: translateX(5px); }
+
+    .contact__or {
+      margin: 0.2rem 0 0;
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.42);
+    }
+    .contact__links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+    .contact__links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      height: 42px;
+      padding: 0 0.95rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+    .contact__links a svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .contact__links a:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-1px);
+    }
+    @media (max-width: 540px) {
+      .contact__primary { width: 100%; justify-content: center; }
+      .contact__links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+      .contact__links a { justify-content: center; padding: 0 0.5rem; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       PIED DE PAGE
+
+       ⚠️ La rangée de liens n'est pas décorative : ce sont les pages déjà
+       indexées du site. Sans lien entrant depuis la racine, leur
+       référencement s'éteint. Elle reste jusqu'à ce que la refonte les ait
+       reprises une par une, et pas une minute de moins.
+       ══════════════════════════════════════════════════════════════════════ */
+    .footer {
+      position: relative;
+      z-index: 2;
+      padding: 3rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      background: var(--bg-base);
+    }
+    .footer__inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+    .footer p { font-size: .85rem; color: var(--text-muted); margin: 0; }
+    .footer a { color: var(--text-muted); transition: color 0.2s ease; }
+    .footer a:hover { color: var(--text-main); }
+    .footer__titre {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(240, 240, 240, 0.4);
+      margin: 0 0 0.75rem;
+    }
+    .footer__pages {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 1.25rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      max-width: 34rem;
+    }
+    .footer__pages a { font-size: 0.88rem; }
+    .footer__bas {
+      max-width: 1100px;
+      margin: 2.5rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 0.8rem;
+      color: rgba(240, 240, 240, 0.4);
+    }
+    @media (max-width: 767px) {
+      .footer { padding: 2rem 1.5rem; }
+      .footer__inner { flex-direction: column; gap: 2rem; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
+       MOUVEMENT — ⚠️ le seul endroit qui l'éteint est le bloc « reduce »
+       ══════════════════════════════════════════════════════════════════════ */
+    @keyframes haloDerive {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to   { transform: translate3d(9vmax, 6vmax, 0) scale(1.16); }
+    }
+    @keyframes radar {
+      from { transform: scale(0.5); opacity: 0.9; }
+      to   { transform: scale(2.2); opacity: 0; }
+    }
+    @keyframes contactSpin { to { transform: rotate(360deg); } }
+    @keyframes contactBreathe {
+      0%, 100% { transform: scale(0.92); opacity: 0.6; }
+      50% { transform: scale(1.06); opacity: 1; }
+    }
+    @keyframes contactDrift {
+      0%   { transform: translate3d(0, 0, 0) scale(1); }
+      50%  { transform: translate3d(6vmax, -4vmax, 0) scale(1.08); }
+      100% { transform: translate3d(-4vmax, 5vmax, 0) scale(0.96); }
+    }
+    @keyframes contactSheen {
+      0%, 70% { transform: skewX(-18deg) translateX(0); }
+      100%    { transform: skewX(-18deg) translateX(420%); }
+    }
+    @keyframes pageRestGlow {
+      0%   { background-position: 5% 0%, 95% 25%, 48% 98%, 75% 40%, 15% 70%; }
+      50%  { background-position: 25% 15%, 75% 50%, 55% 85%, 45% 60%, 40% 35%; }
+      100% { background-position: 95% 30%, 8% 70%, 45% 5%, 85% 75%, 65% 90%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero__halo,
+      .hero__point::after,
+      .page-rest::before { animation: none; opacity: 1; }
+      .page-rest::before { background-position: 20% 10%, 80% 40%, 50% 90%, 60% 50%, 30% 60%; }
+      .page-rest { --page-rest-glow-mix: 1; }
+      .aura { display: none; }
+      .js .reveal { opacity: 1; transform: none; }
+      /* /stand/ coupe nommément la transition du CTA et du burger. */
+      .masthead-cta,
+      .masthead-cta::before,
+      .burger,
+      .main-nav { transition: none; }
+      .contact::before,
+      .contact__aurora span,
+      .contact__ring::before,
+      .contact__ring::after,
+      .contact__primary,
+      .contact__primary::after,
+      .contact__primary-arrow,
+      .contact__links a { animation: none; transition: none; }
+      /* Le filet du contact reste déployé plutôt que de disparaître. */
+      .contact::before { transform: translateX(-50%) scaleX(1); }
+      * { transition-duration: 0.01ms !important; }
+    }
+  </style>
 </head>
-<body class="m-0 h-dvh overflow-hidden font-ui text-texte leading-relaxed bg-fond-haut
-             bg-[radial-gradient(120%_80%_at_50%_-10%,var(--color-action)_0%,transparent_55%)]
-             bg-fixed">
-  <script>/* needle: fix for peerjs */ window.global = window; var parcelRequire;</script>
 
-  <div id="fi-splash" class="ui-splash" role="status" aria-live="polite" aria-label="Chargement" data-i18n-aria="splash.chargement">
-    <img
-      class="ui-splash__logo"
-      src="./assets/fi-logo-252.B9F72pmF.webp"
-      srcset="./assets/fi-logo-168.Yl4Myr2Y.webp 168w, ./assets/fi-logo-252.B9F72pmF.webp 252w"
-      sizes="(min-width: 900px) 160px, 96px"
-      width="160" height="160"
-      alt=""
-      fetchpriority="high"
-      decoding="async"
-    />
-    <p class="ui-splash__marque">Fractal Innov</p>
-    <div class="ui-splash__jauge-zone">
-      <p class="ui-splash__sous-titre" data-i18n="splash.sousTitre">Expérience Interactive</p>
-      <div class="ui-splash__jauge" aria-hidden="true"></div>
-    </div>
-  </div>
+<body>
+  <a class="saut-au-contenu" href="#contenu">Aller au contenu</a>
+  <div class="aura" aria-hidden="true"></div>
 
+  <!-- ══ NAVIGATION ══════════════════════════════════════════════════════
+       ⚠️ L'ordre des éléments est celui de /stand/ et il compte : le fond
+       (.masthead-bg) est le DERNIER enfant, en z-index 0, pendant que les
+       autres sont en z-index 2. Le remonter le ferait passer devant les liens.
+       Le CTA « Contact » est DANS la nav : en grand écran il devient la
+       colonne 3 de la pilule, sur téléphone il entre dans le plein écran.
+  ══════════════════════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <div class="masthead-inner">
+      <a href="#top" class="masthead-brand" aria-label="Fractal Innov, retour en haut de la page">
+        <img src="/media/marque/fractalinnov-logo.webp" alt="Fractal Innov" class="masthead-logo-img"
+             width="770" height="142" loading="eager" decoding="async">
+      </a>
 
-  <!-- ⚠️ **`sr-only` n'est PAS une décoration d'accessibilité ici, c'est le
-       drapeau rendu visible.** Scène 3D allumée, tout ce contenu est lu par les
-       lecteurs d'écran et les moteurs, sans occuper l'écran que prend le
-       village. Scène éteinte, `hub/montage.ts` retire cette classe et le MÊME
-       contenu devient le site visible. C'est ce qui garantit qu'il n'y a jamais
-       deux versions à réconcilier : il n'y a qu'un texte, montré de deux
-       façons. -->
-  <div id="fi-contenu" class="sr-only">
-<header class="sticky top-0 z-10 flex flex-wrap items-center gap-x-8 gap-y-3 py-4 backdrop-blur-xl bg-fond-haut/80 border-b border-texte/10">
-    <div class="w-[min(var(--largeur-contenu),100%-2.5rem)] mx-auto flex flex-wrap items-center gap-x-8 gap-y-3">
-      <p class="me-auto m-0"><a class="me-auto font-bold tracking-wide text-texte no-underline" href="/">Fractal Innov</a></p>
-      <nav class="flex flex-wrap gap-x-5 gap-y-1 text-[0.92rem]">
-      <span aria-current="page" class="text-action font-semibold">Commencer ici</span>
-      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/webxr-dans-le-navigateur/">Sans application</a>
-      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/produits/">Ce qui tourne déjà</a>
-      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/cas-d-usage/">Dans votre métier</a>
-      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/niveaux-et-modules/">Jusqu'où aller</a>
-      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/pilote-15-jours/">Démarrer en 15 jours</a>
-      <a class="text-texte-efface no-underline hover:text-action-claire transition-colors" href="/methode-et-contact/">Me contacter</a>
+      <nav class="main-nav" id="mainNav" aria-label="Navigation principale">
+        <div class="main-nav-links">
+          <a href="#fondateur" class="nav-link">Fondateur</a>
+          <a href="#approche" class="nav-link">Approche</a>
+          <a href="#offre" class="nav-link">Agence WebXR</a>
+          <a href="#demos" class="nav-link">Démos</a>
+          <a href="#partenaires" class="nav-link">Partenaires</a>
+        </div>
+        <a href="#contact" class="masthead-cta">Contact</a>
       </nav>
+
+      <button class="burger" id="burgerBtn" type="button"
+              aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="masthead-bg" aria-hidden="true"></div>
     </div>
   </header>
 
-  <main class="w-[min(var(--largeur-contenu),100%-2.5rem)] mx-auto relative z-[1] pt-[clamp(2.5rem,6vw,5rem)] pb-16">
-    <h1 class="text-[clamp(2rem,1.4rem+3vw,3.6rem)] leading-[1.15] tracking-tight text-balance mb-3">Découvrir ce qui existe • Composer son projet • Repartir avec un message prêt à envoyer</h1>
+  <main id="contenu">
+    <!-- ══ HERO ════════════════════════════════════════════════════════ -->
+    <section class="hero" id="top">
+      <div class="hero__halo hero__halo--haut" aria-hidden="true"></div>
+      <div class="hero__halo hero__halo--bas" aria-hidden="true"></div>
 
-    <!-- ⚠️ La question à laquelle cette page répond, écrite en clair. C'est le
-         cœur du GEO : un modèle de langage cite une source qui répond
-         directement et de façon autonome, pas une qui effleure. -->
-    <p><strong class="block max-w-[46rem] text-[clamp(1.05rem,0.95rem+0.7vw,1.35rem)] font-medium text-texte-efface mb-[clamp(2rem,5vw,3.5rem)]">À quoi sert ce site, et qu'est-ce que j'en repars avec ?</strong></p>
+      <div class="hero__contenu">
+        <span class="hero__pastille">
+          <span class="hero__point" aria-hidden="true"></span>
+          <span>Agence &amp; conseil WebXR</span>
+        </span>
 
-      <section id="accroche" data-arret="accroche" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2">Une expérience 3D en quelques secondes</h2>
-        <p class="max-w-[46rem] mb-4 text-pretty">Un lien, un QR code, n'importe quel écran.</p>
-        <ul class="grid gap-2.5 m-0 p-0 list-none">
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Rien à télécharger</strong> L'expérience démarre dans le navigateur des visiteurs, sans application à installer et sans appareil/casque à prêter.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Les démonstrations sont en ligne et testables tout de suite, sans rendez-vous</li>
-        </ul>
-      </section>
-      <section id="parcours" data-section="parcours" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2"></h2>
-        <p class="max-w-[46rem] mb-4 text-pretty"></p>
-        <ul class="grid gap-2.5 m-0 p-0 list-none">
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>REVEAL, la preuve</strong> Ce qui tourne déjà, en vrai, dans un navigateur. Ce qu'on y voit fonctionner est ce qui est réalisable.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>EXPLORE, la traduction</strong> Ce que chaque produit change dans un métier donné, avec ses contraintes.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>CONFIGURE, la projection</strong> Quelques choix par étape, dont sort la description de votre projet.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>LE CENTRE, le passage à l'acte</strong> Avec qui on travaille, et d'où part la demande.</li>
-        </ul>
-      </section>
+        <h1 class="hero__titre">Transmettre les savoirs
+          <span class="hero__accent">par l'expérience</span>
+        </h1>
 
-      <section id="ce-que-vous-repartez-avec" data-section="ce-que-vous-repartez-avec" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2"></h2>
-        <p class="max-w-[46rem] mb-4 text-pretty">Le configurateur compose un message que vous relisez et envoyez depuis votre propre boîte. Aucune donnée ne transite par un service tiers, il n'y a pas de formulaire, pas de compte à créer et rien à accepter.</p>
-        <ul class="grid gap-2.5 m-0 p-0 list-none">
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Un récapitulatif en clair</strong> Produit, niveau d'engagement, modules.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Un code de configuration court, dictable au téléphone, qui décrit la même chose sans ambiguïté.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Un devis en retour, établi à la main sur cette base. Le seul montant public est l'ancrage du projet pilote.</li>
-        </ul>
-      </section>
+        <p class="hero__lead">Des expériences 3D, AR et VR accessibles directement depuis un
+          navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation
+          scientifique.</p>
 
-      <section id="pour-demarrer" data-section="pour-demarrer" class="ui-revele relative overflow-hidden mb-[clamp(1.25rem,3vw,2rem)] p-[clamp(1.5rem,3.5vw,2.5rem)] rounded-3xl bg-surface border border-texte/10 transition-[border-color,transform] duration-200 hover:border-action/35 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0">
-        <h2 class="text-[clamp(1.35rem,1.1rem+1.2vw,2rem)] leading-tight tracking-tight text-balance mb-2">Ce qu'il faut de votre côté pour démarrer</h2>
-        <p class="max-w-[46rem] mb-4 text-pretty">La liste est courte, et elle est la même quel que soit le niveau d'engagement. Ce qui manque au démarrage se construit ensemble, mais mieux vaut savoir dès maintenant ce que l'on vous demandera.</p>
-        <ul class="grid gap-2.5 m-0 p-0 list-none">
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Un objectif dit en une phrase</strong> Ce que le visiteur doit avoir compris ou fait à la fin.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>Vos contenus</strong> Textes, images, sons, et les modèles 3D si vous en avez déjà.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Votre charte graphique, ou à défaut un logo et deux couleurs.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20">Un interlocuteur qui décide, côté vous, et qui peut valider en quelques jours.</li>
-          <li class="relative ps-6 text-texte-efface transition-colors duration-300 before:absolute before:start-1.5 before:top-[0.62em] before:size-1.5 before:rounded-full before:bg-action before:transition-all before:duration-300 data-vedette:text-texte data-vedette:before:bg-action-vive data-vedette:before:ring-4 data-vedette:before:ring-action-vive/20"><strong>L'endroit où l'expérience vivra</strong> Un lien, un QR code, une page de votre site.</li>
-        </ul>
-      </section>
+        <div class="hero__actions">
+          <a class="hero-cta__btn hero-cta__btn--primary"
+             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+             target="_blank" rel="noopener"><span>Prendre rendez-vous</span></a>
+          <a class="hero-cta__btn hero-cta__btn--secondary" href="#fondateur">Rencontrer le fondateur</a>
+        </div>
 
-      <!-- ⚠️ Cette section vit DANS `main`, donc dans le contenu commun, et non
-           dans un bloc réservé au mode sans 3D. Une section « de repli » serait
-           une seconde version déguisée, avec sa propre dérive. Le carrousel est
-           une partie du site ; la scène est ce qui s'ajoute par-dessus. -->
-      <!-- ⚠️ **AUCUN utilitaire Tailwind sur cette section, et c'est un
-           correctif, pas une préférence.** Elle en portait sept, dont
-           `relative`. En vue des démos, la charte lui donne `position: fixed` —
-           mais une utilitaire Tailwind vit dans une couche PLUS FORTE que
-           `@layer components` : `relative` l'emportait, la section restait dans
-           le flux, et le conteneur défilant n'existait donc pas. Symptôme
-           mesuré : impossible de faire défiler la vue sur téléphone, et un
-           panneau aux coins arrondis qui s'arrêtait au milieu de l'écran alors
-           que le fond devait aller au bord. Le `background` et le
-           `border-radius` de la charte perdaient de la même façon.
-           📌 L'apparence de la section vit maintenant dans `.fi-demos`, où les
-           deux états — dans le flux avec la scène, plein écran sans elle —
-           peuvent se contredire sans qu'aucune couche n'arbitre à leur place. -->
-      <section id="fi-demos" data-section="demos" class="fi-demos ui-revele">
-        <!-- ⚠️ **L'ordre du DOM EST l'ordre du téléphone.** La version d'avant
-             réordonnait en CSS avec `display: contents` et sept `order` : ça
-             marchait, mais la source ne disait plus ce que l'écran montre, et
-             toute relecture devait tenir les deux dans sa tête. Mobile d'abord
-             veut dire que le balisage part du téléphone ; c'est l'écran large
-             qui s'écarte, en grille, et lui seul. -->
-        <!-- ⚠️ **Le titre « Les démonstrateurs » a été RETIRÉ de l'écran, pas
-             du document.** Le bandeau de retour, juste au-dessus, le porte déjà :
-             deux fois le même mot coûtait une rangée à un endroit où chaque
-             rangée est reprise au cadre. Le `h2` reste, en `sr-only` : un
-             lecteur d'écran a besoin de ce niveau de titre pour naviguer, et le
-             supprimer laisserait la section sans nom accessible. -->
-        <h2 class="fi-demos__display sr-only" data-i18n="demos.titre">Les démonstrateurs</h2>
-        <!-- ⚠️ **Le cadre passe AVANT le reste, juste sous le titre.** Ce que
-             le visiteur est venu voir doit occuper le haut de l'écran ; la
-             liste, l'accroche et les points clés se lisent en descendant. Le
-             reste de l'ordre est inchangé : intro, choix, puis détails. -->
-        <div id="fi-demos-scene" class="fi-demos__scene">
-          <!-- Le cadre reste vide tant que personne n'a cliqué : quatre
-               expériences 3D chargées d'un coup, ce sont plusieurs dizaines de
-               mégaoctets et quatre contextes WebGL pour une page survolée. -->
-          <div id="fi-demos-cadre" class="fi-demos__cadre" data-etat="a-venir"></div>
+        <div class="hero__identite">
+          <span class="hero__avatar">
+            <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
+          </span>
+          <span>
+            <span class="hero__nom">Corentin Duboc</span><br>
+            <span class="hero__role">Architecte d'expériences WebXR &amp; 3D temps réel</span>
+          </span>
+        </div>
+      </div>
+    </section>
 
-          <!-- ⚠️ **Plus de bouton « Démarrer ».** La démo se charge dès que son
-               cadre entre à l'écran et se décharge dès qu'il en sort : demander
-               un clic pour voir ce qu'on est venu voir était un péage. Le
-               chargement paresseux qui le justifiait est conservé — c'est
-               l'observateur qui le porte maintenant, pas le visiteur. -->
-          <div class="fi-demos__actions">
-            <button type="button" id="fi-demos-agrandir" class="ui-bouton">Plein écran</button>
-            <!-- Un vrai lien, pas un bouton : le clic du milieu, le menu
-                 contextuel et « copier l'adresse » marchent alors sans une ligne
-                 de JavaScript. Son adresse est posée par `carrousel.ts`. -->
-            <a id="fi-demos-ouvrir" class="ui-bouton ui-bouton--discret" target="_blank" rel="noopener" data-i18n="demos.ouvrirAdresse">Ouvrir l'adresse</a>
+    <!-- Tout ce qui suit le hero baigne dans le halo global de /stand/. -->
+    <div class="page-rest">
 
-            <!-- ⚠️ **Les flèches tiennent la MÊME ligne que les commandes, et
-                 le compteur « 1 / 4 » a été retiré.** Il redisait ce que la liste
-                 montre déjà — l'entrée courante y est marquée, et les quatre
-                 tiennent à l'écran — en occupant la largeur qui manquait pour
-                 que la rangée tienne sur une seule ligne.** Sur une seule rangée, la barre sous le cadre dit
-                 tout ce qu'on peut faire de la démo courante — l'agrandir,
-                 l'ouvrir, passer à la suivante — au lieu de dépenser deux
-                 rangées de hauteur d'écran pour la même chose. -->
-            <div class="fi-demos__pager">
-              <button type="button" id="fi-demos-precedent" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur précédent" data-i18n-aria="demos.precedent">←</button>
-              <button type="button" id="fi-demos-suivant" class="ui-bouton ui-bouton--discret" aria-label="Démonstrateur suivant" data-i18n-aria="demos.suivant">→</button>
+      <!-- ══ FONDATEUR ═══════════════════════════════════════════════════ -->
+      <section class="section" id="fondateur">
+        <div class="fondateur__grille">
+
+          <div class="portrait reveal">
+            <div class="portrait__cadre">
+              <img src="/media/accueil/portrait.webp"
+                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
+              <ul class="portrait__barre tag-liste" aria-label="Domaines d'intervention">
+                <li class="tag">Industrie</li>
+                <li class="tag">Formation</li>
+                <li class="tag">Art</li>
+                <li class="tag">Médiation scientifique</li>
+              </ul>
             </div>
           </div>
-          <button type="button" id="fi-demos-reduire" class="fi-demos__reduire ui-bouton ui-bouton--discret" data-i18n="demos.quitterPleinEcran">Quitter le plein écran</button>
-        </div>
 
-        <p class="fi-demos__intro" data-i18n="demos.intro">Chacun tourne dans le navigateur, sans installer quoi que ce soit. Ouvrez-les ici même, ou en plein écran.</p>
+          <div>
+            <p class="section-number reveal">Le fondateur</p>
+            <h2 class="reveal">Corentin Duboc</h2>
+            <p class="fondateur__role reveal">Architecte d'expériences WebXR &amp; 3D temps réel</p>
+            <p class="ligne-mono reveal">Consultant 3D/WebXR B2B · Freelance · Catalyseur POLD</p>
 
-        <!-- Le choix de la démo : la liste, ses flèches et le compteur, ensemble.
-             ⚠️ Les flèches vivent À CÔTÉ du sélecteur et non sous le cadre :
-             séparées de ce qu'elles changent, elles se lisent comme les
-             commandes de la démo elle-même. -->
-        <div class="fi-demos__choix">
-          <!-- Peinte par `carrousel.ts` depuis `demos.ts` : aucun titre ici. -->
-          <nav id="fi-demos-liste" class="fi-demos__liste" aria-label="Choisir un démonstrateur" data-i18n-aria="demos.choisir"></nav>
-        </div>
+            <p class="fondateur__bio reveal">J'accompagne les industriels
+              (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
+              dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
+              force de vente et réduire leurs coûts logistiques événementiels.</p>
 
+            <p class="bloc-titre reveal">Compétences</p>
+            <ul class="tag-liste reveal" aria-label="Compétences">
+              <li class="tag">Unity</li>
+              <li class="tag">WebXR</li>
+              <li class="tag">AR/VR</li>
+              <li class="tag">Blender</li>
+              <li class="tag">Procreate</li>
+            </ul>
 
-        <div class="fi-demos__infos">
-
-          <!-- ⚠️ Les points clés sont REPLIÉS par défaut : quatre lignes de
-               détail poussaient le cadre hors de l'écran sur téléphone. Un
-               `<details>` natif, donc ouvrable au clavier et annoncé comme
-               tel, sans une ligne de JavaScript. -->
-          <details class="ui-repli fi-demos__repli">
-            <summary class="ui-repli__bouton" data-i18n="demos.repli">Ce que montre cette démo</summary>
-            <!-- ⚠️ **L'accroche est la PREMIÈRE ligne du repli, plus une ligne
-                 à part.** Dehors, elle occupait deux lignes pleines pour dire ce
-                 que le repli annonce déjà ; dedans, elle est la phrase qui
-                 introduit les puces. Le titre de la démo, lui, n'est toujours
-                 pas répété : il vit dans l'entrée sélectionnée juste au-dessus. -->
-            <p id="fi-demos-accroche" class="fi-demos__accroche">&nbsp;</p>
-            <div id="fi-demos-points"></div>
-          </details>
+            <div class="carte boussole reveal">
+              <p class="boussole__titre">Ma boussole</p>
+              <p class="boussole__sous-titre">Le design cognitif</p>
+              <ul>
+                <li>L'objectif n'est jamais la prouesse technologique, mais la clarté</li>
+                <li>Réduire la charge mentale, maximiser l'engagement par l'action</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
+
+      <!-- ══ APPROCHE ════════════════════════════════════════════════════ -->
+      <section class="section" id="approche">
+        <p class="section-number reveal">L'approche</p>
+        <h2 class="reveal">Trois étapes, de l'idée à l'outil que vous gardez</h2>
+        <p class="reveal">Trois temps, trois livrables. Vous savez à chaque étape ce que vous
+          recevez, et ce qu'il vous reste à fournir.</p>
+
+        <div class="etapes">
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">01</p>
+            <h3>Exploration</h3>
+            <p class="etape__court">Comprendre ce qui doit être compris</p>
+            <p class="etape__texte">Nous partons de votre produit, de votre public et de ce qu'il
+              doit retenir. Vos fichiers 3D, photos et vidéos sont regardés ensemble.</p>
+            <ul class="tag-liste">
+              <li class="tag">Recherche &amp; Innovation</li>
+              <li class="tag">Ateliers</li>
+              <li class="tag">Charge cognitive</li>
+            </ul>
+          </article>
+
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">02</p>
+            <h3>Création</h3>
+            <p class="etape__court">La 3D au service de la clarté</p>
+            <p class="etape__texte">Scène 3D temps réel, parcours guidé, contenus au bon moment :
+              l'expérience se construit sur vos fichiers existants.</p>
+            <ul class="tag-liste">
+              <li class="tag">Contenus WebXR</li>
+              <li class="tag">3D temps réel</li>
+              <li class="tag">AR / VR</li>
+            </ul>
+          </article>
+
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">03</p>
+            <h3>Structuration</h3>
+            <p class="etape__court">Un outil qui vous reste</p>
+            <p class="etape__texte">L'expérience est livrée, documentée et mesurée. Vos équipes la
+              font vivre et la réutilisent, sans développeur.</p>
+            <ul class="tag-liste">
+              <li class="tag">Gestion de Projet</li>
+              <li class="tag">Déploiement</li>
+              <li class="tag">Mesure d'usage</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <!-- ══ OFFRE ═══════════════════════════════════════════════════════ -->
+      <section class="section" id="offre">
+        <p class="section-number reveal">L'agence</p>
+        <h2 class="reveal">Faire comprendre votre produit, là où il ne peut pas être</h2>
+        <p class="reveal">Deux situations, un même objectif : que votre interlocuteur saisisse
+          l'essentiel sans attendre qu'on le lui explique.</p>
+
+        <div class="offres">
+          <article class="carte offre reveal">
+            <div class="media-16x9">
+              <img src="/media/accueil/offre-stand.webp"
+                   alt="La borne STAND sur un stand de salon, vue d'ensemble de la scène 3D"
+                   width="1600" height="1063" loading="lazy" decoding="async">
+            </div>
+            <div class="offre__corps">
+              <p class="offre__eyebrow">Sur un salon · STAND</p>
+              <h3>Votre produit ne voyage pas ? Votre démo, si</h3>
+              <p class="offre__texte">Une borne tactile sur votre stand : chaque visiteur découvre
+                votre produit seul, à son rythme, même sans connexion. Vos commerciaux gardent
+                l'outil pour les salons suivants.</p>
+              <div class="offre__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" href="/stand/"><span>Découvrir STAND</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte offre reveal">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/midipile.webp"
+                   alt="Le démonstrateur Midipile : un utilitaire électrique en 3D, configurable dans le navigateur"
+                   width="1080" height="607" loading="lazy" decoding="async">
+            </div>
+            <div class="offre__corps">
+              <p class="offre__eyebrow">En ligne</p>
+              <h3>Vos clients ne se déplacent pas ? Allez vers eux</h3>
+              <p class="offre__texte">Un simple lien pour explorer votre produit sous tous les
+                angles, puis le poser chez soi à travers l'écran du téléphone. Rien à installer.
+                Deux démonstrateurs tournent déjà en ligne.</p>
+              <div class="offre__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" href="/midipile/"
+                   target="_blank" rel="noopener"><span>Voir un exemple</span></a>
+                <a class="hero-cta__btn hero-cta__btn--secondary"
+                   href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+                   target="_blank" rel="noopener">Prendre rendez-vous</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ══ CE QUI TOURNE DÉJÀ ══════════════════════════════════════════ -->
+      <section class="section" id="demos">
+        <p class="section-number reveal">Ce qui tourne déjà</p>
+        <h2 class="reveal">Ouvrez une démonstration, c'est plus court que de l'expliquer</h2>
+        <p class="reveal">Chacune tourne dans le navigateur, sans rien installer et sans casque.
+          Ce qu'on y voit fonctionner est ce qui est réalisable pour votre projet.</p>
+
+        <div class="demos">
+
+          <article class="carte demo reveal" id="demo-stand">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>STAND</h3>
+              <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
+              <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
+              <ul class="demo__points">
+              <li>Vos vidéos et vos fiches dans une interface soignée</li>
+              <li>Les médias se changent depuis un espace d'administration</li>
+              <li>Une télécommande pilote la borne depuis un téléphone</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/stand/">Voir la page
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte demo reveal" id="demo-rayon-x">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>Rayon X</h3>
+              <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
+              <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
+              <ul class="demo__points">
+              <li>Des points de vue guidés amènent le regard là où ça se passe</li>
+              <li>La silhouette d'un opérateur s'affiche ou se masque, pour l'échelle</li>
+              <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte demo reveal" id="demo-midipile">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>Midipile</h3>
+              <p class="demo__sous-titre">le démonstrateur produit</p>
+              <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
+              <ul class="demo__points">
+              <li>Trois carrosseries se comparent : plateau, pick-up, fourgonnette</li>
+              <li>Le véhicule se pose dans votre cour, à sa taille réelle</li>
+              <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte demo reveal" id="demo-moulage">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>À fleur d'écorce</h3>
+              <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
+              <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
+              <ul class="demo__points">
+              <li>Une roue temporelle remonte et redescend la performance</li>
+              <li>Le son fait partie de l'œuvre : un casque est recommandé</li>
+              <li>La caméra suit des points de vue composés, comme un storyboard</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte demo reveal" id="demo-village">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/village.webp" alt="Le village Fractal Innov : le site présenté comme un monde 3D à parcourir"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <h3>Le village</h3>
+              <p class="demo__sous-titre">le site lui-même comme expérience 3D</p>
+              <p class="demo__accroche">Une visite guidée de l'offre, en douze arrêts dans un monde 3D.</p>
+              <ul class="demo__points">
+              <li>La caméra se déplace d'un arrêt à l'autre, comme un storyboard</li>
+              <li>Un configurateur compose votre projet et en sort un code court</li>
+              <li>Français et anglais, au même endroit</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener">Ouvrir la démo
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ══ PARTENAIRES ═════════════════════════════════════════════════ -->
+      <section class="section" id="partenaires">
+        <p class="section-number reveal">Les partenaires</p>
+        <h2 class="reveal">Un réseau d'experts, du code au mobilier</h2>
+        <p class="reveal">Un interlocuteur unique côté client, et les compétences mobilisées
+          projet par projet.</p>
+
+        <div class="partenaires">
+          <article class="carte partenaire reveal">
+            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
+                 contenu de ce span par <img src="…" alt="" width="88" height="88">
+                 et retirer `background` de la règle `.partenaire__logo`. -->
+            <span class="partenaire__logo" aria-hidden="true">H</span>
+            <h3>Hugo Daniel</h3>
+            <p class="partenaire__role">Ingénieur logiciel</p>
+            <p class="partenaire__texte">Conçoit le socle technique commun à toutes les expériences.</p>
+            <ul class="tag-liste">
+                <li class="tag">Architecture</li>
+                <li class="tag">Développement</li>
+            </ul>
+          </article>
+
+          <article class="carte partenaire reveal">
+            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
+                 contenu de ce span par <img src="…" alt="" width="88" height="88">
+                 et retirer `background` de la règle `.partenaire__logo`. -->
+            <span class="partenaire__logo" aria-hidden="true">S</span>
+            <h3>Studio 3D</h3>
+            <p class="partenaire__role">Création graphique</p>
+            <p class="partenaire__texte">Modélise les objets, décors et produits mis en scène.</p>
+            <ul class="tag-liste">
+                <li class="tag">Modélisation</li>
+                <li class="tag">Texturage</li>
+            </ul>
+          </article>
+
+          <article class="carte partenaire reveal">
+            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
+                 contenu de ce span par <img src="…" alt="" width="88" height="88">
+                 et retirer `background` de la règle `.partenaire__logo`. -->
+            <span class="partenaire__logo" aria-hidden="true">M</span>
+            <h3>Fabricant de mobilier</h3>
+            <p class="partenaire__role">Événementiel</p>
+            <p class="partenaire__texte">Donne une enveloppe physique au démonstrateur : la borne interactive.</p>
+            <ul class="tag-liste">
+                <li class="tag">Kiosque</li>
+                <li class="tag">Présentoir sur mesure</li>
+            </ul>
+          </article>
+
+          <article class="carte partenaire reveal">
+            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
+                 contenu de ce span par <img src="…" alt="" width="88" height="88">
+                 et retirer `background` de la règle `.partenaire__logo`. -->
+            <span class="partenaire__logo partenaire__logo--sigle" aria-hidden="true">MB</span>
+            <h3>MilkyBlue Factory</h3>
+            <p class="partenaire__role">Atelier d'art</p>
+            <p class="partenaire__texte">Réalise des œuvres et documente leurs étapes de fabrication.</p>
+            <ul class="tag-liste">
+                <li class="tag">Œuvres d'art</li>
+                <li class="tag">Conservation</li>
+            </ul>
+          </article>
+
+          <article class="carte partenaire reveal">
+            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
+                 contenu de ce span par <img src="…" alt="" width="88" height="88">
+                 et retirer `background` de la règle `.partenaire__logo`. -->
+            <span class="partenaire__logo partenaire__logo--sigle" aria-hidden="true">POLD</span>
+            <h3>Catalyseur POLD</h3>
+            <p class="partenaire__role">Écosystème d'innovation</p>
+            <p class="partenaire__texte">L'accélérateur du territoire Paris Ouest La Défense : mise en relation avec les entreprises et les collectivités du secteur.</p>
+            <ul class="tag-liste">
+                <li class="tag">Incubation</li>
+                <li class="tag">Mise en relation</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <!-- ══ CONTACT ═══════════════════════════════════════════════════════ -->
+    <section class="contact reveal" id="contact">
+      <div class="contact__aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="contact__inner">
+        <figure class="contact__who reveal">
+          <span class="contact__ring">
+            <img src="/media/accueil/portrait.webp" alt="Photo de Corentin Duboc"
+                 width="240" height="240" loading="lazy" decoding="async">
+          </span>
+          <figcaption><strong>Corentin Duboc</strong><span>Fondateur de Fractal Innov</span></figcaption>
+        </figure>
+
+        <h2 class="reveal">Un projet ou une idée en tête ?</h2>
+        <p class="contact__lead reveal">Décrivez votre produit et votre public : nous regardons
+          ensemble ce qui existe et ce que l'expérience doit faire comprendre.</p>
+
+        <div class="contact__actions reveal">
+          <a class="contact__primary" id="contactPrimary"
+             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6" target="_blank" rel="noopener noreferrer">
+            <svg class="contact__primary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Prendre rendez-vous</span>
+            <svg class="contact__primary-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6"></path>
+            </svg>
+          </a>
+
+          <p class="contact__or">ou, si vous préférez</p>
+
+          <div class="contact__links">
+            <a href="https://s.blinq.me/wEhJoOeZIrvGvSIe46Yy?bs=icl" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                <circle cx="8" cy="12" r="2.2"></circle>
+                <line x1="13" y1="10" x2="18" y2="10"></line>
+                <line x1="13" y1="14" x2="18" y2="14"></line>
+              </svg>
+              Carte de visite
+            </a>
+            <a href="mailto:corentin.duboc@fractal-innov.fr" title="corentin.duboc@fractal-innov.fr">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <path d="m22 6-10 7L2 6"></path>
+              </svg>
+              E-mail
+            </a>
+            <a href="https://www.linkedin.com/in/corentin-duboc/" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+              </svg>
+              LinkedIn
+            </a>
+            <a href="https://www.instagram.com/fractalinnov/" target="_blank" rel="noopener noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
-  <footer class="w-[min(var(--largeur-contenu),100%-2.5rem)] mx-auto py-12 border-t border-texte/10 text-texte-efface text-[0.95rem] relative z-[1]">
-    <p class="my-1.5 max-w-[46rem]" data-i18n="pied.promesse">Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque.</p>
-    <p class="my-1.5"><span data-i18n="pied.contact">Contact :</span> <a href="mailto:contact@fractal-innov.fr">contact@fractal-innov.fr</a></p>
-    <p class="my-1.5" data-i18n="pied.pilote">Un premier projet en ligne en 15 jours, à partir de 4900&nbsp;€.</p>
-    <p class="mt-4"><a class="ui-bouton ui-bouton--discret" href="/rayon-x/" data-i18n="pied.essayer">Essayer une expérience →</a></p>
-  </footer>
-  </div>
-
-  <div id="fi-totem-voile" class="ui-totem-voile" aria-hidden="true"></div>
-
-  <!-- ⚠️ **UN SEUL point d'entrée, et rien de statique vers le moteur.** La
-       balise de script vers le fichier engendré qui vivait ici démarrait la
-       scène à coup sûr : la vitrine aurait téléchargé plusieurs mégaoctets de
-       moteur 3D pour ne rien afficher. `hub/montage.ts` décide, et n'importe le
-       moteur que s'il en monte un. Voir `hub/drapeauScene.ts` pour
-       `?scene=on|off`.
-       ⚠️ Ce commentaire NE CITE PAS la balise interdite, volontairement : la
-       dent 1 de `t86` la cherche dans ce fichier, et l'a d'abord trouvée dans
-       sa propre documentation. Elle lit désormais le HTML sans commentaires,
-       mais un motif interdit écrit en toutes lettres à côté de sa garde reste
-       un piège à ressort. -->
-
-  <nav id="fi-navbar-totem" class="ui-navbar-totem" data-etat="lobby" aria-label="Explorer le totem">
-    <!-- ⚠️ Jalon 63c — UNE SEULE SURFACE DE VERRE, la carte. Le panneau et la
-         rangée en sont deux ZONES, plus deux surfaces posées l'une au-dessus de
-         l'autre avec chacune son coin arrondi et un souffle entre elles. Le
-         dessin du 23/08 ne montre qu'une carte : le lobby EST la pilule 1
-         affichee en plein ecran, pas un empilement. -->
-    <div id="fi-navbar-totem-carte" class="ui-navbar-totem__carte ui-verre-sombre">
-      <!-- ⚠️ LE LOGO EST UN ENFANT DIRECT DE LA CARTE, jamais de la rangée :
-           c'est l'ANCRE, le seul objet qui reste quand tout le reste se
-           rétracte. Enfermé dans la rangée, il ne pourrait pas être en haut de
-           la carte pendant le lobby, et la carte ne pourrait pas se refermer
-           autour de lui. Ce sont les zones de la grille qui le placent. -->
-      <button type="button" id="fi-navbar-totem-logo" class="ui-navbar-totem__logo" data-poi="accroche" title="Fractal Innov, voir l'accroche">
-        <span class="ui-navbar-totem__picto" aria-hidden="true"><img src="./assets/fi-logo-168.Yl4Myr2Y.webp" alt="" width="22" height="22" /></span><span class="ui-navbar-totem__marque">Fractal Innov</span>
-      </button>
-      <div id="fi-navbar-totem-panel" class="ui-navbar-totem__panel">
-      <!-- ⚠️ Jalon 63a — LE LOBBY EST UN ÉTAT DU TOTEM, plus une surface à
-           part. Les deux blocs ci-dessous sont les deux CONTENUS possibles du
-           panneau, et totemNavbar.ts en montre exactement un, dérivé de
-           data-etat. Ce sont des contenus alternatifs, pas deux formes d'une
-           même surface : c'est le panneau qui morphe, eux se remplacent.
-           ⚠️ Aucun accent grave dans ce commentaire : il est posé DANS un
-           littéral gabarit, et un accent grave le refermerait. -->
-      <div id="fi-totem-lobby" class="ui-navbar-totem__lobby">
-        <!-- ⚠️ LE SIGNAL EN DEUX MOUVEMENTS (24/08/2026) : le problème du
-             visiteur, PUIS la preuve. Il n'en faisait qu'un, et il parlait du
-             mécanisme du site (un configurateur d'offre a debloquer en chemin)
-             plutôt que de ce que le visiteur vient chercher. Deux paragraphes de
-             la MEME classe : aucun style neuf, et la respiration entre les deux
-             mouvements est ce qui rend le pave lisible sur un telephone.
-             ⚠️ Le mot WebXR a disparu d'ici : le site a une page entiere pour
-             l'expliquer (Sans application), mais le lobby arrive AVANT elle.
-             Un responsable de mediation ou de salon ne sait pas ce que le mot
-             promet, et ce texte est INDEXE (index.html est l'accueil deploye). -->
-
-        <!-- ⚠️ LA BASELINE PUBLIÉE EST LE DISPLAY (01/09/2026), et elle porte le
-             dégradé. Elle était en surtitre discret jusqu'ici, sous une accroche
-             plus grosse qu'elle : quelqu'un qui arrivait de LinkedIn lisait donc
-             d'abord une phrase qu'il n'avait jamais vue. C'est maintenant la
-             bannière du profil, mot pour mot et à la même échelle, qui accueille.
-             ⚠️ LE DÉGRADÉ N'A DROIT QU'À CET ENDROIT DU SITE. Le violet du logo
-             est interdit sous un libellé (voir --color-action-vive dans
-             theme.css) parce qu'un petit texte demande 4,5:1. WCAG n'en demande
-             que 3 pour un texte LARGE, et cette phrase est en display gras : le
-             seuil change avec la taille, pas avec le goût. Une dent de t85
-             mesure les arrêts du dégradé ET vérifie qu'aucun libellé ne l'a
-             attrapé au passage. -->
-        <p class="ui-navbar-totem__accroche-display"><span data-i18n="lobby.accroche">Transmettre les savoirs</span> <span class="ui-navbar-totem__accroche-eclat" data-i18n="lobby.accrocheEclat">par l&rsquo;expérience</span></p>
-        <!-- ⚠️ CE QUI LIMITE N'EST PAS LE SUPPORT, C'EST L'ORDRE (01/09/2026).
-             Cette ligne disait « quelque chose à montrer qui ne tient pas dans
-             une photo ». Deux défauts : « quelque chose » ne nomme rien, et
-             opposer la 3D à la photo rétrécit le sujet, puisqu'une vidéo montre
-             déjà plusieurs angles. La vraie limite commune aux deux est qu'elles
-             imposent une SÉQUENCE, alors qu'une expérience laisse le visiteur
-             composer la sienne. C'est aussi, mot pour mot, ce que fait ce site.
-             📌 Le mot WebXR reste absent : le site a une page entière pour
-             l'expliquer, mais le lobby arrive avant elle, et ce texte est
-             INDEXÉ (index.html est l'accueil déployé). -->
-        <p class="ui-navbar-totem__sous-ligne"><span data-i18n="lobby.sousLigne">Une photo montre un angle. Une vidéo impose un ordre.</span><br /><span class="ui-navbar-totem__sous-ligne-conclusion" data-i18n="lobby.sousLigneConclusion">Une expérience laisse choisir le chemin.</span></p>
-        <!-- ⚠️ **L'AMORCE A DISPARU LE 01/09/2026, ET AVEC ELLE SA CONTRAINTE.**
-             « Sous trois formes : » sortait du repli parce qu'un deux-points ne
-             peut pas pendre au-dessus d'une liste non annoncée. Depuis que les
-             trois noms d'île sont blancs et gras, la liste s'annonce toute
-             seule : la phrase ne faisait plus qu'occuper un bloc gris de plus
-             entre la pastille et les accroches. Le reste du second mouvement
-             continue de se replier, et rien d'autre ne change ici.
-             ⚠️ <details> et non une bascule en JavaScript : splashLobby.ts
-             est la seule vraie porte de chargement du site, et rien de
-             décoratif n'a le droit d'y entrer. Le repli est ici gratuit, natif
-             et accessible au clavier.
-             ⚠️ Le texte reste dans le DOM, jamais retiré : c'est du contenu
-             indexé qui n'existe qu'ici, une seule fois dans toute la page. -->
-        <details class="ui-navbar-totem__repli">
-          <summary class="ui-navbar-totem__repli-bouton" data-i18n="lobby.repli">Les expériences produites</summary>
-          <p class="ui-navbar-totem__signal" data-i18n="lobby.signal">Ce site est la démonstration de ce que je produis : de la 3D et de la Réalité Augmentée qui s&rsquo;ouvrent dans un navigateur, sans application ni casque.</p>
-        </details>
-        <div class="ui-navbar-totem__accroches">
-          <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--stand">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('data:image/png;base64,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');mask-image:url('data:image/png;base64,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')" aria-hidden="true"></span></span>
-            <div class="ui-navbar-totem__accroche-texte-groupe">
-              <p class="ui-navbar-totem__accroche-nom">STAND</p>
-              <p class="ui-navbar-totem__accroche-texte" data-i18n="lobby.stand">Mon stand doit accrocher, et mon produit n&rsquo;est pas transportable.</p>
-            </div>
-          </div>
-          <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--art">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/produit-art.CTT6eMxg.png');mask-image:url('./assets/produit-art.CTT6eMxg.png')" aria-hidden="true"></span></span>
-            <div class="ui-navbar-totem__accroche-texte-groupe">
-              <p class="ui-navbar-totem__accroche-nom">ART</p>
-              <p class="ui-navbar-totem__accroche-texte" data-i18n="lobby.art">Le processus de création disparaît une fois l&rsquo;œuvre finie.</p>
-            </div>
-          </div>
-          <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--configure">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/produit-configure.DHzFDZeK.png');mask-image:url('./assets/produit-configure.DHzFDZeK.png')" aria-hidden="true"></span></span>
-            <div class="ui-navbar-totem__accroche-texte-groupe">
-              <p class="ui-navbar-totem__accroche-nom">CONFIGURE</p>
-              <p class="ui-navbar-totem__accroche-texte" data-i18n="lobby.configure">Mes clients doivent voir le produit configuré, chez eux, avant de commander.</p>
-            </div>
-          </div>
-          <div class="ui-navbar-totem__accroche ui-navbar-totem__accroche--learn">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAQAAABecRxxAAAJEElEQVR42u3dW3XbWhSGUUEwhEAIBEMQBEEpg0DYEATBEAxhQygE12lekpGrHFmX/c/px3NeurTWN+IOte06AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKZ77EpXu8snn3r9r4+GBC06dE+fnv7rz9P1/wQaO//zj87/+XOWAGjL04/P/+WnAKCh7/6XiR+/FwDNKJMDUAwNWlEnB6AaGrTicsMHEABAAAABAAQAEABAAIDNOnYnAYBEw4Q/AiQA0NTx15uPXwAg+PgFAHbp0P3p/v76+AUAgo9fAGBXHmY9fgGAHR1/mfX0BQCij18AYPOOdzt+AYCNH//pjscvABB8/AIAm/Sbl3sFAHZ9/HWh4xcACD5+AYCNOMz+io8AgOMXANiuhxWPXwBg1eMvK56+AED08QsArOC4keMXAFj8+E+bOX4BgODjFwBYyHIv9woAbOz46yaPXwAg+PgFAO7msPIrPgIAjl8AYEkPuzl+AYCZj7/s5vQFAKKPXwBgFsddHr8AwAzHf9rp8QsABB+/AMDNtvpyrwDA3Y+/NnD8AgDBxy8AMMFhV6/4CAA4fgGA33lo9PgFAL49/tLo6QsARB+/AMAnjgHHLwDw4fGfIo5fAEAAAF8BAL8JCOREAPg2Al4EgmheBQYR8IeBIJs/DgwiIACQHQF/JRhE85eCgggIAGRHwD8MAtH802AgAgIA2RHwz4NDtP28MwgERwC4o62/MwgERwBYJAJnAYBkW3xnEAiOALB4BIoAQLKtvDMIBEcAWDUC674uBKxszXcGgeAIAJux/DuDQHAEgA1G4CwAkGyZdwaB4AgAG49AEQBIdr93BoHgCAA7isDcrwsBuzLvO4NAcASAnZrjnUEgOALA7iNwFgBIdus7g0AjBAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAABAHasTj7/amjQijI5AMXQoBWPkwPwaGiwlqEbb/ixfW+fev1VDh42vNYHnP7bDPQeOtz6bb2Fj99xgNjzlwD4/8P/JfjjiwDhanQAvHlAtCH6/J8/gyUg1xgfgNES4AuALwEQ6OJjCRAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQAATABwRAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQAD4yNCNXW1+xev1VzkIgADwWh9w+m8z0AuAAPCiRC57EQABIPX83yfA+QtA5A//yQvfC4AAZKvRC18FQACyf+c/feUHARCAXGP8yo8CIAC+APgSIAACEMjKX8xCAATA0puFAAiAAJgFAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgKUXAAEQAB+zEAABsPQmIQACIABmgQAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIwEeGbuxq84+1Xn+VgwAIgAC81gec/tsM9AIgAALwokQ+4CIAAiAAqef/PgFWXgACA9BHP+ReAAQgOwA1+iFXARCA5AAM8Y95sPQCkBuAMf4xj5ZeAHIDUOMfc7X0ApAbAI/Z0puFAHjQZmEWAmDpzcIsBMDSm4WPAFh6szALAbD0ZiEAAmDpzUIABMDSm4UACIClNwsBEABLbxYCIACW3iwEQAAsvVkIgABYerMQAAGw9GYhAAJg6c1CAATA0puFAAiApTcLARAAS28WAiAAlt4sBEAALL1ZCIAAWHqzEAABsPRmIQACYOnNQgAEwNKbhQAIgKU3CwEQAEtvFgIgAJbeLARAACy9WQiAAFh6sxAAAbD0ZiEAAmDpzUIABMDSm4UACIClNwsBEABLbxYCIACW3iwEQAAsvVkIgAdt6c1CAHzMwiwEwIM2C7MQAEtvFmYhAJbeLHwEwNKbhVkIgKU3CwEQAEtvFgIgAJbeLARAACy9WQiAAFh6sxAAAbD0ZiEAAmDpzUIABMDSm4UACIClNwsBEABLbxYCIACW3iwEQAAsvVkIgABYerMQAAGw9GYhAAJg6c1CAATA0puFAAiApTcLARAAS28WAiAAlt4sBEAALL1ZCIAAWHqzEAABsPRmIQACYOnNQgAEwNKbhQAIgKU3CwEQAEtvFgIgAJbeLARAACy9WQiAAFh6sxAAAbD0ZiEAAmDpzUIAPGhLbxYC4GMWZiEAHrRJmIUAWHqzMAsBsPRmYRYJavxjrmZhFl/Oomlj/IMezcIsvpxF04b4Bz2YhVl8OQtfAmJ+0DMLs4j6AvCsj37QvVmYxbezaFyJfczFLMziR7OQgJjHbBZmEagP+85Xv/ghzyzMItLQjQGPu15/lYNZmMVNswAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB+7R/5FihqfKBPfwAAAABJRU5ErkJggg==');mask-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAQAAABecRxxAAAJEElEQVR42u3dW3XbWhSGUUEwhEAIBEMQBEEpg0DYEATBEAxhQygE12lekpGrHFmX/c/px3NeurTWN+IOte06AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKZ77EpXu8snn3r9r4+GBC06dE+fnv7rz9P1/wQaO//zj87/+XOWAGjL04/P/+WnAKCh7/6XiR+/FwDNKJMDUAwNWlEnB6AaGrTicsMHEABAAAABAAQAEABAAIDNOnYnAYBEw4Q/AiQA0NTx15uPXwAg+PgFAHbp0P3p/v76+AUAgo9fAGBXHmY9fgGAHR1/mfX0BQCij18AYPOOdzt+AYCNH//pjscvABB8/AIAm/Sbl3sFAHZ9/HWh4xcACD5+AYCNOMz+io8AgOMXANiuhxWPXwBg1eMvK56+AED08QsArOC4keMXAFj8+E+bOX4BgODjFwBYyHIv9woAbOz46yaPXwAg+PgFAO7msPIrPgIAjl8AYEkPuzl+AYCZj7/s5vQFAKKPXwBgFsddHr8AwAzHf9rp8QsABB+/AMDNtvpyrwDA3Y+/NnD8AgDBxy8AMMFhV6/4CAA4fgGA33lo9PgFAL49/tLo6QsARB+/AMAnjgHHLwDw4fGfIo5fAEAAAF8BAL8JCOREAPg2Al4EgmheBQYR8IeBIJs/DgwiIACQHQF/JRhE85eCgggIAGRHwD8MAtH802AgAgIA2RHwz4NDtP28MwgERwC4o62/MwgERwBYJAJnAYBkW3xnEAiOALB4BIoAQLKtvDMIBEcAWDUC674uBKxszXcGgeAIAJux/DuDQHAEgA1G4CwAkGyZdwaB4AgAG49AEQBIdr93BoHgCAA7isDcrwsBuzLvO4NAcASAnZrjnUEgOALA7iNwFgBIdus7g0AjBAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAAABAAQAEABAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAABAHasTj7/amjQijI5AMXQoBWPkwPwaGiwlqEbb/ixfW+fev1VDh42vNYHnP7bDPQeOtz6bb2Fj99xgNjzlwD4/8P/JfjjiwDhanQAvHlAtCH6/J8/gyUg1xgfgNES4AuALwEQ6OJjCRAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQAATABwRAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQABAAAQABEAAQAAEAARAAEAABAAEQAD4yNCNXW1+xev1VzkIgADwWh9w+m8z0AuAAPCiRC57EQABIPX83yfA+QtA5A//yQvfC4AAZKvRC18FQACyf+c/feUHARCAXGP8yo8CIAC+APgSIAACEMjKX8xCAATA0puFAAiAAJgFAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgKUXAAEQAB+zEAABsPQmIQACIABmgQAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIAAIgAAKAAAiAACAAAiAACIAACAACIAACgAAIgAAgAAIgAAiAAAgAAiAAAoAACIAAIAACIAAIgAAIwEeGbuxq84+1Xn+VgwAIgAC81gec/tsM9AIgAALwokQ+4CIAAiAAqef/PgFWXgACA9BHP+ReAAQgOwA1+iFXARCA5AAM8Y95sPQCkBuAMf4xj5ZeAHIDUOMfc7X0ApAbAI/Z0puFAHjQZmEWAmDpzcIsBMDSm4WPAFh6szALAbD0ZiEAAmDpzUIABMDSm4UACIClNwsBEABLbxYCIACW3iwEQAAsvVkIgABYerMQAAGw9GYhAAJg6c1CAATA0puFAAiApTcLARAAS28WAiAAlt4sBEAALL1ZCIAAWHqzEAABsPRmIQACYOnNQgAEwNKbhQAIgKU3CwEQAEtvFgIgAJbeLARAACy9WQiAAFh6sxAAAbD0ZiEAAmDpzUIABMDSm4UACIClNwsBEABLbxYCIACW3iwEQAAsvVkIgAdt6c1CAHzMwiwEwIM2C7MQAEtvFmYhAJbeLHwEwNKbhVkIgKU3CwEQAEtvFgIgAJbeLARAACy9WQiAAFh6sxAAAbD0ZiEAAmDpzUIABMDSm4UACIClNwsBEABLbxYCIACW3iwEQAAsvVkIgABYerMQAAGw9GYhAAJg6c1CAATA0puFAAiApTcLARAAS28WAiAAlt4sBEAALL1ZCIAAWHqzEAABsPRmIQACYOnNQgAEwNKbhQAIgKU3CwEQAEtvFgIgAJbeLARAACy9WQiAAFh6sxAAAbD0ZiEAAmDpzUIAPGhLbxYC4GMWZiEAHrRJmIUAWHqzMAsBsPRmYRYJavxjrmZhFl/Oomlj/IMezcIsvpxF04b4Bz2YhVl8OQtfAmJ+0DMLs4j6AvCsj37QvVmYxbezaFyJfczFLMziR7OQgJjHbBZmEagP+85Xv/ghzyzMItLQjQGPu15/lYNZmMVNswAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB+7R/5FihqfKBPfwAAAABJRU5ErkJggg==')" aria-hidden="true"></span></span>
-            <div class="ui-navbar-totem__accroche-texte-groupe">
-              <p class="ui-navbar-totem__accroche-nom">LEARN</p>
-              <p class="ui-navbar-totem__accroche-texte" data-i18n="lobby.learn">Ma formation est juste, mais personne ne la suit jusqu&rsquo;au bout.</p>
-            </div>
-          </div>
-        </div>
-        <!-- Pas de titre h1 ici : la page en a déjà un, plus bas dans le DOM
-             (le même que le site publié). Deux titres h1 sur une même page
-             diluent le signal le plus fort qu'elle porte. -->
-        <!-- ⚠️ UNE PROMESSE, PLUS UNE QUESTION (24/08/2026). Cette ligne
-             demandait par ou commencez-vous alors qu'il n'y a qu'UN bouton,
-             Demarrer : elle appelait un choix que l'interface ne rend pas
-             possible. Rendre les trois accroches cliquables aurait ete l'autre
-             reponse, mais Demarrer occupe LA PLACE des produits (jalon 63c) et
-             cela ferait quatre CTA sur une carte de quelques centimetres.
-             📌 Le texte est le h1 de la page d'accueil, a la deuxieme personne :
-             le lobby et la page qu'il ouvre cessent de raconter deux choses.
-             ⚠️ Aucune duree chiffree ici. Le parcours compte 12 arrets, et une
-             promesse de duree que la visite ne tient pas coute plus qu'elle ne
-             rapporte. ⚠️ L'id reste fi-lobby-titre : splashLobby.ts le cherche
-             par cet id, et t39 tient la liste de ces crochets. -->
-        <p id="fi-lobby-titre" class="ui-navbar-totem__question" data-i18n="lobby.question">Découvrir ce qui existe, composer votre projet, repartir avec un message prêt à envoyer.</p>
-        <p id="fi-lobby-erreur" class="ui-navbar-totem__erreur" hidden data-i18n="lobby.erreur">
-          Le monde 3D met plus de temps que prévu, vous pouvez continuer, le site reste consultable.
-        </p>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div>
+        <p><b>Fractal Innov</b><br>Transmettre les savoirs par l'expérience.</p>
+        <p style="margin-top:0.5rem"><a href="mailto:corentin.duboc@fractal-innov.fr">corentin.duboc@fractal-innov.fr</a></p>
       </div>
-      <div id="fi-totem-archipel" class="ui-navbar-totem__archipel">
-      <section class="ui-navbar-totem__ile" data-ile="reveal" data-ouvert="non">
-        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-reveal" aria-expanded="false" aria-controls="fi-ile-reveal-quartiers">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span>
-          <span class="ui-navbar-totem__ile-texte">
-            <strong class="ui-navbar-totem__ile-nom">Introduction</strong>
-          </span>
-          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
-        </button>
-        <div class="ui-navbar-totem__ile-corps" id="fi-ile-reveal-quartiers" role="group" aria-labelledby="fi-ile-reveal">
-          <p class="ui-navbar-totem__ile-resume">L'espace de démonstration : tout ce qui tourne déjà,dans un navigateur. Ce qu'on y voit fonctionner est ce qui est réalisable pour un projet.</p>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="reveal" title="Voir Introduction en entier">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="techno" title="WebXR, la 3D temps réel dans un navigateur">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">1</span><span class="ui-navbar-totem__libelle">WebXR, la 3D temps réel dans un navigateur</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="produits" title="3 Produits, les démos en ligne">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">2</span><span class="ui-navbar-totem__libelle">3 Produits, les démos en ligne</span>
-          </button>
-        </div>
-      </section>
-      <section class="ui-navbar-totem__ile" data-ile="explore" data-ouvert="non">
-        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-explore" aria-expanded="false" aria-controls="fi-ile-explore-quartiers">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span>
-          <span class="ui-navbar-totem__ile-texte">
-            <strong class="ui-navbar-totem__ile-nom">Espace Démo</strong>
-          </span>
-          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
-        </button>
-        <div class="ui-navbar-totem__ile-corps" id="fi-ile-explore-quartiers" role="group" aria-labelledby="fi-ile-explore">
-          <p class="ui-navbar-totem__ile-resume">Chaque produit se regarde depuis un métier : ses contraintes, ses enjeux.</p>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="explore" title="Voir Espace Démo en entier">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-salon" title="Sur un Salon, capter, mesurer, qualifier">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">3</span><span class="ui-navbar-totem__libelle">Sur un Salon, capter, mesurer, qualifier</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-musee" title="Au Musée, la médiation dans la poche du visiteur">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">4</span><span class="ui-navbar-totem__libelle">Au Musée, la médiation dans la poche du visiteur</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-configurateur" title="Configurateur, du showroom au tunnel de commande">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">5</span><span class="ui-navbar-totem__libelle">Configurateur, du showroom au tunnel de commande</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="cas-formation" title="En Formation, faire comprendre ce qu'on ne peut pas montrer">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">6</span><span class="ui-navbar-totem__libelle">En Formation, faire comprendre ce qu'on ne peut pas montrer</span>
-          </button>
-        </div>
-      </section>
-      <section class="ui-navbar-totem__ile" data-ile="configure" data-ouvert="non">
-        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-configure" aria-expanded="false" aria-controls="fi-ile-configure-quartiers">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span>
-          <span class="ui-navbar-totem__ile-texte">
-            <strong class="ui-navbar-totem__ile-nom">Votre Projet</strong>
-          </span>
-          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
-        </button>
-        <div class="ui-navbar-totem__ile-corps" id="fi-ile-configure-quartiers" role="group" aria-labelledby="fi-ile-configure">
-          <p class="ui-navbar-totem__ile-resume">Compose votre propre projet, quelques choix par étape.</p>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="configure" title="Voir Votre Projet en entier">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="niveaux" title="Trois niveaux d'engagement, indépendants du produit">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">7</span><span class="ui-navbar-totem__libelle">Trois niveaux d'engagement, indépendants du produit</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="catalogue" title="Le catalogue de modules">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">8</span><span class="ui-navbar-totem__libelle">Le catalogue de modules</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="pilote" title="Un premier projet en 15 jours, à 4 900 €">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">9</span><span class="ui-navbar-totem__libelle">Un premier projet en 15 jours, à 4 900 €</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="deploiement" title="Du QR code à votre système d'information">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">10</span><span class="ui-navbar-totem__libelle">Du QR code à votre système d'information</span>
-          </button>
-        </div>
-      </section>
-      <section class="ui-navbar-totem__ile" data-ile="contact" data-ouvert="non">
-        <button type="button" class="ui-navbar-totem__ile-entete" id="fi-ile-contact" aria-expanded="false" aria-controls="fi-ile-contact-quartiers">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/network.BumOhohk.png');mask-image:url('./assets/network.BumOhohk.png')" aria-hidden="true"></span></span>
-          <span class="ui-navbar-totem__ile-texte">
-            <strong class="ui-navbar-totem__ile-nom">Contact</strong>
-          </span>
-          <span class="ui-navbar-totem__ile-chevron" aria-hidden="true">⌄</span>
-        </button>
-        <div class="ui-navbar-totem__ile-corps" id="fi-ile-contact-quartiers" role="group" aria-labelledby="fi-ile-contact">
-          <p class="ui-navbar-totem__ile-resume">Le port de l'archipel : les partenaires mobilisables, la vue d'ensemble des possibles, et le tableau de bord d'où part la demande.</p>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="contact" title="Voir Contact en entier">
-            <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/network.BumOhohk.png');mask-image:url('./assets/network.BumOhohk.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__libelle">Vue d'ensemble</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="interlocuteur" title="Un interlocuteur unique, un réseau mobilisable">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">11</span><span class="ui-navbar-totem__libelle">Un interlocuteur unique, un réseau mobilisable</span>
-          </button>
-          <button type="button" class="ui-navbar-totem__bouton" data-poi="ensemble" title="Travailler ensemble">
-            <span class="ui-navbar-totem__picto" aria-hidden="true">12</span><span class="ui-navbar-totem__libelle">Travailler ensemble</span>
-          </button>
-        </div>
-      </section>
-      </div>
-      </div>
-      <div class="ui-navbar-totem__dock">
-        <span class="ui-navbar-totem__separateur" aria-hidden="true"></span>
-        <div class="ui-navbar-totem__produits">
-        <button type="button" class="ui-navbar-totem__produit" data-poi="reveal" title="Introduction, ce que je fais et comment ça marche">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/energy-efficiency.CCQpKui-.png');mask-image:url('./assets/energy-efficiency.CCQpKui-.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">INTRO</span>
-        </button>
-        <button type="button" class="ui-navbar-totem__produit" data-poi="explore" title="Espace Démo, les quatre produits en ligne">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/icone-boussole.BOwU6hHJ.png');mask-image:url('./assets/icone-boussole.BOwU6hHJ.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">DÉMOS</span>
-        </button>
-        <button type="button" class="ui-navbar-totem__produit" data-poi="configure" title="Votre Projet, périmètre, options et premier pas">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/hrm.abXsEpp5.png');mask-image:url('./assets/hrm.abXsEpp5.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">PROJET</span>
-        </button>
-        </div>
-        <!-- ⚠️ Jalon 90 — CONTACT rejoint la rangée compacte, entre CONFIGURE
-             et le burger. Son propre séparateur la précède ; celui qui la suit
-             est l'ANCIEN séparateur produits/commandes, qui ne bouge pas de
-             place — c'est ce qui donne à CONTACT un filet de chaque côté sans
-             en poser un de trop. Elle suit le même attribut hidden que les 3
-             produits (totemNavbar.ts : visible en dock compact seulement,
-             cachée en lobby ET en sommaire, où sa carte d'île offre déjà le
-             voyage). -->
-        <span class="ui-navbar-totem__separateur" aria-hidden="true"></span>
-        <button type="button" id="fi-navbar-totem-contact" class="ui-navbar-totem__produit ui-navbar-totem__produit--contact" data-poi="contact" title="CONTACT, discuter de votre projet">
-          <span class="ui-navbar-totem__picto" aria-hidden="true"><span class="ui-picto-image" style="-webkit-mask-image:url('./assets/network.BumOhohk.png');mask-image:url('./assets/network.BumOhohk.png')" aria-hidden="true"></span></span><span class="ui-navbar-totem__produit-libelle">CONTACT</span>
-        </button>
-      <!-- ⚠️ DÉMARRER occupe la PLACE des produits ET de CONTACT, il ne
-           s'ajoute pas à la rangée : les deux ne sont jamais visibles
-           ensemble. Et il garde l'id fi-lobby-cta, parce que la porte de
-           chargement le cherche par cet id et que le jalon 63a a décidé de ne
-           PAS toucher à la porte. -->
-      <button type="button" id="fi-lobby-cta" class="ui-bouton ui-navbar-totem__demarrer">
-        <span class="ui-navbar-totem__demarrer-remplissage" aria-hidden="true"></span>
-        <!-- Le rond de lecture reprend la composition du bouton de reprise
-             d'OpenFitWebXR : un picto rond, puis le mot. Il est aria-hidden,
-             le libellé disant deja tout. -->
-        <span class="ui-navbar-totem__demarrer-picto" aria-hidden="true">▶</span>
-        <!-- ⚠️ UN SEUL MOT, pas de sous-titre (24/08/2026). L'anatomie du
-             bouton de reprise d'OpenFitWebXR a bien deux lignes, mais elle
-             dispose de toute la largeur de l'ecran ; ici deux CTA se partagent
-             une forme de quelques centimetres, et deux lignes de consequence
-             cote a cote ecrasent les deux mots qui comptent. Le sous-titre du
-             son survit dans le DOM pour les aides techniques, masque. -->
-        <span class="ui-navbar-totem__demarrer-texte">
-          <strong class="ui-navbar-totem__demarrer-libelle">Démarrer</strong>
-        </span>
-      </button>
-        <span class="ui-navbar-totem__separateur" aria-hidden="true"></span>
-        <div class="ui-navbar-totem__commandes">
-          <!-- ⚠️ **Le point d'accueil du bouton de langue, et il est VIDE.** Le
-               bouton est fabriqué par `socle/ui/boutonLangue.ts` et monté ici par
-               `src/i18n/textes.ts` : le balisage décide de l'ENDROIT, le socle du
-               bouton. C'est la règle 7 — un contrôle vit dans la bande centrale,
-               et cette bande n'est pas la même d'un projet à l'autre, donc le
-               socle ne peut pas la connaître.
-               📌 Il vit dans la rangée du totem, à côté des autres commandes :
-               c'est la seule zone qui reste à l'écran dans l'état lobby comme
-               dans l'état dock. Le second point d'accueil, lui, est posé par
-               `lobbyHub.ts` dans la bande de la vue des démos, qui masque
-               celle-ci. -->
-          <div id="fi-lobby-langue" class="ui-navbar-totem__langue"></div>
 
-        <button type="button" id="fi-navbar-totem-masque" class="ui-navbar-totem__masque" title="Revoir le cadrage téléphone" aria-label="Revoir le cadrage téléphone">
-          <span class="ui-navbar-totem__picto" aria-hidden="true">▮</span>
-        </button>
-        <!-- ⚠️ Jalon 64d — UN SEUL NŒUD DE SON, qui morphe. Le reglage de la
-             carte d'entree et la note du sommaire sont le meme bouton :
-             l'anatomie vient du socle (.ui-reglage-son, portee depuis
-             OpenFitWebXR), le totem ne fait que la resserrer en sommaire.
-             En ecrire un second pour le lobby aurait donne deux boutons a
-             tenir d'accord sur un etat qui vit dans un troisieme endroit. -->
-        <button type="button" id="fi-navbar-totem-son" class="ui-navbar-totem__son ui-reglage-son" data-niveau="doux" title="Régler le son">
-          <!-- ⚠️ Le picto est un SVG monochrome et non un emoji : les emoji
-               de niveau sont rendus EN COULEUR par le systeme, ce qui pose sur
-               la carte d'entree une teinte que la charte ne connait pas. Son
-               contenu est reecrit a chaque niveau par totemNavbar.ts ; celui
-               d'ici correspond au niveau servi statiquement (doux). -->
-          <span class="ui-navbar-totem__son-picto ui-navbar-totem__picto ui-reglage-son__picto" aria-hidden="true"><svg viewBox="0 0 24 24" width="100%" height="100%" focusable="false"><path d="M4 9h3l4.6-3.9v13.8L7 15H4z" fill="currentColor"/><path d="M14.4 9.7a3.4 3.4 0 0 1 0 4.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
-          <span class="ui-reglage-son__texte">
-            <strong id="fi-navbar-totem-son-libelle" class="ui-navbar-totem__son-libelle">Son doux</strong>
-            <small id="fi-navbar-totem-son-detail" class="ui-navbar-totem__son-detail">Discret, par-dessus votre musique</small>
-          </span>
-          <span class="ui-reglage-son__onde" aria-hidden="true"><i></i><i></i><i></i></span>
-        </button>
-        <button type="button" id="fi-navbar-totem-bascule" class="ui-navbar-totem__burger" aria-expanded="false" aria-controls="fi-navbar-totem-panel" title="Explorer les 12 arrêts">
-          <span class="ui-navbar-totem__burger-ouvrir" aria-hidden="true">☰</span><span class="ui-navbar-totem__burger-fermer" aria-hidden="true">✕</span>
-        </button>
-        </div>
-      </div>
+      <nav aria-labelledby="footer-pages-titre">
+        <p class="footer__titre" id="footer-pages-titre">En savoir plus</p>
+        <ul class="footer__pages">
+          <li><a href="/webxr-dans-le-navigateur/">Comment ça marche</a></li>
+          <li><a href="/stand/">STAND</a></li>
+          <li><a href="/art/">ART</a></li>
+          <li><a href="/configure/">CONFIGURE</a></li>
+          <li><a href="/learn/">LEARN</a></li>
+          <li><a href="/pilote-15-jours/">Le pilote en 15 jours</a></li>
+          <li><a href="/methode-et-contact/">Méthode et contact</a></li>
+        </ul>
+      </nav>
     </div>
-  </nav>
+
+    <p class="footer__bas" id="footerCopyright"></p>
+  </footer>
+
+  <script>
+    /* ══════════════════════════════════════════════════════════════════════
+       LE COMPORTEMENT DE LA PAGE
+
+       ⚠️ Rien ici n'est nécessaire à la LECTURE : sans JavaScript, le contenu,
+       les liens et les ancres fonctionnent, et « .reveal » ne masque rien
+       (la classe « js » n'est jamais posée). Le menu mobile est la seule
+       exception, et le lien Contact reste atteignable à côté du burger.
+       ══════════════════════════════════════════════════════════════════════ */
+    (function () {
+      'use strict';
+
+      /* ── Le journal. Ouvert par « ?debug=1 », retenu d'une visite à l'autre. ── */
+      var DEBUG = (function () {
+        try {
+          if (new URLSearchParams(location.search).get('debug') === '1') {
+            localStorage.setItem('fi:debug', '1');
+          }
+          return localStorage.getItem('fi:debug') === '1';
+        } catch (e) { return false; }
+      })();
+      function journal() {
+        if (!DEBUG) return;
+        console.log.apply(console, ['%c[accueil]', 'color:#6ea8ff']
+          .concat(Array.prototype.slice.call(arguments)));
+      }
+      journal('journal actif. Pour l\'éteindre : localStorage.removeItem("fi:debug")');
+
+      var sobre = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      journal('mouvement réduit demandé :', sobre);
+
+      /* ── L'aura du pointeur ────────────────────────────────────────────
+         Elle ne s'allume qu'au premier mouvement de souris : sur un écran
+         tactile il n'y en a jamais, et la lueur ne se fige pas au centre. */
+      var aura = document.querySelector('.aura');
+      if (aura && !sobre) {
+        window.addEventListener('pointermove', function (e) {
+          aura.style.setProperty('--ui-x', e.clientX + 'px');
+          aura.style.setProperty('--ui-y', e.clientY + 'px');
+          if (aura.dataset.vivante !== 'oui') {
+            aura.dataset.vivante = 'oui';
+            journal('aura allumée au premier mouvement du pointeur');
+          }
+        }, { passive: true });
+      }
+
+      /* ── Le menu mobile ────────────────────────────────────────────────
+         Le mécanisme de /stand/, aux mêmes noms de classes : `active` sur le
+         burger (la croix), `menu-open` sur la nav (elle glisse), et le
+         défilement du corps verrouillé pendant l'ouverture, sinon la page
+         continue de bouger derrière le plein écran.
+
+         ⚠️ Deux ajouts par rapport à /stand/, qui ne changent ni l'apparence
+         ni le geste : `aria-expanded` sur le bouton, et Échap qui referme en
+         rendant le focus. Sans eux, un lecteur d'écran n'annonce pas l'état
+         et le clavier reste prisonnier du panneau. */
+      var burgerBtn = document.getElementById('burgerBtn');
+      var mainNav = document.getElementById('mainNav');
+      if (burgerBtn && mainNav) {
+        var fermerMenu = function () {
+          burgerBtn.classList.remove('active');
+          mainNav.classList.remove('menu-open');
+          burgerBtn.setAttribute('aria-expanded', 'false');
+          burgerBtn.setAttribute('aria-label', 'Ouvrir le menu');
+          document.body.style.overflow = '';
+          journal('menu plein écran fermé');
+        };
+        burgerBtn.addEventListener('click', function () {
+          var ouvre = !mainNav.classList.contains('menu-open');
+          burgerBtn.classList.toggle('active', ouvre);
+          mainNav.classList.toggle('menu-open', ouvre);
+          burgerBtn.setAttribute('aria-expanded', ouvre ? 'true' : 'false');
+          burgerBtn.setAttribute('aria-label', ouvre ? 'Fermer le menu' : 'Ouvrir le menu');
+          document.body.style.overflow = ouvre ? 'hidden' : '';
+          journal('menu plein écran', ouvre ? 'ouvert' : 'fermé');
+        });
+        /* Le CTA fait partie du menu sur téléphone : il doit refermer aussi. */
+        mainNav.querySelectorAll('.nav-link, .masthead-cta').forEach(function (lien) {
+          lien.addEventListener('click', function () {
+            if (mainNav.classList.contains('menu-open')) fermerMenu();
+          });
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && mainNav.classList.contains('menu-open')) {
+            fermerMenu();
+            burgerBtn.focus();
+          }
+        });
+        /* Repasser en grand écran avec le menu ouvert laisserait le corps
+           verrouillé et un panneau fantôme au-dessus de la page. */
+        window.addEventListener('resize', function () {
+          if (window.innerWidth > 950 && mainNav.classList.contains('menu-open')) fermerMenu();
+        });
+      }
+
+      /* ── Le lien de navigation de la section courante ──────────────────
+         ⚠️ /stand/ n'utilise PAS d'IntersectionObserver ici, et c'est un
+         choix, pas un oubli. Un observateur répond « cette section est
+         visible », ce qui est ambigu dès que deux sections le sont en même
+         temps, et il se trompe quand on arrive par une ancre.
+
+         Le mécanisme retenu est une LIGNE DE LECTURE : un point situé juste
+         sous le bandeau, dont on cherche dans quelle section il tombe. Une
+         seule réponse possible, toujours. La ligne suit `scroll-padding-top`
+         pour qu'une ancre atteinte désigne bien SA section et non la
+         précédente.
+
+         Le calcul est replanifié en `requestAnimationFrame` : le défilement
+         peut émettre des dizaines d'événements par seconde, le navigateur ne
+         repeint que soixante fois. */
+      var liensNav = document.querySelectorAll('#mainNav .nav-link');
+      var idsSections = ['fondateur', 'approche', 'offre', 'demos', 'partenaires'];
+      var rafNav = 0;
+      var dernierActif = null;
+
+      function majLienActif() {
+        rafNav = 0;
+        if (!liensNav.length) return;
+        var hauteurBandeau = 96;
+        var pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        var ligne = window.scrollY + Math.max(hauteurBandeau + 28, pad + 2);
+
+        var actif = null;
+        var premiere = document.getElementById(idsSections[0]);
+        if (premiere && ligne >= premiere.getBoundingClientRect().top + window.scrollY) {
+          for (var i = 0; i < idsSections.length; i++) {
+            var el = document.getElementById(idsSections[i]);
+            if (!el) continue;
+            var haut = el.getBoundingClientRect().top + window.scrollY;
+            var suivante = document.getElementById(idsSections[i + 1]);
+            var hautSuivante = suivante
+              ? suivante.getBoundingClientRect().top + window.scrollY
+              : Infinity;
+            if (ligne >= haut && ligne < hautSuivante) { actif = idsSections[i]; break; }
+          }
+        }
+
+        liensNav.forEach(function (a) {
+          var href = a.getAttribute('href') || '';
+          var id = href.charAt(0) === '#' ? href.slice(1) : '';
+          a.classList.toggle('active-link', id === actif && actif !== null);
+        });
+        if (actif !== dernierActif) {
+          dernierActif = actif;
+          journal('section courante :', actif || '(le hero)');
+        }
+      }
+      function planifierNav() {
+        if (rafNav) return;
+        rafNav = requestAnimationFrame(majLienActif);
+      }
+      window.addEventListener('scroll', planifierNav, { passive: true });
+      window.addEventListener('resize', majLienActif);
+      majLienActif();
+
+      /* ── Le halo global s'ouvre à mesure que le hero sort ───────────────
+         Sans cela, le fond du hero et celui de la suite se rejoignent sur une
+         LIGNE NETTE, visible au défilement. On fait varier l'opacité du halo
+         selon ce qui reste du hero à l'écran, et la jointure disparaît.
+
+         Le garde-fou `Math.abs(mix - dernierMix) < 0.025` évite de réécrire
+         la variable CSS pour un changement invisible : chaque écriture force
+         un recalcul de style sur un élément qui couvre toute la page. */
+      if (!sobre) {
+        var heroEl = document.querySelector('.hero');
+        var pageRestEl = document.querySelector('.page-rest');
+        var rafHalo = 0;
+        var dernierMix = -1;
+        var appliquerHalo = function () {
+          rafHalo = 0;
+          if (!heroEl || !pageRestEl) return;
+          var bas = heroEl.getBoundingClientRect().bottom;
+          var vh = window.innerHeight;
+          var course = Math.min(420, Math.max(240, vh * 0.42));
+          var mix = Math.min(1, Math.max(0, (vh - bas) / course));
+          if (dernierMix >= 0 && Math.abs(mix - dernierMix) < 0.025 && mix > 0.04 && mix < 0.96) return;
+          dernierMix = mix;
+          pageRestEl.style.setProperty('--page-rest-glow-mix', mix.toFixed(3));
+        };
+        var planifierHalo = function () {
+          if (rafHalo) return;
+          rafHalo = requestAnimationFrame(appliquerHalo);
+        };
+        window.addEventListener('scroll', planifierHalo, { passive: true });
+        window.addEventListener('resize', function () { dernierMix = -1; appliquerHalo(); });
+        appliquerHalo();
+      }
+
+      /* ── Le contact : la lumière du bouton suit le curseur ─────────────
+         Mécanisme de /stand/ : deux variables CSS en pourcentage, lues par le
+         `radial-gradient` du `::before`. Rien de tout cela sur un écran
+         tactile, où il n'y a pas de curseur à suivre. */
+      var contactPrimary = document.getElementById('contactPrimary');
+      if (contactPrimary && !sobre) {
+        contactPrimary.addEventListener('pointermove', function (e) {
+          var r = contactPrimary.getBoundingClientRect();
+          contactPrimary.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+          contactPrimary.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+        }, { passive: true });
+      }
+
+      /* ── Pied de page : l'année courante ───────────────────────────────
+         Écrite par le navigateur plutôt qu'en dur : une page statique qui
+         affiche une année périmée fait vieux, et personne n'y pense en janvier. */
+      var footerCopyright = document.getElementById('footerCopyright');
+      if (footerCopyright) {
+        footerCopyright.textContent = '© ' + new Date().getFullYear() + ' Fractal Innov';
+      }
+
+      /* ── L'apparition au défilement (.reveal de /stand/) ────────────────
+         ⚠️ Ce qui est DÉJÀ visible au chargement n'est jamais masqué : sinon
+         le haut de page clignote à l'arrivée. On active ces éléments-là tout
+         de suite, et on n'observe que ce qui est sous le pli.
+         Le décalage de 0,1 s par frère donne la cascade. */
+      var aReveler = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
+      if (!aReveler.length) return;
+      if (sobre || !('IntersectionObserver' in window)) {
+        aReveler.forEach(function (el) { el.classList.add('active'); });
+        journal('apparitions désactivées, tout est affiché immédiatement');
+        return;
+      }
+      var rangs = new Map();
+      var observateur = new IntersectionObserver(function (entrees) {
+        entrees.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('active');
+          observateur.unobserve(e.target);
+        });
+      }, { threshold: 0.12 });
+
+      var sousLePli = 0;
+      aReveler.forEach(function (el) {
+        if (el.getBoundingClientRect().top < window.innerHeight * 0.9) {
+          el.classList.add('active');
+          return;
+        }
+        var parent = el.parentElement;
+        var rang = rangs.get(parent) || 0;
+        rangs.set(parent, rang + 1);
+        el.style.transitionDelay = (rang * 0.1) + 's';
+        observateur.observe(el);
+        sousLePli++;
+      });
+      journal(aReveler.length + ' éléments « reveal », dont ' + sousLePli + ' sous le pli');
+    })();
+  </script>
 </body>
+
 </html>
