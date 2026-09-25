@@ -40,6 +40,14 @@
   <link rel="apple-touch-icon" href="/icones/fi-180.png">
   <link rel="manifest" href="/site.webmanifest">
 
+  <!-- La mesure d'usage, comme sur les autres pages du site. Umami ne pose
+       aucun cookie : pas de bandeau de consentement. `data-domains` coupe
+       l'envoi hors production : les essais en local ne faussent pas les
+       chiffres (le script répond, mais n'envoie rien). -->
+  <script defer src="https://cloud.umami.is/script.js"
+          data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14"
+          data-domains="www.fractal-innov.fr,fractal-innov.fr"></script>
+
   <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
        d'envoyer l'adresse IP du visiteur à un tiers sans son consentement. -->
   <link rel="preload" href="/media/polices/outfit-latin-400.woff2" as="font" type="font/woff2" crossorigin>
@@ -2591,6 +2599,147 @@
         sousLePli++;
       });
       journal(aReveler.length + ' éléments « reveal », dont ' + sousLePli + ' sous le pli');
+    })();
+  </script>
+  <script>
+    /* ══════════════════════════════════════════════════════════════════════
+       LE PARCOURS
+
+       Ce qu'il fait : il lit les sept sections comme les chapitres d'un même
+       récit, règle la page sur la situation du visiteur, joue un geste par
+       chapitre, tient le dock, et compte ce qui se passe (Umami).
+       Pourquoi un second script : le premier règle l'apparence et s'arrête
+       tôt (le `return` de l'apparition au défilement). Il ne dépend de lui
+       que par UN point : `fi:chapitre` et `body[data-chapitre]`.
+       ⚠️ Ce qui casse si on s'y trompe : la page doit rester lisible sans ce
+       script. Il n'injecte AUCUN texte ; il allume, masque et compte.
+
+       Le contrat (spec, § 8), pour le son et la télécommande :
+         émis    fi:chapitre {id, rang, total}   (par le premier script)
+                 fi:situation {id, origine}      fi:geste {chapitre, geste, etape}
+         écouté  fi:aller {chapitre} | {pas: 1 | -1}
+       ══════════════════════════════════════════════════════════════════════ */
+    (function () {
+      'use strict';
+
+      /* ── Le journal : même interrupteur que le premier script (?debug=1),
+         qui a déjà écrit la clé quand celui-ci s'exécute. ── */
+      var DEBUG = false;
+      try { DEBUG = localStorage.getItem('fi:debug') === '1'; } catch (e) {}
+      function journal() {
+        if (!DEBUG) return;
+        console.log.apply(console, ['%c[parcours]', 'color:#f472b6']
+          .concat(Array.prototype.slice.call(arguments)));
+      }
+      var sobre = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ── Le vocabulaire ────────────────────────────────────────────────
+         ⚠️ Les `id` sont ceux des sections ET les `navItemId` de la
+         télécommande (protocole du Salon) : les renommer casse le pilotage.
+         Même ordre que `idsChapitres` dans le premier script. */
+      var CHAPITRES = [
+        { id: 'top', titre: 'Accueil' },
+        { id: 'fondateur', titre: 'Le fondateur' },
+        { id: 'approche', titre: "L'approche" },
+        { id: 'offre', titre: 'Trois usages' },
+        { id: 'demos', titre: 'Ça tourne déjà' },
+        { id: 'partenaires', titre: 'Partenaires' },
+        { id: 'contact', titre: 'Contact' }
+      ];
+      var IDS = CHAPITRES.map(function (c) { return c.id; });
+      var SITUATIONS = { convaincre: 'Convaincre', former: 'Former', garder: 'Garder' };
+
+      function emettre(nom, detail) {
+        document.dispatchEvent(new CustomEvent(nom, { detail: detail }));
+      }
+      function situationActuelle() {
+        return document.body.getAttribute('data-situation') || 'aucune';
+      }
+
+      /* ── LA MESURE (Umami) ─────────────────────────────────────────────
+         Le contrat de `socle/mesure/analytique.ts`, porté en JS simple :
+         une mesure ne lève JAMAIS d'exception et ne fait rien sans le
+         script (bloqueur, hors ligne). Aucun geste n'appelle Umami : la
+         mesure ÉCOUTE le parcours, comme le feront le son et la télécommande.
+
+         ⚠️ Le script Umami est `defer` : il s'exécute APRÈS celui-ci. Ce qui
+         se mesure au démarrage (la situation d'un lien de relance, le
+         premier chapitre) attend donc l'événement `load` dans une file,
+         sinon la mesure la plus précieuse serait perdue. */
+      var MESURES = {
+        situationChoisie: 'situation-choisie',
+        chapitreAtteint: 'chapitre-atteint',
+        geste: 'geste',
+        guideOuvert: 'guide-ouvert',
+        rdvDemande: 'rdv-demande',
+        demoOuverte: 'demo-ouverte',
+        contactDirect: 'contact-direct'
+      };
+      var fileMesures = [];
+      function envoyer(nom, donnees) {
+        try {
+          var u = window.umami;
+          if (!u || typeof u.track !== 'function') {
+            journal('mesure ignorée (script absent) :', nom, donnees || '');
+            return;
+          }
+          if (donnees && Object.keys(donnees).length) u.track(nom, donnees);
+          else u.track(nom);
+          journal('mesure :', nom, donnees || '');
+        } catch (e) { /* une mesure ne casse jamais la page */ }
+      }
+      function mesurer(nom, donnees) {
+        if (fileMesures) { fileMesures.push([nom, donnees]); return; }
+        envoyer(nom, donnees);
+      }
+      window.addEventListener('load', function () {
+        var file = fileMesures;
+        fileMesures = null;
+        journal(file.length + ' mesure(s) du démarrage envoyée(s) après le chargement d\'Umami');
+        file.forEach(function (m) { envoyer(m[0], m[1]); });
+      });
+      var dejaMesure = {};
+      function mesurerUneFois(cle, nom, donnees) {
+        if (dejaMesure[cle]) return;
+        dejaMesure[cle] = true;
+        mesurer(nom, donnees);
+      }
+
+      document.addEventListener('fi:situation', function (e) {
+        mesurer(MESURES.situationChoisie, {
+          situation: e.detail.id || 'aucune',
+          origine: e.detail.origine || 'inconnue'
+        });
+      });
+      function mesurerChapitre(id) {
+        mesurerUneFois('chapitre:' + id, MESURES.chapitreAtteint, { chapitre: id, rang: IDS.indexOf(id) + 1 });
+      }
+      document.addEventListener('fi:chapitre', function (e) { mesurerChapitre(e.detail.id); });
+      /* Le premier chapitre a été annoncé AVANT que ce script n'écoute. */
+      mesurerChapitre(document.body.getAttribute('data-chapitre') || 'top');
+      document.addEventListener('fi:geste', function (e) {
+        var d = e.detail;
+        mesurerUneFois('geste:' + d.chapitre + ':' + d.geste, MESURES.geste, { chapitre: d.chapitre, geste: d.geste });
+      });
+
+      /* Les clics qui comptent : la réservation (LA conversion), une démo,
+         un autre canal. Une seule écoute, déléguée, lue sur les attributs
+         posés dans le HTML. */
+      document.addEventListener('click', function (e) {
+        if (!e.target.closest) return;
+        var rdv = e.target.closest('[data-rdv]');
+        if (rdv) {
+          mesurer(MESURES.rdvDemande, { situation: situationActuelle(), emplacement: rdv.getAttribute('data-rdv') });
+          return;
+        }
+        var demo = e.target.closest('[data-demo]');
+        if (demo) {
+          mesurer(MESURES.demoOuverte, { demo: demo.getAttribute('data-demo'), situation: situationActuelle() });
+          return;
+        }
+        var canal = e.target.closest('[data-canal]');
+        if (canal) mesurer(MESURES.contactDirect, { canal: canal.getAttribute('data-canal') });
+      });
     })();
   </script>
 </body>
