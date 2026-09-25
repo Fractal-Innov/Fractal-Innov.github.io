@@ -1767,6 +1767,85 @@
     .dock__pastille,
     .dock__fermer { display: none; }
 
+    /* ── La pastille (< 768 px) : rôle `affordance` ── */
+    @media (max-width: 767px) {
+      .dock { bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
+      /* `.dock .dock__pastille` et non `.dock__pastille` : `.dock button`
+         (fond transparent) l'emporterait sinon. */
+      .dock .dock__pastille {
+        display: grid; place-items: center; position: relative;
+        width: 56px; height: 56px; padding: 0; border-radius: 50%;
+        background: rgba(10, 11, 20, 0.82);
+        box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--glass-border);
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* L'anneau : un dégradé conique rempli jusqu'à la progression, évidé
+         au centre par un masque radial. */
+      .dock__anneau {
+        position: absolute; inset: 0; border-radius: 50%;
+        background: conic-gradient(var(--accent-blue) 0deg,
+                    var(--accent-pink) calc(var(--progression, 0) * 360deg),
+                    rgba(255, 255, 255, 0.12) 0deg);
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+        mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
+      }
+      .dock__centre { position: relative; font-size: 1.05rem; font-weight: 700; }
+      .dock__centre .pic { width: 22px; height: 22px; }
+      .dock__sep { display: none; }
+
+      .dock[data-etat="replie"] .dock__panneau { display: none; }
+      .dock[data-etat="deplie"] { left: 16px; right: 16px; width: auto; max-width: none; }
+      .dock[data-etat="deplie"] .dock__pastille { display: none; }
+      .dock[data-etat="deplie"] .dock__panneau {
+        display: grid;
+        grid-template-columns: 44px 1fr auto 44px;
+        grid-template-areas: "prec pos pos suiv" "sit sit fermer fermer";
+        gap: 0.25rem; padding: 0.5rem; border-radius: 20px;
+        transform-origin: 50% 100%;
+        animation: dockDeplie 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+      #dockPrec { grid-area: prec; }
+      #dockPosition { grid-area: pos; min-width: 0; }
+      #dockSuiv { grid-area: suiv; }
+      .dock__situation { grid-area: sit; }
+      .dock__choix { width: 100%; }
+      .dock__menu { left: 0; transform: none; min-width: 0; width: min(18rem, calc(100vw - 48px)); }
+      .dock[data-etat="deplie"] .dock__fermer {
+        grid-area: fermer; display: inline-flex; align-items: center; justify-content: center;
+        min-height: 44px; padding: 0 1rem; border-radius: 999px; font-size: 0.9rem; color: var(--text-muted);
+      }
+
+      /* Les trois effets. ::before = le halo, ::after = le reflet. */
+      .dock__pastille::before,
+      .dock__pastille::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; opacity: 0; }
+      .dock__pastille::before { inset: -6px; border: 2px solid var(--accent-purple); }
+      .dock__pastille::after {
+        inset: 0;
+        background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
+        background-size: 250% 100%;
+      }
+      .dock--entree .dock__pastille { animation: pastilleEntree 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+      .dock--entree .dock__pastille::after { animation: pastilleReflet 0.9s 0.35s ease-out both; }
+      .dock--bascule .dock__centre { animation: centreBascule 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+      .dock--bascule .dock__pastille::before { animation: pastilleHalo 0.6s ease-out; }
+      .dock--invite .dock__pastille { animation: pastilleInvite 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    }
+    @keyframes pastilleEntree { from { transform: translateY(140%) scale(0.6); } to { transform: none; } }
+    @keyframes pastilleReflet {
+      0% { opacity: 1; background-position: 120% 0; }
+      80% { opacity: 1; }
+      100% { opacity: 0; background-position: -30% 0; }
+    }
+    @keyframes centreBascule { from { transform: rotateX(90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes pastilleHalo { from { opacity: 0.9; transform: scale(0.85); } to { opacity: 0; transform: scale(1.35); } }
+    @keyframes pastilleInvite {
+      0%, 100% { transform: none; }
+      30% { transform: translateY(-10px); }
+      55% { transform: translateY(0); }
+      75% { transform: translateY(-4px); }
+    }
+    @keyframes dockDeplie { from { opacity: 0; transform: scale(0.4, 0.3); } to { opacity: 1; transform: none; } }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
@@ -1791,6 +1870,15 @@
       .contact__links a { animation: none; transition: none; }
       /* Le filet du contact reste déployé plutôt que de disparaître. */
       .contact::before { transform: translateX(-50%) scaleX(1); }
+      /* Le parcours : états finaux, aucun mouvement. L'anneau reste à jour. */
+      .dock,
+      .dock__panneau,
+      .dock__pastille,
+      .dock__pastille::before,
+      .dock__pastille::after,
+      .dock__centre,
+      .situation-btn,
+      .constellation path { animation: none !important; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
   </style>
@@ -3086,6 +3174,117 @@
         dock.inert = true;
         majFil();
         majVisibilite();
+
+        /* ── La pastille (téléphone) ─────────────────────────────────────
+           Sous 768 px, le dock replié tient en 56 px : un anneau qui se
+           remplit avec la lecture, le numéro du chapitre (ou le
+           pictogramme de la situation) au centre.
+           Trois effets, un par intention, AUCUN en boucle : un appel qui ne
+           s'arrête jamais devient du bruit, et fatigue en rendez-vous.
+             entrée  : « je suis là »       (première apparition)
+             bascule : « vous avancez »     (changement de chapitre)
+             invite  : « touchez-moi »      (une fois par visite) */
+        var mobile = window.matchMedia('(max-width: 767px)');
+        var pastille = document.getElementById('dockPastille');
+        var centre = document.getElementById('dockCentre');
+        var pastilleLibelle = document.getElementById('dockPastilleLibelle');
+        var dejaApparu = false;
+        var guideOuvert = false;
+        var inviteFaite = false;
+        var chapitresSansOuvrir = 0;
+        var ignorerDefilementJusqua = 0;
+
+        /* Rejoue une classe d'animation, même si elle tournait déjà. */
+        var jouer = function (classe, duree) {
+          if (sobre) return;
+          dock.classList.remove(classe);
+          void dock.offsetWidth;
+          dock.classList.add(classe);
+          clearTimeout(jouer[classe]);
+          jouer[classe] = setTimeout(function () { dock.classList.remove(classe); }, duree);
+        };
+        var majPastille = function () {
+          var i = Math.max(0, IDS.indexOf(chapitreDock));
+          var s = document.body.getAttribute('data-situation');
+          /* `s` vient de SITUATIONS (liste fermée) : l'innerHTML est sûr. */
+          centre.innerHTML = s && SITUATIONS[s]
+            ? '<svg class="pic" aria-hidden="true"><use href="#pic-' + s + '"></use></svg>'
+            : String(i + 1);
+          pastilleLibelle.textContent = 'Chapitre ' + (i + 1) + ' sur ' + IDS.length + ', ' + CHAPITRES[i].titre
+            + (s ? ', situation ' + SITUATIONS[s] : '') + '. Ouvrir le guide';
+        };
+        var deplier = function () {
+          dock.setAttribute('data-etat', 'deplie');
+          pastille.setAttribute('aria-expanded', 'true');
+          ignorerDefilementJusqua = performance.now() + 400;
+          journal('dock déplié');
+          if (!guideOuvert) { guideOuvert = true; mesurerUneFois('guide', MESURES.guideOuvert); }
+          (dockSuiv.disabled ? dockPrec : dockSuiv).focus();
+        };
+        var replier = function (raison) {
+          if (dock.getAttribute('data-etat') !== 'deplie') return;
+          dock.setAttribute('data-etat', 'replie');
+          pastille.setAttribute('aria-expanded', 'false');
+          fermerMenuSituation();
+          journal('dock replié :', raison);
+        };
+
+        pastille.addEventListener('click', deplier);
+        document.getElementById('dockFermer').addEventListener('click', function () {
+          replier('bouton Fermer');
+          pastille.focus();
+        });
+        /* Les flèches font défiler en douceur : ce défilement-là ne doit
+           pas replier le dock qu'on est en train d'utiliser. */
+        [dockPrec, dockSuiv].forEach(function (b) {
+          b.addEventListener('click', function () { ignorerDefilementJusqua = performance.now() + 1200; });
+        });
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape' && dock.getAttribute('data-etat') === 'deplie') {
+            replier('Échap');
+            pastille.focus();
+          }
+        });
+        mobile.addEventListener('change', function () { replier('passage en grand écran'); });
+
+        /* L'anneau : une information, pas une décoration. Il reste à jour
+           en mouvement réduit. */
+        var rafProgression = 0;
+        var majProgression = function () {
+          rafProgression = 0;
+          var max = document.documentElement.scrollHeight - window.innerHeight;
+          var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+          dock.style.setProperty('--progression', p.toFixed(3));
+        };
+        window.addEventListener('scroll', function () {
+          if (!rafProgression) rafProgression = requestAnimationFrame(majProgression);
+          if (performance.now() > ignorerDefilementJusqua) replier('défilement');
+        }, { passive: true });
+
+        document.addEventListener('fi:dock', function (e) {
+          if (!e.detail.visible) { replier('dock effacé'); return; }
+          if (!dejaApparu) {
+            dejaApparu = true;
+            if (mobile.matches) { jouer('dock--entree', 1300); journal('pastille : première apparition'); }
+          }
+        });
+        document.addEventListener('fi:chapitre', function () {
+          majPastille();
+          if (!mobile.matches || dock.getAttribute('data-visible') !== 'oui') return;
+          if (!dock.classList.contains('dock--entree')) jouer('dock--bascule', 650);
+          if (!guideOuvert && !inviteFaite && ++chapitresSansOuvrir >= 2) {
+            inviteFaite = true;
+            setTimeout(function () { jouer('dock--invite', 750); }, 700);
+            journal('pastille : invitation (une fois par visite)');
+          }
+        });
+        document.addEventListener('fi:situation', function () {
+          majPastille();
+          replier('situation choisie');
+        });
+
+        majPastille();
+        majProgression();
       }
 
       /* ── AU DÉMARRAGE ──────────────────────────────────────────────────
