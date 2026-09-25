@@ -29,7 +29,7 @@ actuelle), Umami Cloud (script déjà utilisé par les autres pages du site).
 ## Global Constraints
 
 - Un seul fichier : `index.html`. Aucune dépendance ajoutée hormis le script Umami.
-- Poids ajouté au document **sous 15 Ko** (CSS + JS + balisage), mesuré par `wc -c` contre la base **105 276 octets**.
+- Poids ajouté au document **sous 40 Ko** (CSS + JS + balisage, relevé de 15 à 40 Ko le 25/09/2026 : commentaires gardés), mesuré par `wc -c` contre la base **105 756 octets** (après la correction des jetons, hors parcours).
 - Sans JavaScript, la page se lit comme aujourd'hui, les trois cartes ouvertes, sans dock.
 - Aucun texte injecté par JavaScript (SEO) : les variantes sont dans le balisage, masquées par attribut `hidden`.
 - Charte de `/stand/` : jetons existants, `--brand-gradient`, aucune nouvelle couleur.
@@ -1593,10 +1593,7 @@ Expected : `fi:chapitre {…}` après le `fi:aller`, puis `0` titre à point fin
 - [ ] **Step 2 : Le poids**
 
 Run : `wc -c index.html`
-Expected : moins de `120636` (105 276 + 15 360). Si le poids dépasse à
-cause des commentaires pédagogiques, le dire à Corentin avec le chiffre,
-sans les supprimer : c'est à lui d'arbitrer entre le budget et la règle
-« le code n'est jamais compressé ».
+Expected : moins de `146716` (105 756 + 40 960).
 
 - [ ] **Step 3 : Relecture commerciale**
 
