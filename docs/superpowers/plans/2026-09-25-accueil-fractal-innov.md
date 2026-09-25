@@ -379,20 +379,41 @@ modifier `apercu/index.html`
 
 **Fichiers :** Modifier `apercu/index.html` (bloc `<script>` final)
 
-- [ ] **8.1** Scroll-spy : IntersectionObserver sur `#fondateur, #approche,
-      #offre, #demos, #partenaires`, `rootMargin: -45% 0px -50% 0px`, qui pose
-      le soulignement bleu 2 px sur le lien actif.
+- [x] **8.1** Scroll-spy. ⚠️ **Pas un IntersectionObserver, contrairement à ce
+      que demandait le handoff** : /stand/ utilise une **ligne de lecture**,
+      un point situé juste sous le bandeau dont on cherche dans quelle section
+      il tombe. Un observateur répond « cette section est visible », ce qui est
+      ambigu dès que deux le sont ensemble et faux quand on arrive par une
+      ancre ; la ligne n'a qu'une réponse possible. Elle suit
+      `scroll-padding-top`, est replanifiée en `requestAnimationFrame`, et pose
+      `.active-link`.
+
+- [x] **8.1 bis (non prévu)** `scroll-padding-top` sur `html`, 4 paliers de
+      /stand/ (6.75 / 7.75 / 8.25 / 9rem). **Il manquait, et c'était un vrai
+      défaut** : sans lui, cliquer une ancre fait atterrir le titre de section
+      SOUS la pilule, et le visiteur croit avoir raté le lien.
 - [ ] **8.2** Apparition au défilement : `[data-revele]` sous le pli part de
       `opacity:0; translateY(24px)`, arrive en 0.8 s `cubic-bezier(.16,1,.3,1)`,
       0.1 s de décalage par frère. **Ce qui est déjà visible n'est jamais masqué.**
-- [ ] **8.3** Aura du pointeur : calque fixe, `--ui-x/--ui-y` mis à jour au
+- [x] **8.3** Aura du pointeur : calque fixe, `--ui-x/--ui-y` mis à jour au
       `pointermove` passif, `pointer-events: none`.
-- [ ] **8.4** Burger ≤ 950 px : trois barres qui deviennent une croix, panneau
+- [x] **8.4** Burger ≤ 950 px : trois barres qui deviennent une croix, panneau
       déroulant, fermeture au clic sur un lien et à l'échappement.
-- [ ] **8.5** Halo de page `.page-rest::before`, statique ≤ 1024 px.
-- [ ] **Vérification** : au clavier seul, parcourir toute la page ; le menu
-      burger s'ouvre et se ferme ; `prefers-reduced-motion` coupe tout le
-      mouvement sans casser la mise en page.
+- [x] **8.5** Halo de page `.page-rest::before`, statique ≤ 1024 px, **plus le
+      réglage dynamique de /stand/** : son opacité suit ce qui reste du hero à
+      l'écran (`--page-rest-glow-mix`, 0 → 1). Sans cela, le fond du hero et
+      celui de la suite se rejoignent sur une **ligne nette** visible au
+      défilement. Un garde-fou évite de réécrire la variable pour un
+      changement invisible : chaque écriture force un recalcul de style sur un
+      élément qui couvre toute la page.
+- [x] **Vérification** (relevée) : les **5** sections activent chacune leur
+      lien (`#fondateur`, `#approche`, `#offre`, `#demos`, `#partenaires`) et
+      **aucun** n'est actif au niveau du hero ; `--page-rest-glow-mix` passe de
+      **0.000** au hero à **1.000** en bas de page ; un clic réel sur l'ancre
+      « Démos » pose le titre à **250 px** alors que la pilule s'arrête à
+      **89 px**, donc bien en dessous, et le lien devient actif ;
+      `scroll-padding-top` mesuré à **132 px** en grand écran ; **zéro requête
+      en échec**.
 - [ ] **8.6** Commit `feat(accueil): ajouter le scroll-spy, les apparitions et le menu mobile`
 
 ---

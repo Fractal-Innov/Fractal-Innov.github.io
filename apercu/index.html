@@ -166,7 +166,18 @@
 
     *, *::before, *::after { box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
+    /* ⚠️ `scroll-padding-top` est ce qui empêche un titre de section d'arriver
+       SOUS la pilule de navigation quand on clique une ancre. Sans lui, le
+       visiteur atterrit sur un titre à moitié caché et croit avoir raté le
+       lien. Les quatre paliers sont ceux de /stand/, mesurés sur la hauteur
+       réelle du bandeau à chaque largeur. */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 7.75rem;
+    }
+    @media (max-width: 640px) { html { scroll-padding-top: 6.75rem; } }
+    @media (min-width: 641px) and (max-width: 1024px) { html { scroll-padding-top: 9rem; } }
+    @media (min-width: 951px) { html { scroll-padding-top: 8.25rem; } }
 
     body {
       margin: 0;
@@ -292,6 +303,10 @@
     /* Le halo global sous le hero : .page-rest de /stand/, cinq dégradés qui
        dérivent lentement. ⚠️ Il est éteint sous 1024px (coût de peinture). */
     .page-rest {
+      /* Réglé en JavaScript entre 0 et 1 selon ce qui reste du hero à
+         l'écran. Valeur de repli : 1, donc le halo est entier si le script
+         ne tourne pas. */
+      --page-rest-glow-mix: 1;
       position: relative;
       background-color: var(--bg-base);
       isolation: isolate;
@@ -303,6 +318,9 @@
       inset: 0;
       z-index: 0;
       pointer-events: none;
+      /* Plancher haut : le halo reste lisible même quand le mélange est à 0,
+         c'est-à-dire quand le bas du hero est encore visible. */
+      opacity: calc(0.55 + 0.45 * var(--page-rest-glow-mix));
       -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 12vh, #000 32vh, #000 100%);
       mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.35) 12vh, #000 32vh, #000 100%);
       background:
@@ -321,6 +339,7 @@
         animation: none;
         background-position: 20% 10%, 80% 40%, 50% 90%, 60% 50%, 30% 60%;
       }
+      .page-rest { --page-rest-glow-mix: 1; }
     }
 
     /* L'apparition au défilement. ⚠️ Conditionnée à « .js » : sans
@@ -1553,8 +1572,9 @@
       html { scroll-behavior: auto; }
       .hero__halo,
       .hero__point::after,
-      .page-rest::before { animation: none; }
+      .page-rest::before { animation: none; opacity: 1; }
       .page-rest::before { background-position: 20% 10%, 80% 40%, 50% 90%, 60% 50%, 30% 60%; }
+      .page-rest { --page-rest-glow-mix: 1; }
       .aura { display: none; }
       .js .reveal { opacity: 1; transform: none; }
       /* /stand/ coupe nommément la transition du CTA et du burger. */
@@ -2197,6 +2217,99 @@
         window.addEventListener('resize', function () {
           if (window.innerWidth > 950 && mainNav.classList.contains('menu-open')) fermerMenu();
         });
+      }
+
+      /* ── Le lien de navigation de la section courante ──────────────────
+         ⚠️ /stand/ n'utilise PAS d'IntersectionObserver ici, et c'est un
+         choix, pas un oubli. Un observateur répond « cette section est
+         visible », ce qui est ambigu dès que deux sections le sont en même
+         temps, et il se trompe quand on arrive par une ancre.
+
+         Le mécanisme retenu est une LIGNE DE LECTURE : un point situé juste
+         sous le bandeau, dont on cherche dans quelle section il tombe. Une
+         seule réponse possible, toujours. La ligne suit `scroll-padding-top`
+         pour qu'une ancre atteinte désigne bien SA section et non la
+         précédente.
+
+         Le calcul est replanifié en `requestAnimationFrame` : le défilement
+         peut émettre des dizaines d'événements par seconde, le navigateur ne
+         repeint que soixante fois. */
+      var liensNav = document.querySelectorAll('#mainNav .nav-link');
+      var idsSections = ['fondateur', 'approche', 'offre', 'demos', 'partenaires'];
+      var rafNav = 0;
+      var dernierActif = null;
+
+      function majLienActif() {
+        rafNav = 0;
+        if (!liensNav.length) return;
+        var hauteurBandeau = 96;
+        var pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+        var ligne = window.scrollY + Math.max(hauteurBandeau + 28, pad + 2);
+
+        var actif = null;
+        var premiere = document.getElementById(idsSections[0]);
+        if (premiere && ligne >= premiere.getBoundingClientRect().top + window.scrollY) {
+          for (var i = 0; i < idsSections.length; i++) {
+            var el = document.getElementById(idsSections[i]);
+            if (!el) continue;
+            var haut = el.getBoundingClientRect().top + window.scrollY;
+            var suivante = document.getElementById(idsSections[i + 1]);
+            var hautSuivante = suivante
+              ? suivante.getBoundingClientRect().top + window.scrollY
+              : Infinity;
+            if (ligne >= haut && ligne < hautSuivante) { actif = idsSections[i]; break; }
+          }
+        }
+
+        liensNav.forEach(function (a) {
+          var href = a.getAttribute('href') || '';
+          var id = href.charAt(0) === '#' ? href.slice(1) : '';
+          a.classList.toggle('active-link', id === actif && actif !== null);
+        });
+        if (actif !== dernierActif) {
+          dernierActif = actif;
+          journal('section courante :', actif || '(le hero)');
+        }
+      }
+      function planifierNav() {
+        if (rafNav) return;
+        rafNav = requestAnimationFrame(majLienActif);
+      }
+      window.addEventListener('scroll', planifierNav, { passive: true });
+      window.addEventListener('resize', majLienActif);
+      majLienActif();
+
+      /* ── Le halo global s'ouvre à mesure que le hero sort ───────────────
+         Sans cela, le fond du hero et celui de la suite se rejoignent sur une
+         LIGNE NETTE, visible au défilement. On fait varier l'opacité du halo
+         selon ce qui reste du hero à l'écran, et la jointure disparaît.
+
+         Le garde-fou `Math.abs(mix - dernierMix) < 0.025` évite de réécrire
+         la variable CSS pour un changement invisible : chaque écriture force
+         un recalcul de style sur un élément qui couvre toute la page. */
+      if (!sobre) {
+        var heroEl = document.querySelector('.hero');
+        var pageRestEl = document.querySelector('.page-rest');
+        var rafHalo = 0;
+        var dernierMix = -1;
+        var appliquerHalo = function () {
+          rafHalo = 0;
+          if (!heroEl || !pageRestEl) return;
+          var bas = heroEl.getBoundingClientRect().bottom;
+          var vh = window.innerHeight;
+          var course = Math.min(420, Math.max(240, vh * 0.42));
+          var mix = Math.min(1, Math.max(0, (vh - bas) / course));
+          if (dernierMix >= 0 && Math.abs(mix - dernierMix) < 0.025 && mix > 0.04 && mix < 0.96) return;
+          dernierMix = mix;
+          pageRestEl.style.setProperty('--page-rest-glow-mix', mix.toFixed(3));
+        };
+        var planifierHalo = function () {
+          if (rafHalo) return;
+          rafHalo = requestAnimationFrame(appliquerHalo);
+        };
+        window.addEventListener('scroll', planifierHalo, { passive: true });
+        window.addEventListener('resize', function () { dernierMix = -1; appliquerHalo(); });
+        appliquerHalo();
       }
 
       /* ── Le contact : la lumière du bouton suit le curseur ─────────────
