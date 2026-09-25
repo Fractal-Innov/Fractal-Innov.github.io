@@ -55,6 +55,26 @@ Conséquence concrète : les **noms** de variables et de classes sont ceux de
 `.section`, `.section-number`, `.reveal`, `.page-rest`, `.burger`). Un bloc
 copié d'une page à l'autre fonctionne sans traduction.
 
+⚠️ **Deuxième relevé, le 25/09/2026 : la feuille de /stand/ se surcharge
+elle-même plus bas.** Lire la première définition d'une règle donne une valeur
+PÉRIMÉE. Deux éléments avaient été repris sur leur version obsolète, et sont
+refaits sur l'état final :
+
+- **le CTA de la navigation** n'est pas un bouton fantôme bleu mais un bouton
+  **plein en dégradé profond** (`--accent-blue-deep` → `--accent-purple-deep`),
+  qui révèle un second dégradé plus clair au survol via un `::before` ;
+- **le menu mobile** n'est pas un panneau déroulant sous la pilule mais un
+  **plein écran qui glisse depuis la droite** (`right: -100%` → `0`, fond
+  `rgba(10,11,20,.88)` flouté à 22px, `visibility` en `step-end`), et le CTA
+  « Contact » **entre dedans**. C'est la MÊME balise `nav` dans les deux cas :
+  au-delà de 951px elle passe en `display: contents` et ses deux enfants
+  deviennent les colonnes 2 et 3 de la grille de la pilule.
+
+S'y ajoute la famille complète des boutons, à **quatre** variantes et non deux :
+`.hero-cta__btn` (fantôme bleu), `--primary` (plein, dégradé, `-2px` au survol,
+`scale(0.98)` au clic), `--secondary` (bleu sourd plein) et `--ghost`.
+Le handoff appelait « principal » le fantôme : c'est `--primary` qui l'est.
+
 Les écarts tranchés en faveur de `/stand/` :
 
 | | handoff | /stand/, retenu |
@@ -210,16 +230,24 @@ git -C /Users/coko/Documents/GitHub/Fractal-Innov.github.io add apercu/index.htm
 
 **Fichiers :** Modifier `apercu/index.html`, créer `assets/accueil/demos/`
 
-- [ ] **4.1** Copier les visuels : `stand/assets/demo/vue-ensemble.webp` pour la
-      carte STAND. Pour la carte « En ligne », capturer Midipile (la plus
-      parlante : trois carrosseries + pose en AR).
-- [ ] **4.2** Écrire les deux cartes, média 16:9 en tête, corps, boutons en pied.
-- [ ] **4.3** Carte STAND : « Découvrir STAND » vers `/stand/`.
-- [ ] **4.4** Carte En ligne : le bouton « Bientôt » à bord pointillé est
+- [x] **4.1** Visuels en place. STAND : `vue-ensemble.webp` copié. En ligne :
+      **le poster du démonstrateur lui-même** plutôt qu'une capture refaite à la
+      main. Chaque démo publie le sien en `og:image`, ils sont déjà cadrés en
+      16:9 et pèsent 5 à 18 Ko. Les trois sont descendus d'un coup dans
+      `media/accueil/demos/` (midipile, moulage, rayon-x), ce qui sert aussi la
+      tâche 5. Rayon X était en PNG de 114 Ko : converti en webp, **17,6 Ko**.
+- [x] **4.2** Écrire les deux cartes, média 16:9 en tête, corps, boutons en pied.
+- [x] **4.3** Carte STAND : « Découvrir STAND » vers `/stand/`.
+- [x] **4.4** Carte En ligne : le bouton « Bientôt » à bord pointillé est
       **remplacé** par « Voir un exemple » vers `/midipile/`, le secondaire
       reste « Prendre rendez-vous ». Le texte perd toute promesse au futur.
-- [ ] **Vérification** : les deux boutons répondent en 200, la hauteur des deux
-      cartes reste alignée quand les textes diffèrent.
+- [x] **Vérification** (relevée) : menu plein écran conforme (`position: fixed`,
+      `right` **-773px → 0px**, `visibility` hidden → visible, `overflow: hidden`
+      sur le corps, flou **22px**, CTA bien À L'INTÉRIEUR de la nav) ; Échap
+      referme et **rend le défilement** ; en grand écran `display: contents` et
+      grille **3 colonnes** ; CTA en dégradé `rgb(40,89,255)` → `rgb(124,58,237)`,
+      libellé blanc ; les 2 cartes d'offre s'affichent et se révèlent ;
+      débordement **0 px** à 375 px comme à 1280 px ; **aucune erreur console**.
 - [ ] **4.5** Commit `feat(accueil): ajouter la section offre et brancher la carte en ligne sur midipile`
 
 ---

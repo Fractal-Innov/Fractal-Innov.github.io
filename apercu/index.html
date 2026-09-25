@@ -152,18 +152,15 @@
       --masthead-row-overlap: clamp(4.5rem, 11vw, 6rem);
 
       /* ── Les trois seuls ajouts propres à cette page ────────────────────
-         Ils n'existent pas dans /stand/ parce que celle-ci n'en a pas
-         l'usage, et ils suivent les mêmes familles de valeurs. */
+         Elles n'existent pas dans /stand/ parce que celle-ci n'en a pas
+         l'usage, et elles suivent les mêmes familles de valeurs. */
       /* Un cran de texte plus lisible que --text-muted, pour le chapeau du
          hero et les paragraphes longs. C'est le « 70 % » du handoff. */
       --text-soft: rgba(240, 240, 240, 0.70);
-      /* La navigation : le rayon de la pilule DÉCOULE du burger (42 × 0.35)
-         plus la marge intérieure. Deux courbes parallèles, sinon la pilule
-         n'a plus l'air taillée dans un seul bloc. */
-      --burger: 42px;
-      --radius-burger: calc(var(--burger) * 0.35);
-      --radius-pill-nav: calc(var(--radius-burger) + 0.5rem);
-      /* Le rayon des cartes de /stand/ (.friction-card, .level-card). */
+      /* Le rayon des cartes de /stand/ (.friction-card, .level-card).
+         ⚠️ Les dimensions de la navigation ne sont PAS ici : elles vivent sur
+         `.masthead-inner`, comme chez /stand/, parce qu'elles changent de
+         valeur selon la largeur d'écran. */
       --radius-card: 16px;
     }
 
@@ -337,7 +334,21 @@
     .js .reveal.active { opacity: 1; transform: translateY(0); }
 
     /* ══════════════════════════════════════════════════════════════════════
-       NAVIGATION (.masthead de /stand/)
+       NAVIGATION — l'état FINAL de .masthead dans /stand/
+
+       ⚠️ La feuille de /stand/ surcharge ses propres règles plus bas : il faut
+       lire la DERNIÈRE version, pas la première. Deux pièges relevés le
+       25/09/2026, tous deux corrigés ici :
+         · le CTA n'est pas un bouton fantôme bleu mais un bouton PLEIN en
+           dégradé profond, qui révèle un second dégradé plus clair au survol ;
+         · le menu mobile n'est pas un panneau déroulant sous la pilule, c'est
+           un PLEIN ÉCRAN qui glisse depuis la droite, et le CTA Contact entre
+           dedans. C'est la même balise `nav` dans les deux cas : en grand
+           écran elle passe en `display: contents` et ses enfants se posent
+           directement dans la grille de la pilule.
+
+       Les dimensions vivent sur `.masthead-inner`, en variables, comme chez
+       /stand/ : le rayon de la pilule DÉCOULE de celui du burger.
        ══════════════════════════════════════════════════════════════════════ */
     .masthead {
       position: sticky;
@@ -345,25 +356,40 @@
       z-index: 102;
       display: flex;
       justify-content: center;
+      align-items: center;
       padding: 1rem 1rem 0.65rem;
       background: transparent;
+      border: none;
     }
+
     .masthead-inner {
+      --masthead-burger-size: 42px;
+      --masthead-text-size: 0.95rem;
+      --masthead-pad-trb: 0.5rem;
+      /* La courbe gauche de la pilule mange de l'espace : un léger surplus
+         rend l'écart visuellement égal sur les quatre côtés. */
+      --masthead-pad-x-start: calc(var(--masthead-pad-trb) + 0.15rem);
+      --masthead-icon-squircle: 0.35;
+      --masthead-burger-radius: calc(var(--masthead-burger-size) * var(--masthead-icon-squircle));
+      --masthead-shell-radius: calc(var(--masthead-burger-radius) + var(--masthead-pad-trb));
       position: relative;
-      width: 100%;
-      max-width: min(1100px, calc(100vw - 2rem));
+      z-index: 1;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: clamp(0.75rem, 2vw, 1.75rem);
-      padding: 0.5rem 0.5rem 0.5rem 0.65rem;
-      border-radius: var(--radius-pill-nav);
+      width: 100%;
+      max-width: min(1100px, calc(100vw - 2rem));
+      padding: var(--masthead-pad-trb) var(--masthead-pad-trb) var(--masthead-pad-trb) var(--masthead-pad-x-start);
+      border-radius: var(--masthead-shell-radius);
       border: 1px solid rgba(255, 255, 255, 0.12);
+      /* Pas d'`overflow: hidden` : il rognerait le menu en `position: fixed`. */
       isolation: isolate;
       box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
-    /* Le fond est un calque séparé : `backdrop-filter` sur le conteneur
-       lui-même créerait un contexte d'empilement qui rognerait le menu. */
+
+    /* Le fond est un calque séparé : `backdrop-filter` posé sur le conteneur
+       lui-même créerait un contexte d'empilement qui piégerait le menu. */
     .masthead-bg {
       position: absolute;
       inset: 0;
@@ -374,22 +400,32 @@
       backdrop-filter: blur(14px) saturate(150%);
       -webkit-backdrop-filter: blur(14px) saturate(150%);
     }
+
     .masthead-brand {
-      position: relative;
-      z-index: 2;
       display: flex;
       align-items: center;
-      color: var(--text-main);
+      position: relative;
+      z-index: 2;
+      text-decoration: none;
       transition: opacity 0.2s ease;
     }
     .masthead-brand:hover { opacity: 0.92; }
-    .masthead-brand img {
+    .masthead-brand:focus-visible {
+      outline: 2px solid var(--accent-blue-light);
+      outline-offset: 4px;
+      border-radius: 8px;
+    }
+    .masthead-logo-img {
+      display: block;
+      width: auto;
       height: auto;
-      max-height: min(var(--burger), 2.5rem);
-      max-width: min(240px, 52vw);
+      max-height: min(var(--masthead-burger-size), calc(var(--masthead-text-size) * 2.65));
+      max-width: min(280px, 52vw);
       object-fit: contain;
       object-position: left center;
+      flex-shrink: 0;
     }
+
     .main-nav {
       position: relative;
       z-index: 2;
@@ -397,141 +433,252 @@
       align-items: center;
       gap: clamp(1rem, 2vw, 1.75rem);
     }
-    .nav-link {
+    .main-nav .nav-link {
       position: relative;
       display: inline-flex;
       align-items: center;
       color: var(--text-muted);
-      font-size: 0.95rem;
+      text-decoration: none;
+      font-size: var(--masthead-text-size);
       font-weight: 500;
       line-height: 1.2;
       transition: color 0.3s ease;
     }
     /* Une largeur animée, pas un `transform` : le trait reste net à chaque
        étape de la transition. */
-    .nav-link::after {
-      content: "";
+    .main-nav .nav-link::after {
+      content: '';
       position: absolute;
       bottom: -4px;
       left: 0;
-      height: 2px;
       width: 0;
+      height: 2px;
       border-radius: 2px;
       background: var(--accent-blue);
       transition: width 0.3s ease;
     }
-    .nav-link:hover,
-    .nav-link[data-actif="oui"] { color: var(--text-main); }
-    .nav-link:hover::after,
-    .nav-link[data-actif="oui"]::after { width: 100%; }
+    .main-nav .nav-link:hover,
+    .main-nav .nav-link.active-link { color: var(--text-main); }
+    .main-nav .nav-link:hover::after,
+    .main-nav .nav-link.active-link::after { width: 100%; }
 
-    .masthead-actions {
+    /* Le CTA de la pilule : bouton PLEIN, dégradé profond, avec un second
+       dégradé plus clair qui monte en opacité au survol (le `::before`). */
+    .masthead-cta {
       position: relative;
       z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .masthead-cta {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      height: var(--burger);
+      box-sizing: border-box;
+      min-height: var(--masthead-burger-size);
+      height: var(--masthead-burger-size);
       padding: 0 clamp(0.65rem, 1.15vw, 0.95rem);
-      font-size: 0.95rem;
-      font-weight: 600;
+      font-size: var(--masthead-text-size);
+      font-weight: 700;
       line-height: 1.2;
-      letter-spacing: 0.04em;
-      color: var(--accent-blue);
+      letter-spacing: 0.03em;
+      color: #fff;
+      text-decoration: none;
       white-space: nowrap;
-      border-radius: var(--radius-burger);
-      border: 1px solid rgba(110, 168, 255, 0.35);
-      background: var(--surface);
+      border-radius: var(--masthead-burger-radius);
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, var(--accent-blue-deep) 0%, var(--accent-purple-deep) 100%);
+      box-shadow: 0 10px 26px -10px rgba(40, 89, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      overflow: hidden;
       transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
+    .masthead-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 55%, var(--accent-pink) 100%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
     .masthead-cta:hover {
-      color: var(--accent-blue);
-      transform: translateY(-1px);
-      border-color: var(--accent-blue);
-      box-shadow: 0 8px 24px -8px rgba(110, 168, 255, 0.5);
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px -12px rgba(110, 168, 255, 0.75);
+    }
+    .masthead-cta:hover::before { opacity: 1; }
+    .masthead-cta:focus-visible {
+      outline: 2px solid var(--accent-blue-light);
+      outline-offset: 3px;
     }
 
     .burger {
-      position: relative;
       display: none;
-      width: var(--burger);
-      height: var(--burger);
+      position: relative;
+      width: var(--masthead-burger-size);
+      height: var(--masthead-burger-size);
+      aspect-ratio: 1;
       padding: 0;
       flex-shrink: 0;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--glass-border);
-      border-radius: var(--radius-burger);
-      backdrop-filter: blur(16px) saturate(160%);
-      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      box-sizing: border-box;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--masthead-burger-radius);
       cursor: pointer;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      transition: background 0.2s ease, border-color 0.2s ease;
+      /* ⚠️ Au-dessus du menu plein écran (z-index 150) : c'est ce qui permet
+         de refermer avec le même bouton qu'on a ouvert. */
+      z-index: 200;
+      box-shadow: none;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
     .burger:hover {
-      background: rgba(255, 255, 255, 0.1);
-      border-color: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.06);
+      transform: translateY(-1px);
     }
     .burger span {
       position: absolute;
-      left: 9px;
+      left: 10px;
       width: 22px;
       height: 2px;
+      background-color: #fff;
       border-radius: 2px;
-      background: var(--text-main);
-      transition: transform 0.3s ease, top 0.3s ease, opacity 0.3s ease;
+      transform-origin: center;
+      transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
     }
-    .burger span:nth-child(1) { top: 11px; }
-    .burger span:nth-child(2) { top: 19px; }
-    .burger span:nth-child(3) { top: 27px; }
+    .burger span:nth-child(1) { top: 12px; }
+    .burger span:nth-child(2) { top: 20px; }
+    .burger span:nth-child(3) { top: 28px; }
     /* Les deux barres extrêmes rejoignent la médiane puis pivotent : la croix
        se forme sans changer le nombre d'éléments. */
-    .burger[aria-expanded="true"] span:nth-child(1) { top: 19px; transform: rotate(45deg); }
-    .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-    .burger[aria-expanded="true"] span:nth-child(3) { top: 19px; transform: rotate(-45deg); }
+    .burger.active span:nth-child(1) { top: 20px; transform: rotate(45deg); }
+    .burger.active span:nth-child(2) { opacity: 0; }
+    .burger.active span:nth-child(3) { top: 20px; transform: rotate(-45deg); }
 
-    .menu-mobile {
-      position: absolute;
-      z-index: 3;
-      top: calc(100% + 0.5rem);
-      left: 0;
-      right: 0;
-      display: none;
-      flex-direction: column;
-      gap: 0.25rem;
-      padding: 0.5rem;
-      border-radius: var(--radius-pill-nav);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(10, 11, 20, 0.96);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-    }
-    .menu-mobile[data-ouvert="oui"] { display: flex; }
-    .menu-mobile a {
-      display: flex;
-      align-items: center;
-      min-height: 44px;
-      padding: 0 0.9rem;
-      border-radius: var(--radius-burger);
-      color: var(--text-main);
-      font-size: 1rem;
-      font-weight: 500;
-    }
-    .menu-mobile a:hover { background: rgba(255, 255, 255, 0.06); }
-
+    /* ── Téléphone et tablette : le menu devient un plein écran ─────────── */
     @media (max-width: 950px) {
-      .main-nav { display: none; }
-      .burger { display: block; }
+      .burger { display: flex; }
+
+      .main-nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        margin: 0;
+        padding: 2rem 1.5rem;
+        box-sizing: border-box;
+        background: transparent;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2.5rem;
+        z-index: 150;
+        isolation: isolate;
+        /* `visibility` en `step-end` : le panneau reste atteignable au clavier
+           pendant qu'il glisse, et disparaît d'un coup une fois sorti. */
+        visibility: hidden;
+        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.4s step-end;
+      }
+      .main-nav::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: rgba(10, 11, 20, 0.88);
+        backdrop-filter: blur(22px) saturate(150%);
+        -webkit-backdrop-filter: blur(22px) saturate(150%);
+        transform: translateZ(0);
+      }
+      .main-nav.menu-open {
+        right: 0;
+        visibility: visible;
+        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s;
+      }
+      .main-nav-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+        position: relative;
+        z-index: 1;
+      }
+      .main-nav .nav-link,
+      .main-nav .masthead-cta { font-size: 1.05rem; line-height: 1.25; }
+      .main-nav .nav-link { position: relative; z-index: 1; font-weight: 600; }
+      .main-nav .masthead-cta {
+        position: relative;
+        z-index: 1;
+        height: auto;
+        min-height: 44px;
+        letter-spacing: 0.06em;
+        padding: 0.9rem 1.75rem;
+        margin-top: 0.25rem;
+        border-radius: 12px;
+      }
+      .main-nav .nav-link::after,
+      .main-nav .masthead-cta::after { display: none; }
+    }
+
+    /* ── Grand écran : la nav s'efface, ses enfants entrent dans la grille ── */
+    @media (min-width: 951px) {
+      .masthead { padding: 1.1rem 1.25rem 0.75rem; }
+      .masthead-inner {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: clamp(0.75rem, 2vw, 1.75rem);
+        max-width: min(1120px, calc(85vw - 2rem));
+        --masthead-burger-size: 46px;
+        --masthead-text-size: 0.98rem;
+        --masthead-pad-trb: 0.72rem;
+        --masthead-pad-x-start: calc(var(--masthead-pad-trb) + 0.2rem);
+      }
+      .masthead-brand { grid-column: 1; }
+      /* `display: contents` fait disparaître la nav de la mise en page sans
+         la retirer du DOM : ses deux enfants deviennent directement les
+         colonnes 2 et 3 de la pilule. */
+      .main-nav { display: contents; }
+      .main-nav-links {
+        grid-column: 2;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: clamp(1rem, 2vw, 1.75rem);
+        min-width: 0;
+        position: relative;
+        z-index: 2;
+      }
+      .main-nav .masthead-cta { grid-column: 3; }
+    }
+
+    /* ── Tablette : le flou coûte cher, on l'allège puis on le retire ────── */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .masthead { padding-top: calc(1rem + 1px); }
+      .masthead-bg {
+        backdrop-filter: blur(8px) saturate(130%);
+        -webkit-backdrop-filter: blur(8px) saturate(130%);
+      }
+    }
+    @media (max-width: 767px) {
+      .masthead { padding: 1rem 1rem 0.5rem; }
+      .masthead-inner { --masthead-text-size: 0.9rem; }
+      .masthead-bg {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(10, 11, 20, 0.96);
+      }
     }
 
     /* ══════════════════════════════════════════════════════════════════════
-       BOUTONS (.hero-cta__btn de /stand/)
+       BOUTONS — la famille .hero-cta__btn de /stand/, ses QUATRE variantes
+
+       ⚠️ Le bouton de base est le fantôme bleu. Le bouton PRINCIPAL est
+       `--primary`, plein, en dégradé : c'est lui qui porte l'action qui
+       rapporte. Le handoff décrivait le fantôme comme « principal », ce qui
+       ne correspond plus à ce que fait /stand/.
        ══════════════════════════════════════════════════════════════════════ */
-    .btn {
+    .hero-cta__btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -542,29 +689,85 @@
       font-size: clamp(0.95rem, 2.8vw, 1.05rem);
       font-weight: 700;
       letter-spacing: 0.03em;
+      color: var(--accent-blue);
+      text-decoration: none;
       white-space: nowrap;
       border-radius: 12px;
       cursor: pointer;
-      color: var(--accent-blue);
       background: var(--surface);
       border: 1px solid rgba(110, 168, 255, 0.35);
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .btn:hover {
+    .hero-cta__btn:hover {
       color: var(--accent-blue);
       transform: translateY(-1px);
       border-color: var(--accent-blue);
       box-shadow: 0 10px 30px -12px rgba(110, 168, 255, 0.55);
     }
-    .btn--secondaire {
+    .hero-cta__btn:focus-visible {
+      outline: 2px solid var(--accent-blue-light);
+      outline-offset: 3px;
+    }
+
+    .hero-cta__btn--primary {
+      position: relative;
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent-blue-deep) 0%, var(--accent-purple-deep) 100%);
+      box-shadow: 0 10px 26px -10px rgba(40, 89, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      overflow: hidden;
+    }
+    .hero-cta__btn--primary > * { position: relative; z-index: 1; }
+    .hero-cta__btn--primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 55%, var(--accent-pink) 100%);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    .hero-cta__btn--primary:hover {
+      color: #fff;
+      border-color: transparent;
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px -12px rgba(110, 168, 255, 0.75);
+    }
+    .hero-cta__btn--primary:hover::before { opacity: 1; }
+    .hero-cta__btn--primary:active { transform: translateY(0) scale(0.98); }
+
+    .hero-cta__btn--secondary {
       color: #fff;
       background: var(--accent-blue-muted);
       border-color: transparent;
     }
-    .btn--secondaire:hover {
+    .hero-cta__btn--secondary:hover {
       color: #fff;
       background: var(--accent-purple-muted);
+      border-color: transparent;
       box-shadow: none;
+    }
+
+    .hero-cta__btn--ghost {
+      color: #fff;
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+    }
+    .hero-cta__btn--ghost:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: none;
+    }
+
+    /* Un bouton désactivé : présent, lisible, non cliquable. */
+    .hero-cta__btn[aria-disabled="true"] {
+      color: var(--text-muted);
+      background: transparent;
+      border-style: dashed;
+      border-color: rgba(255, 255, 255, 0.18);
+      cursor: default;
+      pointer-events: none;
     }
 
     /* ══════════════════════════════════════════════════════════════════════
@@ -834,6 +1037,82 @@
     .etape .tag-liste { margin-top: auto; }
 
     /* ══════════════════════════════════════════════════════════════════════
+       OFFRE — deux cartes à média, titrées par le problème du client
+       ══════════════════════════════════════════════════════════════════════ */
+    .offres {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    /* La carte à média ne porte pas le rembourrage : c'est son corps qui l'a,
+       sinon l'image ne pourrait pas toucher les bords. */
+    .offre {
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+      border-radius: var(--radius-enveloppe);
+    }
+    .offre__media {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: #1a1f36;
+      overflow: hidden;
+      /* Le liseré du bas sépare l'image du corps sans trait dur. */
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .offre__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.45s var(--ease-morph, cubic-bezier(0.34, 1.2, 0.64, 1));
+    }
+    .offre:hover .offre__media img { transform: scale(1.03); }
+    /* Un voile du haut vers le bas : le sur-titre du corps ne se cogne pas à
+       une image claire, et les deux cartes se ressemblent quelle que soit la
+       luminosité de leur visuel. */
+    .offre__media::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(9, 11, 19, 0) 45%, rgba(9, 11, 19, 0.55) 100%);
+      pointer-events: none;
+    }
+    .offre__corps {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 2rem;
+    }
+    .offre__eyebrow {
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent-blue-light);
+      margin: 0 0 0.9rem;
+    }
+    .offre h3 {
+      margin: 0 0 0.9rem;
+      font-size: clamp(1.35rem, 1.1rem + 1vw, 1.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -.01em;
+      text-wrap: balance;
+    }
+    .offre__texte { color: var(--text-muted); font-size: 1.05rem; margin: 0 0 1.5rem; }
+    /* `margin-top: auto` colle les boutons en bas : les deux cartes alignent
+       leurs actions même quand leurs textes n'ont pas la même longueur. */
+    .offre__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: auto;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════════
        MOUVEMENT — ⚠️ le seul endroit qui l'éteint est le bloc « reduce »
        ══════════════════════════════════════════════════════════════════════ */
     @keyframes haloDerive {
@@ -858,6 +1137,11 @@
       .page-rest::before { background-position: 20% 10%, 80% 40%, 50% 90%, 60% 50%, 30% 60%; }
       .aura { display: none; }
       .js .reveal { opacity: 1; transform: none; }
+      /* /stand/ coupe nommément la transition du CTA et du burger. */
+      .masthead-cta,
+      .masthead-cta::before,
+      .burger,
+      .main-nav { transition: none; }
       * { transition-duration: 0.01ms !important; }
     }
   </style>
@@ -867,38 +1151,37 @@
   <a class="saut-au-contenu" href="#contenu">Aller au contenu</a>
   <div class="aura" aria-hidden="true"></div>
 
-  <!-- ══ NAVIGATION ══════════════════════════════════════════════════════ -->
+  <!-- ══ NAVIGATION ══════════════════════════════════════════════════════
+       ⚠️ L'ordre des éléments est celui de /stand/ et il compte : le fond
+       (.masthead-bg) est le DERNIER enfant, en z-index 0, pendant que les
+       autres sont en z-index 2. Le remonter le ferait passer devant les liens.
+       Le CTA « Contact » est DANS la nav : en grand écran il devient la
+       colonne 3 de la pilule, sur téléphone il entre dans le plein écran.
+  ══════════════════════════════════════════════════════════════════════ -->
   <header class="masthead">
     <div class="masthead-inner">
-      <div class="masthead-bg" aria-hidden="true"></div>
-
-      <a class="masthead-brand" href="#top" aria-label="Fractal Innov, retour en haut">
-        <img src="/media/marque/fractalinnov-logo.webp" alt="Fractal Innov" width="770" height="142">
+      <a href="#top" class="masthead-brand" aria-label="Fractal Innov, retour en haut de la page">
+        <img src="/media/marque/fractalinnov-logo.webp" alt="Fractal Innov" class="masthead-logo-img"
+             width="770" height="142" loading="eager" decoding="async">
       </a>
 
-      <nav class="main-nav" aria-label="Navigation principale">
-        <a class="nav-link" href="#fondateur" data-cible="fondateur">Fondateur</a>
-        <a class="nav-link" href="#approche" data-cible="approche">Approche</a>
-        <a class="nav-link" href="#offre" data-cible="offre">Agence WebXR</a>
-        <a class="nav-link" href="#demos" data-cible="demos">Démos</a>
-        <a class="nav-link" href="#partenaires" data-cible="partenaires">Partenaires</a>
+      <nav class="main-nav" id="mainNav" aria-label="Navigation principale">
+        <div class="main-nav-links">
+          <a href="#fondateur" class="nav-link">Fondateur</a>
+          <a href="#approche" class="nav-link">Approche</a>
+          <a href="#offre" class="nav-link">Agence WebXR</a>
+          <a href="#demos" class="nav-link">Démos</a>
+          <a href="#partenaires" class="nav-link">Partenaires</a>
+        </div>
+        <a href="#contact" class="masthead-cta">Contact</a>
       </nav>
 
-      <div class="masthead-actions">
-        <a class="masthead-cta" href="#contact">Contact</a>
-        <button class="burger" type="button" aria-label="Ouvrir le menu"
-                aria-expanded="false" aria-controls="menu-mobile">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
+      <button class="burger" id="burgerBtn" type="button"
+              aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mainNav">
+        <span></span><span></span><span></span>
+      </button>
 
-      <nav class="menu-mobile" id="menu-mobile" data-ouvert="non" aria-label="Navigation mobile">
-        <a href="#fondateur">Fondateur</a>
-        <a href="#approche">Approche</a>
-        <a href="#offre">Agence WebXR</a>
-        <a href="#demos">Démos</a>
-        <a href="#partenaires">Partenaires</a>
-      </nav>
+      <div class="masthead-bg" aria-hidden="true"></div>
     </div>
   </header>
 
@@ -923,9 +1206,10 @@
           scientifique.</p>
 
         <div class="hero__actions">
-          <a class="btn" href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-             target="_blank" rel="noopener">Prendre rendez-vous</a>
-          <a class="btn btn--secondaire" href="#fondateur">Rencontrer le fondateur</a>
+          <a class="hero-cta__btn hero-cta__btn--primary"
+             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+             target="_blank" rel="noopener"><span>Prendre rendez-vous</span></a>
+          <a class="hero-cta__btn hero-cta__btn--secondary" href="#fondateur">Rencontrer le fondateur</a>
         </div>
 
         <div class="hero__identite">
@@ -1041,8 +1325,58 @@
         </div>
       </section>
 
-      <!-- Les sections offre, démos, partenaires et contact arrivent aux
-           tâches 4 à 6 du plan. -->
+      <!-- ══ OFFRE ═══════════════════════════════════════════════════════ -->
+      <section class="section" id="offre">
+        <p class="section-number reveal">L'agence</p>
+        <h2 class="reveal">Faire comprendre votre produit, là où il ne peut pas être</h2>
+        <p class="reveal">Deux situations, un même objectif : que votre interlocuteur saisisse
+          l'essentiel sans attendre qu'on le lui explique.</p>
+
+        <div class="offres">
+          <article class="carte offre reveal">
+            <div class="offre__media">
+              <img src="/media/accueil/offre-stand.webp"
+                   alt="La borne STAND sur un stand de salon, vue d'ensemble de la scène 3D"
+                   width="1600" height="1063" loading="lazy" decoding="async">
+            </div>
+            <div class="offre__corps">
+              <p class="offre__eyebrow">Sur un salon · STAND</p>
+              <h3>Votre produit ne voyage pas ? Votre démo, si</h3>
+              <p class="offre__texte">Une borne tactile sur votre stand : chaque visiteur découvre
+                votre produit seul, à son rythme, même sans connexion. Vos commerciaux gardent
+                l'outil pour les salons suivants.</p>
+              <div class="offre__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" href="/stand/"><span>Découvrir STAND</span></a>
+              </div>
+            </div>
+          </article>
+
+          <article class="carte offre reveal">
+            <div class="offre__media">
+              <img src="/media/accueil/demos/midipile.webp"
+                   alt="Le démonstrateur Midipile : un utilitaire électrique en 3D, configurable dans le navigateur"
+                   width="1080" height="607" loading="lazy" decoding="async">
+            </div>
+            <div class="offre__corps">
+              <p class="offre__eyebrow">En ligne</p>
+              <h3>Vos clients ne se déplacent pas ? Allez vers eux</h3>
+              <p class="offre__texte">Un simple lien pour explorer votre produit sous tous les
+                angles, puis le poser chez soi à travers l'écran du téléphone. Rien à installer.
+                Deux démonstrateurs tournent déjà en ligne.</p>
+              <div class="offre__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" href="/midipile/"
+                   target="_blank" rel="noopener"><span>Voir un exemple</span></a>
+                <a class="hero-cta__btn hero-cta__btn--secondary"
+                   href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+                   target="_blank" rel="noopener">Prendre rendez-vous</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Les sections démos, partenaires et contact arrivent aux tâches 5
+           et 6 du plan. -->
     </div>
   </main>
 
@@ -1093,30 +1427,51 @@
       }
 
       /* ── Le menu mobile ────────────────────────────────────────────────
-         `aria-expanded` porte l'état : le CSS s'en sert pour la croix, le
-         lecteur d'écran pour annoncer l'ouverture. Une seule source. */
-      var burger = document.querySelector('.burger');
-      var menu = document.getElementById('menu-mobile');
-      if (burger && menu) {
-        var basculer = function (ouvrir) {
-          burger.setAttribute('aria-expanded', ouvrir ? 'true' : 'false');
-          burger.setAttribute('aria-label', ouvrir ? 'Fermer le menu' : 'Ouvrir le menu');
-          menu.dataset.ouvert = ouvrir ? 'oui' : 'non';
-          journal('menu mobile', ouvrir ? 'ouvert' : 'fermé');
+         Le mécanisme de /stand/, aux mêmes noms de classes : `active` sur le
+         burger (la croix), `menu-open` sur la nav (elle glisse), et le
+         défilement du corps verrouillé pendant l'ouverture, sinon la page
+         continue de bouger derrière le plein écran.
+
+         ⚠️ Deux ajouts par rapport à /stand/, qui ne changent ni l'apparence
+         ni le geste : `aria-expanded` sur le bouton, et Échap qui referme en
+         rendant le focus. Sans eux, un lecteur d'écran n'annonce pas l'état
+         et le clavier reste prisonnier du panneau. */
+      var burgerBtn = document.getElementById('burgerBtn');
+      var mainNav = document.getElementById('mainNav');
+      if (burgerBtn && mainNav) {
+        var fermerMenu = function () {
+          burgerBtn.classList.remove('active');
+          mainNav.classList.remove('menu-open');
+          burgerBtn.setAttribute('aria-expanded', 'false');
+          burgerBtn.setAttribute('aria-label', 'Ouvrir le menu');
+          document.body.style.overflow = '';
+          journal('menu plein écran fermé');
         };
-        burger.addEventListener('click', function () {
-          basculer(burger.getAttribute('aria-expanded') !== 'true');
+        burgerBtn.addEventListener('click', function () {
+          var ouvre = !mainNav.classList.contains('menu-open');
+          burgerBtn.classList.toggle('active', ouvre);
+          mainNav.classList.toggle('menu-open', ouvre);
+          burgerBtn.setAttribute('aria-expanded', ouvre ? 'true' : 'false');
+          burgerBtn.setAttribute('aria-label', ouvre ? 'Fermer le menu' : 'Ouvrir le menu');
+          document.body.style.overflow = ouvre ? 'hidden' : '';
+          journal('menu plein écran', ouvre ? 'ouvert' : 'fermé');
         });
-        menu.addEventListener('click', function (e) {
-          if (e.target.closest('a')) basculer(false);
+        /* Le CTA fait partie du menu sur téléphone : il doit refermer aussi. */
+        mainNav.querySelectorAll('.nav-link, .masthead-cta').forEach(function (lien) {
+          lien.addEventListener('click', function () {
+            if (mainNav.classList.contains('menu-open')) fermerMenu();
+          });
         });
         document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && menu.dataset.ouvert === 'oui') { basculer(false); burger.focus(); }
+          if (e.key === 'Escape' && mainNav.classList.contains('menu-open')) {
+            fermerMenu();
+            burgerBtn.focus();
+          }
         });
-        /* Repasser en large avec le menu ouvert laisserait un panneau
-           fantôme sous une navigation redevenue horizontale. */
+        /* Repasser en grand écran avec le menu ouvert laisserait le corps
+           verrouillé et un panneau fantôme au-dessus de la page. */
         window.addEventListener('resize', function () {
-          if (window.innerWidth > 950 && menu.dataset.ouvert === 'oui') basculer(false);
+          if (window.innerWidth > 950 && mainNav.classList.contains('menu-open')) fermerMenu();
         });
       }
 
