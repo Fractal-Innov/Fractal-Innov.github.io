@@ -291,10 +291,10 @@ inconnue est ignorée et journalisée.
 - **Navbar** : la règle du 25/09/2026 tient toujours, une seule rangée.
 - **Journal de debug** (`?debug=1`) : chaque module raconte le flux
   (« chapitre 3 → 4 », « situation : former, venue de l'URL »), muet sinon.
-- **Poids** : moins de 40 Ko ajoutés au document (CSS + JS + balisage).
-  📌 Relevé de 15 à 40 Ko le 25/09/2026 : la troisième carte d'usage et les
-  commentaires pédagogiques, gardés par choix de Corentin (le code n'est
-  jamais compressé).
+- **Poids** : le document `index.html` reste sous **500 Ko** au total.
+  📌 Budget fixé par Corentin le 25/09/2026 (d'abord 15 Ko ajoutés, puis
+  40) : les commentaires pédagogiques sont gardés. À resserrer si l'usage
+  sur réseau mobile le demande (mesure transférée, compressée, à suivre).
 - **Un seul fichier** : tout reste dans `index.html`, comme le reste de la
   page.
 
@@ -367,7 +367,7 @@ situation est une information, pas un trou.
 7. Sans JS : texte complet, les boutons du hero mènent aux cartes.
 8. Un écouteur posé en console reçoit `fi:chapitre`, `fi:situation`,
    `fi:geste`, et `fi:aller { pas: 1 }` fait avancer d'un chapitre.
-9. Poids ajouté sous 40 Ko ; aucun tiret cadratin dans le texte visible ;
+9. Document sous 500 Ko ; aucun tiret cadratin dans le texte visible ;
    aucun point final dans les titres.
 10. Avec `?debug=1`, le journal montre chaque mesure (« rdv-demande,
     situation former, emplacement contact ») ; sans le script Umami
