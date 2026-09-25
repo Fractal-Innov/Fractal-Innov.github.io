@@ -1670,6 +1670,29 @@
     .etapes__geste [hidden] { display: none; }
     .contact__atelier { margin: 0.75rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
 
+    /* ── Ce que la situation allume ─────────────────────────────────────
+       ⚠️ Rien n'est masqué ni réordonné dans les offres et les démos :
+       réordonner ferait sauter le contenu sous le doigt. On allume. */
+    body[data-situation="convaincre"] [data-usages~="convaincre"],
+    body[data-situation="former"] [data-usages~="former"],
+    body[data-situation="garder"] [data-usages~="garder"] {
+      border: 1px solid transparent;
+      background: linear-gradient(var(--bg-base-2), var(--bg-base-2)) padding-box,
+                  var(--brand-gradient) border-box;
+      box-shadow: 0 18px 48px -22px rgba(139, 92, 246, 0.6);
+    }
+    body[data-situation="convaincre"] [data-usages~="convaincre"] .badge-cas[hidden],
+    body[data-situation="former"] [data-usages~="former"] .badge-cas[hidden],
+    body[data-situation="garder"] [data-usages~="garder"] .badge-cas[hidden] { display: inline-flex; }
+    body[data-situation="convaincre"] [data-pour="convaincre"][hidden],
+    body[data-situation="former"] [data-pour="former"][hidden],
+    body[data-situation="garder"] [data-pour="garder"][hidden] { display: inline; }
+    body[data-situation] [data-pour="aucune"] { display: none; }
+    /* Le fondateur : le repère de la situation passe en tête de liste. */
+    body[data-situation="convaincre"] .repere[data-usages~="convaincre"],
+    body[data-situation="former"] .repere[data-usages~="former"],
+    body[data-situation="garder"] .repere[data-usages~="garder"] { order: -1; }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
@@ -2740,6 +2763,86 @@
         var canal = e.target.closest('[data-canal]');
         if (canal) mesurer(MESURES.contactDirect, { canal: canal.getAttribute('data-canal') });
       });
+
+      /* ── LA SITUATION ──────────────────────────────────────────────────
+         Une seule variable, écrite de trois endroits : un bouton du hero,
+         le menu du dock, l'URL à l'arrivée (lien de relance).
+         ⚠️ L'URL n'est LUE qu'une fois, au démarrage ; ensuite c'est le
+         choix qui l'écrit, jamais l'inverse. Deux sources qui se lisent
+         l'une l'autre finissent par se contredire. */
+      var situation = null;
+      var boutonsSituation = document.querySelectorAll('[data-situation-choix]');
+
+      function choisirSituation(id, origine) {
+        if (id !== null && !SITUATIONS.hasOwnProperty(id)) {
+          journal('situation inconnue, ignorée :', id);
+          return;
+        }
+        if (id === situation) return;
+        var avant = situation;
+        situation = id;
+        if (id) document.body.setAttribute('data-situation', id);
+        else document.body.removeAttribute('data-situation');
+        boutonsSituation.forEach(function (b) {
+          if (b.getAttribute('data-situation-choix') === id) b.setAttribute('aria-current', 'true');
+          else b.removeAttribute('aria-current');
+        });
+        /* `replaceState` et non `pushState` : changer de situation ne doit
+           pas ajouter une page au bouton Précédent. */
+        try {
+          var url = new URL(location.href);
+          if (id) url.searchParams.set('situation', id);
+          else url.searchParams.delete('situation');
+          history.replaceState(history.state, '', url.pathname + url.search + url.hash);
+        } catch (e) { /* file:// ou navigateur ancien : la page marche sans */ }
+        journal('situation :', (avant || 'aucune') + ' → ' + (id || 'aucune'), '(venue de : ' + origine + ')');
+        emettre('fi:situation', { id: id, origine: origine });
+      }
+
+      /* Le lien du hero garde son ancre : on choisit, PUIS le navigateur
+         descend à la carte, comme sans JavaScript. */
+      document.addEventListener('click', function (e) {
+        var cible = e.target.closest && e.target.closest('[data-situation-choix]');
+        if (!cible) return;
+        var v = cible.getAttribute('data-situation-choix');
+        choisirSituation(v === 'aucune' ? null : v, cible.getAttribute('data-origine') || 'hero');
+      });
+
+      /* ── ALLER À UN CHAPITRE (fi:aller) ────────────────────────────────
+         La porte d'entrée du dock et de la future télécommande.
+         ⚠️ Pendant un défilement doux, `data-chapitre` n'a pas encore
+         changé : deux « suivant » rapides viseraient deux fois le même
+         chapitre. On compte donc depuis la DERNIÈRE cible pendant 1 s. */
+      var derniereCible = -1;
+      var cibleViseeA = 0;
+      document.addEventListener('fi:aller', function (e) {
+        var d = e.detail || {};
+        var rang = IDS.indexOf(d.chapitre);
+        if (rang < 0 && (d.pas === 1 || d.pas === -1)) {
+          var depart = (derniereCible >= 0 && performance.now() - cibleViseeA < 1000)
+            ? derniereCible
+            : Math.max(0, IDS.indexOf(document.body.getAttribute('data-chapitre') || 'top'));
+          rang = depart + d.pas;
+          if (rang < 0 || rang >= IDS.length) { journal('fi:aller : déjà au bout du parcours'); return; }
+        }
+        if (rang < 0) { journal('fi:aller : chapitre inconnu', d); return; }
+        derniereCible = rang;
+        cibleViseeA = performance.now();
+        journal('fi:aller →', IDS[rang]);
+        document.getElementById(IDS[rang]).scrollIntoView({ behavior: sobre ? 'auto' : 'smooth', block: 'start' });
+      });
+
+      /* ── AU DÉMARRAGE ──────────────────────────────────────────────────
+         ⚠️ Cette section reste la DERNIÈRE du script : tous les écouteurs
+         (mesure, dock) doivent être posés avant que la situation venue de
+         l'URL ne soit annoncée, sinon ils la manquent. */
+      var depuisUrl = null;
+      try { depuisUrl = new URLSearchParams(location.search).get('situation'); } catch (e) {}
+      if (depuisUrl !== null) {
+        if (SITUATIONS.hasOwnProperty(depuisUrl)) choisirSituation(depuisUrl, 'url');
+        else journal('?situation=' + depuisUrl + ' inconnue : la page reste neutre');
+      }
+      journal('parcours prêt, chapitre', document.body.getAttribute('data-chapitre') || 'top');
     })();
   </script>
 </body>
