@@ -162,6 +162,11 @@
          `.masthead-inner`, comme chez /stand/, parce qu'elles changent de
          valeur selon la largeur d'écran. */
       --radius-card: 16px;
+      /* La courbe des transitions de la charte (`charte.css`, `socle/ui/theme.css`).
+         ⚠️ Elle était utilisée sans être définie : une `var()` sans valeur
+         annule toute la déclaration, et le zoom des images de carte ne
+         s'animait plus (saut sec au survol). */
+      --ease-morph: cubic-bezier(0.34, 1.2, 0.64, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; }
@@ -1085,7 +1090,9 @@
       flex-direction: column;
       padding: 0;
       overflow: hidden;
-      border-radius: var(--radius-enveloppe);
+      /* ⚠️ `--radius-enveloppe` n'existe nulle part : la carte perdait son
+         arrondi (rayon 0) sans que rien ne le signale. */
+      border-radius: var(--radius-card);
     }
     /* Le média d'une carte, partagé par les offres et les démonstrateurs.
        ⚠️ Une seule définition pour les deux : c'est ce qui garantit qu'une
