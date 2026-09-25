@@ -60,9 +60,15 @@ réglée sur le cas du prospect.
 
 | id | Le bouton | La situation reconnue | La preuve qui tourne |
 |---|---|---|---|
-| `convaincre` | Convaincre un acheteur | « Ma machine ne tient pas sur un stand » | STAND, Midipile |
-| `former` | Former un nouvel arrivant | « On apprend sur l'équipement en production » | Rayon X |
-| `garder` | Garder le geste d'un expert | « Mon expert part, son savoir-faire aussi » | À fleur d'écorce |
+| `convaincre` | Convaincre un acheteur | « Notre équipement est trop lourd pour voyager, et le déplacer coûte cher » | STAND, Midipile |
+| `former` | Former un nouvel arrivant | « On apprend sur l'équipement en production, et notre savoir-faire est confidentiel » | Rayon X |
+| `garder` | Garder un savoir-faire | « Nos savoir-faire partent avec ceux qui les ont » | À fleur d'écorce |
+
+📌 Amendé le 25/09/2026 à la validation : « Convaincre » reprend l'angle
+moins niche de STAND (équipements lourds, encombrants, coût et impact
+logistique) ; « Former » souligne un savoir-faire, compatible avec des
+solutions sous NDA ; « Garder » couvre les processus de fabrication, les
+savoir-faire et le geste d'une artiste, d'où le bouton élargi.
 
 Le village n'est rattaché à aucune situation : c'est la visite de tout le site.
 
@@ -128,16 +134,18 @@ dit ce qui se passe après. Ce qui n'est pas encore dans `VENTE.md` est marqué
   il reste. Dans le navigateur, sans application. »
 - Question : « Votre savoir doit d'abord : »
 - Boutons : « Convaincre un acheteur » · « Former un nouvel arrivant » ·
-  « Garder le geste d'un expert » · lien discret « Juste regarder »
+  « Garder un savoir-faire » · lien discret « Juste regarder »
 - CTA primaire : « Réserver 30 min » (remplace « Prendre rendez-vous »)
 
 ### Le fondateur
 Les tags de secteurs (Industrie, Formation, Art, Médiation scientifique)
 deviennent trois repères d'usage :
-- **Convaincre** : démonstrateurs pour les forces de vente (Greentech,
-  Mobilité, Énergie)
-- **Former** : parcours de formation sur équipement (Rayon X)
-- **Garder** : le geste d'une artiste, rejouable (Mathilde Thiennot)
+- **Convaincre** : vos équipements lourds et encombrants, présentés sans
+  le coût ni l'impact logistique du transport
+- **Former** : des parcours sur équipement qui mettent en valeur un
+  savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)
+- **Garder** : processus de fabrication, savoir-faire, geste d'une
+  artiste, rejouables étape par étape (Mathilde Thiennot)
 
 ### L'approche
 L'étape 01 garde son contenu et prend son nom réel :
@@ -154,17 +162,21 @@ L'étape 01 garde son contenu et prend son nom réel :
 
 | Carte (`id`) | Titre | Texte | Preuve |
 |---|---|---|---|
-| `usage-convaincre` | Votre machine ne tient pas sur un stand ? Votre démo, si | Le produit en 3D sur une borne ou derrière un lien : chaque acheteur le découvre à son rythme, même sans connexion. Vos commerciaux gardent l'outil d'un salon à l'autre. | STAND, Midipile |
-| `usage-former` | Vos nouveaux arrivants apprennent sur l'équipement en production ? | Ils le démontent, le parcourent et recommencent en 3D, sans arrêter la ligne ni prendre de risque. **[à valider : sur poste, tablette ou casque]** | Rayon X |
-| `usage-garder` | Votre expert part, son savoir-faire aussi ? | Son geste est capturé, découpé en étapes et rejouable : ceux qui arrivent le revoient sous tous les angles, aussi souvent qu'il le faut. **[à valider : la captation fait-elle partie de l'offre]** | À fleur d'écorce |
+| `usage-convaincre` | Votre produit ne voyage pas ? Votre démo, si | Machines, équipements lourds, systèmes intégrés : leur jumeau 3D se présente sur une borne ou derrière un lien, sans transport, sans montage, sans le coût ni l'impact logistique d'un convoi. Vos commerciaux gardent l'outil d'un salon à l'autre. | STAND, Midipile |
+| `usage-former` | Vos nouveaux arrivants apprennent sur l'équipement en production ? | Ils le démontent, le parcourent et recommencent en 3D, sans arrêter la ligne ni prendre de risque. Le parcours met en valeur votre savoir-faire et respecte vos accords de confidentialité. | Rayon X |
+| `usage-garder` | Vos savoir-faire partent avec ceux qui les ont ? | Un processus de fabrication, un tour de main, le geste d'une artiste : capturés, découpés en étapes et rejouables sous tous les angles, aussi souvent qu'il le faut. La captation se fait avec vous, ou avec un partenaire spécialisé selon le besoin. | À fleur d'écorce |
+
+Le titre de la carte « Convaincre » est celui de l'offre actuelle, gardé tel
+quel : c'est l'accroche qui marche. Aucune carte ne cite plus de support
+(poste, tablette, casque) tant que `VENTE.md` ne le dit pas.
 
 Chaque carte finit par « Réserver 30 min ». La carte « Convaincre » garde en
 plus le lien « Découvrir STAND ».
 
 ### Contact
 - Titre neutre : « Un projet ou une idée en tête ? » (gardé)
-- Variantes : « Parlons de votre prochain salon » · « Parlons de vos nouveaux
-  arrivants » · « Parlons du geste de votre expert »
+- Variantes : « Parlons de l'équipement qui ne voyage pas » · « Parlons de
+  vos nouveaux arrivants » · « Parlons du savoir-faire à garder »
 - Sous le CTA : « L'atelier de cadrage, gratuit : nous partons de votre
   situation et du socle existant. »
 
@@ -285,10 +297,47 @@ inconnue est ignorée et journalisée.
 
 ---
 
+## 9 bis. La mesure (Umami)
+
+Ajoutée le 25/09/2026 à la validation. Même approche que
+`Needle5/socle/mesure/analytique.ts`, utilisée par fi.fr, RayonX et le Salon.
+
+- **Le script** : celui des autres pages du site, même identifiant,
+  `<script defer src="https://cloud.umami.is/script.js"
+  data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14">`. Umami ne pose
+  aucun cookie : pas de bandeau de consentement.
+- **Le contrat du socle, porté en JS simple** (la page n'a pas de build) :
+  `mesurer(nom, donnees)` ne lève jamais d'exception et ne fait rien sans le
+  script (bloqueur, hors ligne, local) ; `mesurerUneFois(cle, nom, donnees)`
+  ne compte qu'une fois par visite. Les noms sont en kebab-case, regroupés
+  dans une seule table `MESURES`, comme `offreMesures.ts`.
+- **La mesure écoute le contrat du parcours** (§ 8) : aucun geste n'appelle
+  Umami lui-même. Le parcours émet, la mesure compte, exactement comme le son
+  et la télécommande le feront.
+
+| Événement | Données | Quand | Ce qu'il répond |
+|---|---|---|---|
+| `situation-choisie` | `situation`, `origine` (`hero`, `dock`, `url`) | à chaque choix | quelle situation attire, et d'où vient le choix |
+| `chapitre-atteint` | `chapitre`, `rang` | une fois par chapitre et par visite | jusqu'où on lit (l'entonnoir) |
+| `geste` | `chapitre`, `geste` | une fois par geste et par visite | quels gestes sont joués |
+| `guide-ouvert` | aucune | une fois par visite, pastille touchée | la pastille attire-t-elle |
+| `rdv-demande` | `situation`, `emplacement` (`hero`, `offre`, `approche`, `contact`) | clic sur un « Réserver 30 min » | **la conversion**, et quel CTA la porte |
+| `demo-ouverte` | `demo`, `situation` | clic sur une démo | même nom que dans fi.fr : quelle preuve convainc |
+| `contact-direct` | `canal` (`email`, `linkedin`, `carte`, `instagram`) | clic sur un autre canal | même nom que dans fi.fr |
+
+`situation` vaut `aucune` tant que rien n'est choisi : une conversion sans
+situation est une information, pas un trou.
+
+---
+
 ## 10. Hors de ce sous-projet
 
 - Le son (sous-projet 2), la télécommande et son mode présentation
   (sous-projet 3), la passe `veilleur` SEO/GEO (sous-projet 4).
+  📌 **Contrainte posée pour le sous-projet 3** (25/09/2026) : pendant les
+  temps de démo, **Corentin tient l'écran** (téléphone ou autre support) et
+  **c'est le visiteur qui a la télécommande**. Elle doit donc se comprendre
+  sans explication, dans les mains d'un inconnu, sans PIN (mode public).
 - La nouvelle approche de prix de STAND, et la mise à jour de `/stand/` et
   de `stand/VENTE.md` qui en découlera.
 - La version anglaise (la structure la permet : les textes sont dans le
@@ -317,6 +366,9 @@ inconnue est ignorée et journalisée.
    `fi:geste`, et `fi:aller { pas: 1 }` fait avancer d'un chapitre.
 9. Poids ajouté sous 15 Ko ; aucun tiret cadratin dans le texte visible ;
    aucun point final dans les titres.
+10. Avec `?debug=1`, le journal montre chaque mesure (« rdv-demande,
+    situation former, emplacement contact ») ; sans le script Umami
+    (bloqueur simulé), la page fonctionne et la console reste sans erreur.
 
 ## 12. Ce qui risque de mordre
 
