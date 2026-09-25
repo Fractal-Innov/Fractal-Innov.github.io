@@ -1693,6 +1693,30 @@
     body[data-situation="former"] .repere[data-usages~="former"],
     body[data-situation="garder"] .repere[data-usages~="garder"] { order: -1; }
 
+    /* ── Les gestes ── */
+    /* ⚠️ On éteint les ENFANTS de l'étape, pas l'étape : elle porte déjà
+       l'opacité de `.reveal`, et deux règles d'opacité se battraient. */
+    .etapes[data-etape] .etape > * { transition: opacity 0.4s ease; }
+    .etapes[data-etape] .etape:not(.etape--allumee) > * { opacity: 0.38; }
+
+    .partenaires { position: relative; }
+    .partenaire { position: relative; z-index: 1; }
+    .constellation {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      overflow: visible; pointer-events: none; z-index: 0;
+    }
+    .constellation path {
+      fill: none; stroke: var(--accent-purple); stroke-width: 1.5; stroke-linecap: round;
+      stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
+      transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+    }
+    .partenaires.reliee .constellation path { stroke-dashoffset: 0; opacity: 0.55; }
+    .partenaire__logo { transition: opacity 0.4s ease, box-shadow 0.4s ease; }
+    .partenaires.reliee .partenaire__logo {
+      opacity: 1;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 26px rgba(139, 92, 246, 0.5);
+    }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
@@ -2831,6 +2855,76 @@
         journal('fi:aller →', IDS[rang]);
         document.getElementById(IDS[rang]).scrollIntoView({ behavior: sobre ? 'auto' : 'smooth', block: 'start' });
       });
+
+      /* ── LES GESTES ────────────────────────────────────────────────────
+         Un geste par chapitre, qui se joue et ne se subit pas : aucun ne
+         fait défiler la page. Le fondateur, l'offre, les démos et le
+         contact sont « joués » par la situation (CSS) ; restent ces deux. */
+
+      /* L'approche : « Étape suivante » allume les trois temps l'un après
+         l'autre. Sans JS, le bouton reste `hidden` et tout est allumé. */
+      var boiteEtapes = document.querySelector('#approche .etapes');
+      var etapes = boiteEtapes ? boiteEtapes.querySelectorAll('.etape') : [];
+      var btnEtape = document.getElementById('etapeSuivante');
+      if (etapes.length && btnEtape) {
+        var allumees = 0;
+        var allumer = function (n) {
+          allumees = n;
+          etapes.forEach(function (el, i) {
+            el.classList.toggle('etape--allumee', i < n);
+            if (i === n - 1) el.setAttribute('aria-current', 'step');
+            else el.removeAttribute('aria-current');
+          });
+          btnEtape.textContent = n >= etapes.length ? 'Revoir depuis le début' : 'Étape suivante';
+        };
+        boiteEtapes.setAttribute('data-etape', '');
+        allumer(1);
+        btnEtape.hidden = false;
+        btnEtape.addEventListener('click', function () {
+          allumer(allumees >= etapes.length ? 1 : allumees + 1);
+          journal('approche : étape', allumees, 'allumée');
+          emettre('fi:geste', { chapitre: 'approche', geste: 'etape', etape: allumees });
+        });
+      }
+
+      /* Les partenaires : au survol ou au toucher, les monogrammes se
+         relient en constellation. Le tracé est recalculé à chaque fois, sur
+         la position réelle des logos : la grille change de colonnes avec la
+         largeur. ⚠️ Au toucher, `pointerleave` arrive dès que le doigt se
+         lève : on n'éteint alors qu'en quittant le chapitre. */
+      var grillePart = document.querySelector('#partenaires .partenaires');
+      if (grillePart) {
+        var ciel = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        ciel.setAttribute('class', 'constellation');
+        ciel.setAttribute('aria-hidden', 'true');
+        grillePart.appendChild(ciel);
+        var constellationVue = false;
+        var relier = function () {
+          var base = grillePart.getBoundingClientRect();
+          var d = Array.prototype.map.call(grillePart.querySelectorAll('.partenaire__logo'), function (logo, i) {
+            var r = logo.getBoundingClientRect();
+            return (i ? 'L' : 'M') + Math.round(r.left - base.left + r.width / 2) + ' ' + Math.round(r.top - base.top + r.height / 2);
+          }).join(' ');
+          ciel.setAttribute('viewBox', '0 0 ' + Math.round(base.width) + ' ' + Math.round(base.height));
+          ciel.innerHTML = '<path pathLength="1" d="' + d + '"></path>';
+        };
+        var allumerCiel = function () {
+          if (grillePart.classList.contains('reliee')) return;
+          relier();
+          ciel.getBoundingClientRect(); /* force le premier rendu : sans lui, pas de tracé animé */
+          grillePart.classList.add('reliee');
+          journal('partenaires : constellation reliée');
+          if (!constellationVue) {
+            constellationVue = true;
+            emettre('fi:geste', { chapitre: 'partenaires', geste: 'constellation', etape: 1 });
+          }
+        };
+        var eteindreCiel = function () { grillePart.classList.remove('reliee'); };
+        grillePart.addEventListener('pointerenter', allumerCiel);
+        grillePart.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') eteindreCiel(); });
+        document.addEventListener('fi:chapitre', function (e) { if (e.detail.id !== 'partenaires') eteindreCiel(); });
+        window.addEventListener('resize', function () { if (grillePart.classList.contains('reliee')) relier(); });
+      }
 
       /* ── AU DÉMARRAGE ──────────────────────────────────────────────────
          ⚠️ Cette section reste la DERNIÈRE du script : tous les écouteurs
