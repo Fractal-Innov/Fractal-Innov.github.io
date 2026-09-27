@@ -577,6 +577,7 @@ Puis :
 ```
 Expected : `["object", false, true, "1"]` ; console : `[son] prêt, son coupé · chapitre de départ 1`, `[son] son allumé`, `[son] moteur audio créé`, `[son] ♪ confirmation : do4-sol4 · timbre aucune`.
 
+Dans un **second** appel (sinon la note tombe moins de 80 ms après l'accord de confirmation, et l'écart minimal l'ignore, à juste titre) :
 ```js
 document.dispatchEvent(new CustomEvent('fi:chapitre', { detail: { id: 'demos', rang: 3, total: 7 } }));
 document.dispatchEvent(new CustomEvent('fi:chapitre', { detail: { id: 'approche', rang: 4, total: 7 } }));
@@ -585,9 +586,9 @@ Expected console : `♪ chapitre demos : mi4`, puis `chapitre approche : moins d
 
 - [ ] **Step 5 : Arrivée par une ancre profonde (Review Focus 2)**
 
-Le son est allumé (`fi:son` = `'1'`). Naviguer vers `http://localhost:4000/?debug=1#demos`.
-Expected console : `[son] prêt, son allumé (en attente d'un geste) · chapitre de départ 3`.
-Cliquer n'importe où dans la page. Expected : `[son] réveillé par le premier geste de la visite`.
+Le son est allumé (`fi:son` = `'1'`). Charger `http://localhost:4000/?debug=1#demos` par un **vrai rechargement** (`location.reload()` : changer seulement l'ancre ne recharge pas la page).
+Expected console : `[son] prêt, son allumé (en attente d'un geste) · chapitre de départ 1`. C'est juste : la page part du haut, puis le navigateur descend à `#demos` en émettant `offre` puis `demos`, que le son reçoit.
+Cliquer n'importe où dans la page. Expected : `[son] réveillé par le premier geste de la visite`. Puis, en JS : `document.dispatchEvent(new CustomEvent('fi:geste', { detail: { chapitre: 'demos', geste: 'test' } }))`. Expected : `♪ geste test (ornement par défaut) : mi5` (rang 3 + une octave : le degré courant est le bon).
 
 - [ ] **Step 6 : L'accord de la réservation survit à l'arrière-plan (Review Focus 1)**
 

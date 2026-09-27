@@ -48,6 +48,11 @@
           data-website-id="6d76c813-ff70-4f96-b7c3-186f17661a14"
           data-domains="www.fractal-innov.fr,fractal-innov.fr"></script>
 
+  <!-- Les composants partagés (voir /galerie/), servis tels quels.
+       ⚠️ `defer` s'exécute dans l'ordre d'écriture : son.js AVANT
+       composants.js, qui lit window.FiSon pour le bouton son. -->
+  <script defer src="/composants/son.js"></script>
+
   <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
        d'envoyer l'adresse IP du visiteur à un tiers sans son consentement. -->
   <link rel="preload" href="/media/polices/outfit-latin-400.woff2" as="font" type="font/woff2" crossorigin>
