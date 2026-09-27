@@ -231,6 +231,16 @@ dans la galerie. Noms en français, préfixe de classe du composant.
 
 ## 6. Le moteur d'intonations (`son.js`)
 
+> ⚠️ **Remplacé le 27/09/2026 après écoute** : trop présent (une note par
+> section) et trop simple (un bip aigu). Le moteur reprend désormais la
+> grammaire de la voix du village (`Needle5/.../voixDuVillage.ts`,
+> `Needle5/socle/son/synthese.ts`) : silence au défilement, un symbole
+> seulement quand un CTA est actionné, sol grave à 196 Hz, salle (réverbe
+> générée et écho), passe-bas qui se referme, symboles de deux notes au
+> moins dont le sens compte, règle de la queue, doublure réservée à la
+> réservation. L'en-tête de `composants/son.js` fait foi ; la suite de
+> cette section décrit la première version.
+
 ### La gamme et les timbres
 
 - **Pentatonique majeure en do** : aucune combinaison ne sonne faux.

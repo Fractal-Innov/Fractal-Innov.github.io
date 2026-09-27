@@ -1,21 +1,42 @@
 /* ══════════════════════════════════════════════════════════════════════
    LE MOTEUR D'INTONATIONS (composants/son.js)
    spec : docs/superpowers/specs/2026-09-27-galerie-affordance-son-design.md § 6
+   d'après la voix du village (Needle5/Needle/fractal-innov/src/scripts/
+   voixDuVillage.ts et Needle5/socle/son/synthese.ts), jalons 55 à 57
 
-   Ce qu'il fait : il ÉCOUTE le parcours (fi:chapitre, fi:situation,
-   fi:geste) et répond par une note. Il ne connaît aucun composant, aucun
-   sélecteur : un composant nouveau sonne sans qu'on touche à ce fichier.
+   Ce qu'il fait : il ÉCOUTE les gestes du visiteur (fi:situation,
+   fi:geste, fi:son) et répond par un petit symbole sonore. Il ne connaît
+   aucun composant, aucun sélecteur : un composant nouveau sonne sans
+   qu'on touche à ce fichier.
 
-   Ce qu'il promet :
+   Les règles, reprises du village :
+     1. **Le silence entre deux gestes n'est pas un manque.** Défiler ne
+        joue rien (retour d'usage du 27/09/2026 : une note par section,
+        c'était trop présent). Seul un CTA actionné sonne ; un panneau qui
+        défile tout seul (fi:geste avec `auto`) se tait.
+     2. **Grave et dans une salle.** Sol à 196 Hz, gamme pentatonique (aucun
+        demi-ton, donc aucune combinaison ne sonne faux), une réverbe
+        générée et un écho léger : le son a de l'espace au lieu d'un bip.
+     3. **Un son se ferme en s'éteignant.** Un passe-bas suit l'enveloppe :
+        la note s'assombrit en mourant, comme un corps qui résonne.
+     4. **Un symbole a au moins deux notes, et leur sens compte.** Monter,
+        c'est entrer ; descendre, c'est revenir. Le degré d'arrivée est
+        celui de la situation : après « Garder », les gestes se posent sur
+        sol.
+     5. **La règle de la queue.** Si le symbole précédent résonne encore,
+        seule la note d'ARRIVÉE du suivant sonne, plus bas, dans sa
+        réverbe : qui clique vite fait une mélodie, pas un empilement.
+     6. **La doublure à l'octave inférieure est réservée à la
+        réservation** : entendue seule, elle ne peut être que ça.
+
+   Ce qu'il promet aussi :
      - coupé par défaut ; allumé seulement par FiSon.basculer() (le bouton
        son), et le choix est retenu (localStorage « fi:son ») ;
      - le moteur audio du navigateur n'existe pas tant qu'un geste ne l'a
        pas demandé : la page ne paie rien tant que le son est coupé ;
-     - une gamme pentatonique : aucune combinaison ne sonne faux ;
-     - le degré suit le chapitre, le timbre suit la situation ;
      - jamais d'exception : sans Web Audio ou sans stockage, il se tait.
 
-   API    : window.FiSon = { actif(), basculer(), jouer(rang, timbre) }
+   API    : window.FiSon = { actif(), basculer(), jouer(degre) }
    Émet   : fi:son {actif}
    Journal: « ?debug=1 » (clé fi:debug), préfixe [son].
    ══════════════════════════════════════════════════════════════════════ */
@@ -33,45 +54,63 @@
   /* Une promesse rejetée ne doit jamais remonter en console. */
   function sansErreur(p) { if (p && typeof p.catch === 'function') p.catch(function () {}); }
 
-  /* ── La gamme ─────────────────────────────────────────────────────────
-     Pentatonique majeure en do, sur un peu plus de deux octaves. Le rang
-     d'un chapitre (1 à 7) donne l'indice rang - 1 ; + 3 monte d'une quinte
-     dans la gamme, + 5 d'une octave. */
-  var GAMME = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
-  var NOMS = ['do4', 'ré4', 'mi4', 'sol4', 'la4', 'do5', 'ré5', 'mi5', 'sol5', 'la5', 'do6'];
+  /* ── L'accordage ──────────────────────────────────────────────────────
+     ⚠️ 196 Hz et non plus do4 (262 Hz) jusqu'à do6 (1 047 Hz) : au-dessus de
+     1 000 Hz on entre dans la bande où l'oreille fatigue le plus vite, et
+     c'est là que l'ancien moteur passait sa réservation. Un palier monte
+     d'une QUINTE (7 demi-tons), jamais d'une octave : le village a payé
+     pour apprendre qu'une octave par étage sort de la bande utile. */
+  var FONDAMENTALE = 196;
+  var PENTA = [0, 2, 4, 7, 9];
+  var PAS_PALIER = 7;
+  var NOMS = ['sol', 'la', 'si', 'ré', 'mi'];
+  /* Le degré de chaque situation : c'est là que ses gestes se posent. */
+  var DEGRES = { aucune: 0, convaincre: 1, former: 2, garder: 3 };
 
-  /* ── Les timbres : un par situation ──────────────────────────────────
-     attaque et déclin en secondes. `quinte` ajoute la quinte juste (× 1,5)
-     à ce gain (0,25 ≈ −12 dB) ; `passeBas` adoucit les aigus (en Hz). */
-  var TIMBRES = {
-    aucune:     { onde: 'sine',     attaque: 0.015, declin: 0.6 },
-    convaincre: { onde: 'triangle', attaque: 0.008, declin: 0.45 },
-    former:     { onde: 'sine',     attaque: 0.015, declin: 0.7, quinte: 0.25 },
-    garder:     { onde: 'triangle', attaque: 0.04,  declin: 0.9, passeBas: 1200 }
-  };
+  function hauteur(palier, degre) {
+    var octave = Math.floor(degre / PENTA.length);
+    var i = ((degre % PENTA.length) + PENTA.length) % PENTA.length;
+    return FONDAMENTALE * Math.pow(2, (palier * PAS_PALIER) / 12 + octave + PENTA[i] / 12);
+  }
+  function nom(palier, degre) {
+    var i = ((degre % PENTA.length) + PENTA.length) % PENTA.length;
+    return NOMS[i] + palier;
+  }
 
-  var VOLUME = 0.12;              /* gain maître : bas, jamais réglé par la page */
-  var VOIX_MAX = 4;               /* l'accord de la réservation en compte 4 */
-  var ECART_DECLENCHEMENT = 80;   /* ms entre deux déclenchements */
-  var ECART_CHAPITRE = 400;       /* ms : pas de rejeu en oscillant au bord d'une section */
+  var VOLUME = 0.3;               /* le « doux » du village */
+  var COUPURE = 900;              /* passe-bas au palier 0, en Hz */
+  var OUVERTURE_PAR_PALIER = 1.35;
+  var PLAFOND_COUPURE = 3200;
   var DELAI_SUSPENSION = 1500;    /* ms en arrière-plan avant de suspendre */
 
   var actif = false;
   try { actif = localStorage.getItem('fi:son') === '1'; } catch (e) {}
   var ctx = null;
   var maitre = null;
-  var voix = 0;
-  var dernierDeclenchement = -Infinity;
-  /* ⚠️ Ce script est `defer` : le premier fi:chapitre est parti avant lui.
-     Le rang de départ se lit donc sur <body>, posé par le premier script. */
-  var rangCourant = parseInt(document.body.getAttribute('data-chapitre-rang'), 10) || 1;
-  var dernierChapitre = document.body.getAttribute('data-chapitre');
-  var chapitreA = -Infinity;
+  var envoiEcho = null;
+  var finQueue = 0;               /* instant (horloge audio) où la queue du dernier symbole s'éteint */
   var minuterieSuspension = 0;
 
-  function situation() {
+  function degreSituation() {
     var s = document.body.getAttribute('data-situation');
-    return s && TIMBRES.hasOwnProperty(s) ? s : 'aucune';
+    return DEGRES.hasOwnProperty(s) ? DEGRES[s] : 0;
+  }
+  function coupureDe(palier) {
+    return Math.min(PLAFOND_COUPURE, COUPURE * Math.pow(OUVERTURE_PAR_PALIER, palier));
+  }
+
+  /* ── La salle : une réverbe générée, sans fichier à charger ──────────
+     Un bruit qui décroît en exponentielle : la recette classique d'une
+     réverbe bon marché, ni licence ni poids. Plus un écho rebouclé léger
+     qui donne les rebonds distincts après une note longue. */
+  function construireImpulsion(c) {
+    var n = Math.floor(c.sampleRate * 2.4);
+    var buf = c.createBuffer(2, n, c.sampleRate);
+    for (var canal = 0; canal < 2; canal++) {
+      var data = buf.getChannelData(canal);
+      for (var i = 0; i < n; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3.2);
+    }
+    return buf;
   }
 
   /* ── Le moteur audio, créé par un geste seulement ────────────────────
@@ -88,7 +127,21 @@
         maitre = ctx.createGain();
         maitre.gain.value = VOLUME;
         maitre.connect(ctx.destination);
-        journal('moteur audio créé');
+        var convolveur = ctx.createConvolver();
+        convolveur.buffer = construireImpulsion(ctx);
+        envoiEcho = ctx.createGain();
+        envoiEcho.gain.value = 0.45;
+        var delai = ctx.createDelay(1);
+        delai.delayTime.value = 0.19;
+        var reinjection = ctx.createGain();
+        reinjection.gain.value = 0.32;
+        delai.connect(reinjection);
+        reinjection.connect(delai);
+        envoiEcho.connect(convolveur);
+        convolveur.connect(maitre);
+        envoiEcho.connect(delai);
+        delai.connect(maitre);
+        journal('moteur audio créé, avec sa salle');
       }
       if (ctx.state === 'suspended') sansErreur(ctx.resume());
       return true;
@@ -99,112 +152,129 @@
     }
   }
 
-  /* ── Une voix : un ou deux oscillateurs, une enveloppe, un filtre ──── */
-  function note(indice, nomTimbre, delai, court) {
-    if (voix >= VOIX_MAX) { journal('note', NOMS[indice], 'ignorée :', VOIX_MAX, 'voix déjà'); return; }
-    var tb = TIMBRES[nomTimbre] || TIMBRES.aucune;
-    var declin = court ? tb.declin * 0.4 : tb.declin;
-    var t = ctx.currentTime + (delai || 0);
-    var fin = t + tb.attaque + declin;
-    /* Rampes exponentielles : l'oreille entend en logarithme, une rampe
-       linéaire paraîtrait s'éteindre d'un coup à la fin. */
+  /* ── Une note : sinus, enveloppe percussive, filtre qui se referme ───
+     o : { gain, queue (s), envoi (part vers la salle), coupure (Hz),
+           doublure (demi-tons, vers le BAS seulement) } */
+  function note(freq, t, o) {
     var env = ctx.createGain();
     env.gain.setValueAtTime(0.0001, t);
-    env.gain.exponentialRampToValueAtTime(1, t + tb.attaque);
-    env.gain.exponentialRampToValueAtTime(0.0001, fin);
-    var filtre = null;
-    if (tb.passeBas) {
-      filtre = ctx.createBiquadFilter();
-      filtre.type = 'lowpass';
-      filtre.frequency.value = tb.passeBas;
-      env.connect(filtre);
-      filtre.connect(maitre);
-    } else {
-      env.connect(maitre);
+    env.gain.exponentialRampToValueAtTime(Math.max(0.0002, o.gain), t + 0.012);
+    env.gain.exponentialRampToValueAtTime(0.0001, t + o.queue);
+    /* ⚠️ Le filtre AVANT l'enveloppe et la prise d'écho : sinon la salle
+       recevrait le sommet non filtré et rendrait ce que le filtre ôte. */
+    var filtre = ctx.createBiquadFilter();
+    filtre.type = 'lowpass';
+    filtre.Q.value = 0.7;
+    filtre.frequency.setValueAtTime(o.coupure, t);
+    filtre.frequency.exponentialRampToValueAtTime(Math.max(120, o.coupure * 0.35), t + o.queue);
+    filtre.connect(env);
+    var oscs = [];
+    var poser = function (hz, part) {
+      var osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(hz, t);
+      if (part === 1) osc.connect(filtre);
+      else { var g = ctx.createGain(); g.gain.value = part; osc.connect(g); g.connect(filtre); }
+      osc.start(t);
+      osc.stop(t + o.queue + 0.05);
+      oscs.push(osc);
+    };
+    poser(freq, 1);
+    if (o.doublure < 0) poser(freq * Math.pow(2, o.doublure / 12), 0.5);
+    env.connect(maitre);
+    if (o.envoi) {
+      var prise = ctx.createGain();
+      prise.gain.value = o.envoi;
+      env.connect(prise);
+      prise.connect(envoiEcho);
     }
-    var oscillateur = function (freq, gain) {
-      var o = ctx.createOscillator();
-      var g = ctx.createGain();
-      o.type = tb.onde;
-      o.frequency.value = freq;
-      g.gain.value = gain;
-      o.connect(g);
-      g.connect(env);
-      o.start(t);
-      o.stop(fin + 0.05);
-      return o;
-    };
-    var principal = oscillateur(GAMME[indice], 1);
-    if (tb.quinte) oscillateur(GAMME[indice] * 1.5, tb.quinte);
-    voix++;
-    principal.onended = function () {
-      voix--;
-      try { env.disconnect(); if (filtre) filtre.disconnect(); } catch (e) {}
-    };
+    oscs[0].onended = function () { try { env.disconnect(); filtre.disconnect(); } catch (e) {} };
   }
 
-  /* ── Un déclenchement = une ou plusieurs notes ───────────────────────
-     notes : [[indice dans la GAMME, délai en s], …]. Les notes d'un même
-     arpège ne comptent pas dans l'écart de 80 ms : seul le déclenchement
-     compte. */
-  function declencher(nom, notes, court) {
+  /* ── Le vocabulaire ──────────────────────────────────────────────────
+     notes : [palier, degré] ; pas : secondes entre deux notes ; queue :
+     durée de résonance de chaque note ; envoi : part vers la salle.
+     ⚠️ Un acquit (clic sur un objet déjà là) a un pas SERRÉ et pas
+     d'écho : deux notes espacées se liraient comme un déplacement. */
+  function symbole(nomSymbole, notes, reglage) {
     if (!actif || document.hidden || !ctx || ctx.state === 'closed') return;
-    var maintenant = performance.now();
-    if (maintenant - dernierDeclenchement < ECART_DECLENCHEMENT) {
-      journal(nom, ': moins de', ECART_DECLENCHEMENT, 'ms après le précédent, ignoré');
-      return;
-    }
-    dernierDeclenchement = maintenant;
-    var timbre = situation();
+    var t = ctx.currentTime;
+    /* La règle de la queue : on garde l'ARRIVÉE, la dernière note. */
+    var enchaine = t < finQueue;
+    var aJouer = enchaine ? [notes[notes.length - 1]] : notes;
     var noms = [];
-    notes.forEach(function (n) {
-      var i = Math.max(0, Math.min(GAMME.length - 1, n[0]));
-      noms.push(NOMS[i]);
-      note(i, timbre, n[1], court);
+    aJouer.forEach(function (n, i) {
+      var palier = n[0], degre = n[1];
+      var derniere = enchaine || i === aJouer.length - 1;
+      note(hauteur(palier, degre), t + i * reglage.pas, {
+        gain: (enchaine ? 0.6 : 1) * reglage.gain * (derniere ? 1 : 0.78),
+        queue: reglage.queue,
+        envoi: reglage.envoi,
+        coupure: coupureDe(palier),
+        doublure: derniere ? (reglage.doublure || 0) : 0
+      });
+      noms.push(nom(palier, degre));
     });
-    journal('♪', nom, ':', noms.join('-'), '· timbre', timbre);
+    finQueue = t + (aJouer.length - 1) * reglage.pas + reglage.queue * 0.55;
+    journal('♪', nomSymbole, ':', noms.join('-') + (enchaine ? ' (dans la queue du précédent)' : ''));
   }
 
-  /* ── Ce qui joue ─────────────────────────────────────────────────── */
-  document.addEventListener('fi:chapitre', function (e) {
-    var d = e.detail || {};
-    if (!d.rang) return;
-    rangCourant = d.rang;
-    if (d.id === dernierChapitre) return;
-    dernierChapitre = d.id;
-    var maintenant = performance.now();
-    var tropProche = maintenant - chapitreA < ECART_CHAPITRE;
-    chapitreA = maintenant;
-    if (tropProche) { journal('chapitre', d.id, ': moins de', ECART_CHAPITRE, 'ms après le précédent, muet'); return; }
-    declencher('chapitre ' + d.id, [[d.rang - 1, 0]]);
-  });
+  /* Le son s'allume : deux gongs, la tonique puis sa quinte, longs et
+     lointains. C'est l'entrée dans la visite sonore. */
+  function gongs() {
+    symbole('entrée', [[0, 0], [0, 3]], { pas: 0.62, gain: 0.4, queue: 3.4, envoi: 0.7 });
+  }
+  /* Choisir une situation, c'est entrer : on monte vers son degré, un
+     palier plus haut. « Aucune », c'est revenir : on redescend. */
+  function situation(id) {
+    if (id) symbole('situation ' + id, [[0, 0], [1, DEGRES[id] || 0]], { pas: 0.32, gain: 0.34, queue: 1.6, envoi: 0.5 });
+    else symbole('retour', [[1, 0], [0, 0]], { pas: 0.32, gain: 0.26, queue: 1.2, envoi: 0.4 });
+  }
+  var GESTES = {
+    /* Une pastille, un pilier : un acquit, deux notes serrées sans écho. */
+    etape: function (d) {
+      var degre = Math.max(1, Math.min(3, d.etape || 1));
+      return { notes: [[1, degre - 1], [1, degre]], reglage: { pas: 0.11, gain: 0.16, queue: 0.7, envoi: 0 } };
+    },
+    choix: function () {
+      var degre = degreSituation();
+      return { notes: [[1, degre], [1, degre + 1]], reglage: { pas: 0.11, gain: 0.16, queue: 0.7, envoi: 0 } };
+    },
+    /* Ouvrir une démo : on entre, deux notes qui montent dans la salle. */
+    ouvre: function () {
+      var degre = degreSituation();
+      return { notes: [[1, degre], [2, degre]], reglage: { pas: 0.24, gain: 0.26, queue: 1.4, envoi: 0.45 } };
+    },
+    /* La réservation : la résolution, trois notes qui montent vers le
+       degré de la situation, la dernière doublée à l'octave inférieure. */
+    rdv: function () {
+      return {
+        notes: [[0, 0], [0, 3], [1, degreSituation() + 5]],
+        reglage: { pas: 0.2, gain: 0.34, queue: 2.4, envoi: 0.6, doublure: -12 }
+      };
+    }
+  };
 
   document.addEventListener('fi:situation', function (e) {
-    if (!e.detail || !e.detail.id) return;
-    /* Le timbre est celui de la NOUVELLE situation : le parcours écrit
-       body[data-situation] avant d'émettre. */
-    declencher('situation ' + e.detail.id, [[0, 0], [2, 0.08], [3, 0.16]]);
+    var d = e.detail || {};
+    /* Au démarrage (lien de relance), la situation vient de l'URL, pas
+       d'un geste : rien ne joue. */
+    if (d.origine === 'url') return;
+    situation(d.id);
   });
-
-  var ORNEMENTS = {
-    choix: function () { return [[rangCourant - 1, 0], [rangCourant + 2, 0.09]]; },
-    etape: function (d) { return [[[0, 2, 3][Math.max(0, Math.min(2, (d.etape || 1) - 1))], 0]]; },
-    relie: function () { return [[9, 0]]; },
-    ouvre: function () { return [[3, 0], [5, 0.09]]; },
-    rdv:   function () { return [[0, 0], [2, 0.06], [3, 0.12], [5, 0.18]]; }
-  };
-  var COURTS = { relie: true };
   document.addEventListener('fi:geste', function (e) {
     var d = e.detail || {};
-    var ornement = ORNEMENTS[d.geste];
-    if (ornement) declencher('geste ' + d.geste, ornement(d), COURTS[d.geste]);
-    else declencher('geste ' + d.geste + ' (ornement par défaut)', [[rangCourant + 4, 0]], true);
+    /* Un panneau qui défile tout seul n'est pas un geste du visiteur. */
+    if (d.auto) { journal('geste', d.geste, 'automatique : silence'); return; }
+    var f = GESTES[d.geste] || GESTES.choix;
+    var s = f(d);
+    symbole('geste ' + d.geste, s.notes, s.reglage);
   });
 
   /* ── L'arrière-plan ──────────────────────────────────────────────────
-     ⚠️ Suspendre tout de suite couperait l'accord de la réservation :
-     « Réserver 30 min » ouvre l'agenda dans un nouvel onglet, et l'accueil
-     passe en arrière-plan au moment même où l'accord commence. */
+     ⚠️ Suspendre tout de suite couperait la réservation : « Réserver
+     30 min » ouvre l'agenda dans un nouvel onglet, et l'accueil passe en
+     arrière-plan au moment même où le symbole commence. */
   document.addEventListener('visibilitychange', function () {
     clearTimeout(minuterieSuspension);
     if (!ctx) return;
@@ -235,17 +305,15 @@
     actif = !actif;
     try { localStorage.setItem('fi:son', actif ? '1' : '0'); } catch (e) {}
     journal('son', actif ? 'allumé' : 'coupé');
-    if (actif && reveiller()) declencher('confirmation', [[0, 0], [3, 0.09]]);
+    if (actif && reveiller()) { finQueue = 0; gongs(); }
     document.dispatchEvent(new CustomEvent('fi:son', { detail: { actif: actif } }));
     return actif;
   }
-  /* Pour la galerie : une note précise, dans un timbre précis. */
-  function jouer(rang, timbre) {
+  /* Pour la galerie : une note seule, au degré donné (palier 1). */
+  function jouer(degre) {
     if (!actif || !reveiller()) return false;
-    var i = Math.max(0, Math.min(GAMME.length - 1, (rang | 0) - 1));
-    var t = TIMBRES.hasOwnProperty(timbre) ? timbre : 'aucune';
-    note(i, t, 0);
-    journal('♪ jouer', NOMS[i], '· timbre', t);
+    note(hauteur(1, degre | 0), ctx.currentTime, { gain: 0.26, queue: 1.2, envoi: 0.4, coupure: coupureDe(1) });
+    journal('♪ jouer', nom(1, degre | 0));
     return true;
   }
 
@@ -254,5 +322,5 @@
     basculer: basculer,
     jouer: jouer
   };
-  journal('prêt, son', actif ? 'allumé (en attente d\'un geste)' : 'coupé', '· chapitre de départ', rangCourant);
+  journal('prêt, son', actif ? 'allumé (en attente d\'un geste)' : 'coupé', '· silence au défilement, un symbole par CTA');
 })();
