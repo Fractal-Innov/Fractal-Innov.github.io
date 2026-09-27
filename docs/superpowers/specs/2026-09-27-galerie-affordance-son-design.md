@@ -114,6 +114,47 @@ réponse, preuve, méthode, confiance :
 - Les liens de la nav suivent le même ordre. La spec du parcours
   (`2026-09-25`) garde l'historique ; celle-ci fait foi pour l'ordre.
 
+## 3 ter. Décisions de la séance du 27/09/2026 (après la tâche 2)
+
+Prises en co-conception, sur croquis et prototype jouable.
+
+### La fenêtre (piste A : modale qui grandit du bouton)
+
+Un seul composant `fenetre`, réutilisé par la plupart des CTA : la page
+s'assombrit, la fenêtre grandit depuis le bouton cliqué, Échap / fond /
+« Fermer » la referment et le focus revient au bouton. Sur téléphone, plein
+écran. Mouvement réduit : fondu seul. Sans JavaScript, chaque CTA garde son
+lien.
+
+| Variante | Ouverte par | Contenu |
+|---|---|---|
+| `agenda` | les « Réserver 30 min » de l'approche, de l'offre, du contact | l'agenda Google en iframe (adresse longue `calendar.google.com/calendar/appointments/schedules/…`, le lien court refuse l'iframe), chargée au premier clic seulement ; « Ouvrir dans un onglet » en secours, mis en avant après 8 s sans chargement |
+| `demo` | les « Ouvrir la démo » (Rayon X, Midipile, À fleur d'écorce, le village) | la démo en iframe à gauche, ses détails à droite (repris de la carte, rien de nouveau) ; sur téléphone, les détails dans un tiroir ; « Ouvrir en plein écran » en garde-fou (AR, caméra) |
+| `carte` | « Carte de visite » du contact | une carte maison : portrait, nom, rôle, e-mail, QR vers la carte Blinq (Blinq refuse l'iframe : `X-Frame-Options: DENY`), bouton « Ajouter à mes contacts » (`.vcf`) |
+
+- **STAND** n'a pas de scène de démo : son lien ouvre `/stand/` comme une
+  page normale, dans le même onglet.
+- Le « Réserver 30 min » du hero descend toujours au contact (§ 3 bis).
+
+### L'offre : un usage à la fois (piste A : sélecteur en pastilles)
+
+Remplace « rien n'est masqué » pour les trois cartes de l'offre (les démos,
+elles, restent toutes visibles, groupées par usage).
+
+- Trois pastilles (icône + libellé) au-dessus d'une seule carte ; la carte
+  change en fondu.
+- **Effet story** : chaque pastille se remplit en **5 s**, puis la suivante,
+  **en boucle**. La story **démarre quand l'offre entre à l'écran** et se
+  met en pause quand elle en sort, au survol et au focus clavier.
+- **Situation choisie dans la page** (hero, dock, `?situation=`) : l'offre
+  s'ouvre sur sa pastille, **figée**, sans minuteur.
+- **Clic sur une pastille** : la story se fige sur elle ; le choix reste
+  **local à la section** (la situation de la page ne change pas).
+- **Son** : une note douce à chaque changement de pastille, seulement tant
+  que la section est visible (et que le son est allumé).
+- Mouvement réduit : pas de minuteur, première pastille (ou celle de la
+  situation). Sans JavaScript : les trois cartes l'une sous l'autre.
+
 ## 4. La correspondance sections / structures
 
 Une structure STAND par section, deux au plus, choisie par ce qui coince.
