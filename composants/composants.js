@@ -6,7 +6,7 @@
    Un comportement par attribut, rien d'autre :
      data-composant="choix"        groupe de piliers, flèches du clavier
      data-composant="bascule-son"  le bouton son (lit window.FiSon)
-     data-eclat                    un éclat de particules au clic
+     data-eclat                    une onde iridescente au clic
      data-reflet                   un reflet unique quand l'élément paraît
      data-geste="nom"              émet fi:geste {chapitre, geste} au clic
    ⚠️ Rien ici ne connaît le son : un geste passe par fi:geste, et c'est
@@ -61,9 +61,8 @@
   /* ── ÉCLAT ─────────────────────────────────────────────────────────
      ⚠️ La boîte est posée dans <body>, aux coordonnées de la PAGE, et non
      dans l'élément : un bouton en `overflow: hidden` (le CTA primaire de
-     l'accueil, par exemple) rognerait les particules à son bord. En
+     l'accueil, par exemple) rognerait l'onde à son bord. En
      coordonnées de page, elle défile quand même avec l'élément. */
-  var PARTICULES = 8;
   function eclat(el, x, y) {
     if (!el || sobre(el)) return;
     var r = el.getBoundingClientRect();
@@ -72,11 +71,10 @@
     boite.setAttribute('aria-hidden', 'true');
     boite.style.left = (window.scrollX + r.left + (x == null ? r.width / 2 : x)) + 'px';
     boite.style.top = (window.scrollY + r.top + (y == null ? r.height / 2 : y)) + 'px';
-    for (var i = 0; i < PARTICULES; i++) {
-      var p = document.createElement('span');
-      p.style.setProperty('--fi-angle', (i * 360 / PARTICULES) + 'deg');
-      boite.appendChild(p);
-    }
+    // L'onde couvre un peu plus que l'élément, bornée pour rester légère
+    var onde = Math.min(320, Math.max(80, Math.max(r.width, r.height) * 1.4));
+    boite.style.setProperty('--fi-onde', Math.round(onde) + 'px');
+    boite.appendChild(document.createElement('span'));
     document.body.appendChild(boite);
     retirerApres(boite, 700);
     journal('éclat sur', el.tagName.toLowerCase() + (el.id ? '#' + el.id : ''));

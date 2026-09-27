@@ -115,21 +115,25 @@
   100% { opacity: 1; transform: none; }
 }
 
-/* ── ÉCLAT : huit particules en étoile ──────────────────────────────────
+/* ── ÉCLAT : une onde iridescente qui part du clic ──────────────────────
    La boîte est posée dans <body>, aux coordonnées de la page (elle défile
-   avec l'élément, sans être rognée par son `overflow`) ; chaque particule
-   part dans son angle (--fi-angle) et s'éteint. */
+   avec l'élément, sans être rognée par son `overflow`). Un seul anneau
+   fin, aux couleurs de la charte en dégradé conique, grandit et s'éteint ;
+   son diamètre (--fi-onde) suit la taille de l'élément. */
 .fi-eclat { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 95; }
 .fi-eclat > span {
-  position: absolute; left: -3px; top: -3px;
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--fi-eclat);
-  transform: rotate(var(--fi-angle)) translateX(0) scale(1);
-  animation: fiEclat 520ms var(--fi-ease-sortie) forwards;
+  position: absolute;
+  left: calc(var(--fi-onde, 120px) / -2); top: calc(var(--fi-onde, 120px) / -2);
+  width: var(--fi-onde, 120px); height: var(--fi-onde, 120px); border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--fi-eclat), var(--fi-eclat-2), #a78bfa, #67e8f9, var(--fi-eclat));
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px), transparent);
+          mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px), transparent);
+  opacity: 0.85;
+  transform: scale(0.08) rotate(0deg);
+  animation: fiOnde 650ms var(--fi-ease-sortie) forwards;
 }
-.fi-eclat > span:nth-child(even) { background: var(--fi-eclat-2); }
-@keyframes fiEclat {
-  to { transform: rotate(var(--fi-angle)) translateX(var(--fi-eclat-portee, 44px)) scale(0.2); opacity: 0; }
+@keyframes fiOnde {
+  to { transform: scale(1) rotate(90deg); opacity: 0; }
 }
 
 /* ── REFLET : une bande de lumière traverse l'élément, une fois ────────
