@@ -1623,28 +1623,22 @@
       stroke-linecap: round; stroke-linejoin: round;
     }
 
-    /* Le choix du hero : trois pilules, le même poids pour les trois. */
     .situations { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; }
     .situations__question { margin: 0; font-size: 0.95rem; color: var(--text-soft); }
-    .situations__liste {
-      list-style: none; margin: 0; padding: 0;
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem;
+    /* Le choix du hero : trois piliers (composants/composants.css, .fi-pilier),
+       de même largeur (règle 9), sur une rangée dès 768 px. La page ne
+       règle que leur place. */
+    .situations__liste.fi-choix { list-style: none; margin: 0; padding: 0; width: min(100%, 48rem); }
+    @media (min-width: 768px) {
+      .situations__liste.fi-choix { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
-    .situation-btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      min-height: 44px; padding: 0.6rem 1.1rem;
-      border-radius: 999px; border: 1px solid var(--glass-border-highlight);
-      background: var(--glass-bg); color: var(--text-main);
-      font-weight: 600; font-size: 0.95rem; text-decoration: none;
-      transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-    }
-    .situation-btn:hover,
-    .situation-btn:focus-visible { background: var(--glass-bg-hover); border-color: var(--accent-blue); transform: translateY(-2px); }
-    .situation-btn[aria-current="true"] {
-      border-color: transparent;
-      background: linear-gradient(var(--bg-base-2), var(--bg-base-2)) padding-box,
-                  var(--brand-gradient) border-box;
-    }
+    /* Une section qui reçoit le focus par script (le hero y descend) ne
+       s'encadre pas : le focus sert au prochain Tab, pas au regard. */
+    section[tabindex="-1"]:focus { outline: none; }
+    /* L'invitation « Visite sonore » : une pilule discrète, en pointillé
+       tant que le son est coupé (une invitation, pas un bouton de plus). */
+    .situations__son { border-style: dashed; color: var(--text-soft); }
+    .situations__son[aria-pressed="true"] { border-style: solid; color: var(--text-main); }
     .situations__regarder { font-size: 0.9rem; color: var(--text-muted); text-underline-offset: 3px; }
     .situations__regarder:hover { color: var(--text-main); }
     /* Le bloc d'identité du hero est un lien vers le fondateur (spec
@@ -1778,6 +1772,10 @@
     }
     .dock__menu button:hover,
     .dock__menu button[aria-current="true"] { background: var(--glass-bg-hover); }
+    /* ⚠️ `.dock button` (deux sélecteurs) bat `.fi-bascule-son` : fond,
+       bordure et couleur du dock s'appliquent, c'est voulu. */
+    .dock .fi-bascule-son { font-size: 0.9rem; }
+    .dock .fi-bascule-son:hover { background: var(--glass-bg-hover); }
     .dock__pastille,
     .dock__fermer { display: none; }
 
@@ -1813,7 +1811,7 @@
       .dock[data-etat="deplie"] .dock__panneau {
         display: grid;
         grid-template-columns: 44px 1fr auto 44px;
-        grid-template-areas: "prec pos pos suiv" "sit sit fermer fermer";
+        grid-template-areas: "prec pos pos suiv" "sit sit sit sit" "son son fermer fermer";
         gap: 0.25rem; padding: 0.5rem; border-radius: 20px;
         transform-origin: 50% 100%;
         animation: dockDeplie 0.3s cubic-bezier(0.22, 1, 0.36, 1);
@@ -1823,6 +1821,7 @@
       #dockSuiv { grid-area: suiv; }
       .dock__situation { grid-area: sit; }
       .dock__choix { width: 100%; }
+      .dock__son { grid-area: son; justify-content: center; }
       .dock__menu { left: 0; transform: none; min-width: 0; width: min(18rem, calc(100vw - 48px)); }
       .dock[data-etat="deplie"] .dock__fermer {
         grid-area: fermer; display: inline-flex; align-items: center; justify-content: center;
@@ -1891,7 +1890,6 @@
       .dock__pastille::before,
       .dock__pastille::after,
       .dock__centre,
-      .situation-btn,
       .constellation path { animation: none !important; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
@@ -1952,9 +1950,9 @@
        ⚠️ Placé juste APRÈS la navigation, et non en fin de page : l'ordre du
        DOM est l'ordre du clavier. En fin de page, on ne l'atteignait
        qu'après tous les liens du pied de page. Sa position à l'écran ne
-       dépend pas de sa place (`position: fixed`). Les
-       emplacements du son et de la télécommande n'existent pas encore :
-       aucun bouton mort tant que leur sous-projet n'est pas livré. -->
+       dépend pas de sa place (`position: fixed`). Le son a son bouton ;
+       la télécommande n'existe pas encore : aucun bouton mort tant que
+       son sous-projet n'est pas livré. -->
   <div class="dock" id="dock" data-etat="replie" data-visible="non" hidden>
     <button class="dock__pastille" id="dockPastille" type="button"
             aria-expanded="false" aria-controls="dockPanneau">
@@ -1981,6 +1979,18 @@
           <li><button type="button" data-situation-choix="aucune" data-origine="dock">Aucune</button></li>
         </ul>
       </div>
+      <span class="dock__sep" aria-hidden="true"></span>
+      <!-- Le bouton son (composants/composants.js). `hidden` : sans JS, ou
+           sans le moteur son.js, il n'existe pas. -->
+      <button class="fi-bascule-son dock__son" type="button"
+              data-composant="bascule-son" aria-pressed="false" hidden>
+        <svg class="fi-bascule-son__icone" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M11 5 6 9H3v6h3l5 4z"/>
+          <path class="fi-bascule-son__ondes" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+          <path class="fi-bascule-son__coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
+        </svg>
+        <span data-bascule-libelle>Son coupé</span>
+      </button>
       <button class="dock__fermer" id="dockFermer" type="button">Fermer</button>
     </nav>
   </div>
@@ -2010,15 +2020,36 @@
              section LA SITUATION). -->
         <div class="situations">
           <p class="situations__question" id="situationsQuestion">Votre savoir doit d'abord :</p>
-          <ul class="situations__liste" aria-labelledby="situationsQuestion">
-            <li><a class="situation-btn" href="#offre" data-situation-choix="convaincre">
-              <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</a></li>
-            <li><a class="situation-btn" href="#offre" data-situation-choix="former">
-              <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</a></li>
-            <li><a class="situation-btn" href="#offre" data-situation-choix="garder">
-              <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</a></li>
+          <ul class="situations__liste fi-choix" aria-labelledby="situationsQuestion" data-composant="choix">
+            <li><a class="fi-pilier" href="#offre" data-situation-choix="convaincre" data-choix-item data-eclat>
+              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
+              <span class="fi-pilier__texte"><strong>Convaincre</strong> un acheteur</span>
+              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a></li>
+            <li><a class="fi-pilier" href="#offre" data-situation-choix="former" data-choix-item data-eclat>
+              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-former"></use></svg>
+              <span class="fi-pilier__texte"><strong>Former</strong> un nouvel arrivant</span>
+              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a></li>
+            <li><a class="fi-pilier" href="#offre" data-situation-choix="garder" data-choix-item data-eclat>
+              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-garder"></use></svg>
+              <span class="fi-pilier__texte"><strong>Garder</strong> un savoir-faire</span>
+              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a></li>
           </ul>
           <a class="situations__regarder" href="#offre" data-situation-choix="aucune">Juste regarder</a>
+          <!-- Le son s'allume ici, avant le premier geste (spec § 3 ter) ;
+               ensuite le dock prend le relais. Même composant, ses mots à lui. -->
+          <button class="fi-bascule-son situations__son" type="button"
+                  data-composant="bascule-son" aria-pressed="false" hidden
+                  data-libelle-coupe="Visite sonore" data-libelle-allume="Visite sonore activée">
+            <svg class="fi-bascule-son__icone" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 5 6 9H3v6h3l5 4z"/>
+              <path class="fi-bascule-son__ondes" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+              <path class="fi-bascule-son__coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
+            </svg>
+            <span data-bascule-libelle>Visite sonore</span>
+          </button>
         </div>
 
         <div class="hero__actions">
@@ -2921,7 +2952,9 @@
         guideOuvert: 'guide-ouvert',
         rdvDemande: 'rdv-demande',
         demoOuverte: 'demo-ouverte',
-        contactDirect: 'contact-direct'
+        contactDirect: 'contact-direct',
+        sonActive: 'son-active',
+        sonCoupe: 'son-coupe'
       };
       var fileMesures = [];
       function envoyer(nom, donnees) {
@@ -2967,7 +3000,13 @@
       mesurerChapitre(document.body.getAttribute('data-chapitre') || 'top');
       document.addEventListener('fi:geste', function (e) {
         var d = e.detail;
+        /* ⚠️ La réservation est déjà comptée par `rdv-demande` : la
+           compter aussi en `geste` la doublerait sous un autre nom. */
+        if (d.geste === 'rdv') return;
         mesurerUneFois('geste:' + d.chapitre + ':' + d.geste, MESURES.geste, { chapitre: d.chapitre, geste: d.geste });
+      });
+      document.addEventListener('fi:son', function (e) {
+        mesurer(e.detail.actif ? MESURES.sonActive : MESURES.sonCoupe, { situation: situationActuelle() });
       });
 
       /* Les clics qui comptent : la réservation (LA conversion), une démo,
@@ -2978,6 +3017,10 @@
         var rdv = e.target.closest('[data-rdv]');
         if (rdv) {
           mesurer(MESURES.rdvDemande, { situation: situationActuelle(), emplacement: rdv.getAttribute('data-rdv') });
+          /* La réservation devient aussi un geste, pour que le son la
+             résolve (spec 2026-09-27 § 3). */
+          var sectionRdv = rdv.closest('section[id]');
+          emettre('fi:geste', { chapitre: sectionRdv ? sectionRdv.id : 'top', geste: 'rdv' });
           return;
         }
         var demo = e.target.closest('[data-demo]');
@@ -3024,14 +3067,38 @@
         emettre('fi:situation', { id: id, origine: origine });
       }
 
-      /* Le lien du hero garde son ancre : on choisit, PUIS le navigateur
-         descend à la carte, comme sans JavaScript. */
+      /* Le hero : on choisit, l'onde et l'accord partent, PUIS on descend
+         à la section suivante (#offre). 220 ms : le temps de voir l'onde
+         avant que la page ne glisse ; rien en mouvement réduit. Sans
+         JavaScript, le lien mène au même endroit. Les boutons du dock
+         n'ont pas d'ancre : ils choisissent sans faire défiler. */
+      var DELAI_DESCENTE = 220;
+      var descenteEnCours = 0;
       document.addEventListener('click', function (e) {
         var cible = e.target.closest && e.target.closest('[data-situation-choix]');
         if (!cible) return;
         var v = cible.getAttribute('data-situation-choix');
         choisirSituation(v === 'aucune' ? null : v, cible.getAttribute('data-origine') || 'hero');
+        var ancre = cible.getAttribute('href');
+        var dest = ancre && ancre.charAt(0) === '#' ? document.getElementById(ancre.slice(1)) : null;
+        if (!dest) return;
+        e.preventDefault();
+        /* Un double clic ne descend qu'une fois. */
+        clearTimeout(descenteEnCours);
+        descenteEnCours = setTimeout(function () { descendreA(dest, v); }, sobre ? 0 : DELAI_DESCENTE);
       });
+      function descendreA(dest, v) {
+        dest.scrollIntoView({ behavior: sobre ? 'auto' : 'smooth', block: 'start' });
+        /* Le focus suit, comme avec une ancre : le prochain Tab part de là. */
+        if (!dest.hasAttribute('tabindex')) dest.setAttribute('tabindex', '-1');
+        dest.focus({ preventScroll: true });
+        /* À l'arrivée, un reflet unique sur la carte de la situation. */
+        var carte = v && v !== 'aucune' ? document.getElementById('usage-' + v) : null;
+        if (carte && window.FiComposants) {
+          setTimeout(function () { window.FiComposants.reflet(carte); }, sobre ? 0 : 900);
+        }
+        journal('hero → #' + dest.id + (carte ? ', reflet sur ' + carte.id : ''));
+      }
 
       /* ── ALLER À UN CHAPITRE (fi:aller) ────────────────────────────────
          La porte d'entrée du dock et de la future télécommande.
