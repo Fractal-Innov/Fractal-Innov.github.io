@@ -1937,6 +1937,169 @@
       .constellation path { animation: none !important; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
+
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE TYPOGRAPHIQUE ET ESPACEMENTS (27/09/2026)
+       Modèle : échelle 1,25 et grille de 8 px groupée, jetons --fi-t* et
+       --fi-e* dans composants/composants.css. Surcharge seule : les règles
+       d'origine restent au-dessus, intactes.
+
+       ⚠️ SPÉCIFICITÉ. `.section p` (0,1,1) battait toute classe seule posée
+       sur un paragraphe : .section-number, .offre__eyebrow, .etape__num,
+       .fi-groupe__etiquette… s'affichaient tous à 16,8 px au lieu de leur
+       taille écrite. D'où l'écriture `.section .x` (0,2,0) ici.
+       ══════════════════════════════════════════════════════════════════ */
+
+    /* ── Le rythme des sections ──────────────────────────────────────── */
+    .section {
+      padding-block: var(--fi-section);  /* 64 px mobile › 96 px bureau */
+      line-height: var(--fi-interligne); /* hérité par tout le texte de la section */
+    }
+    .hero, .contact { line-height: var(--fi-interligne); }
+    .contact { padding-block: var(--fi-section); } /* même souffle que les autres, au lieu de 113 / 92 */
+
+    /* En-tête de section = un groupe serré : étiquette › titre › intro. */
+    .section .section-number { font-size: var(--fi-t-1); margin-bottom: var(--fi-e2); } /* étiquette ; 16 px la colle à son titre */
+    .section h2 {
+      /* 26,6 px à 360 px › 33,2 px dès 1024 px : le titre des démos, le
+         plus long, tient sur 3 lignes à 360 px (il en faisait 4 à 32 px). */
+      font-size: clamp(var(--fi-t2), 1.439rem + 0.994vw, var(--fi-t3));
+      line-height: var(--fi-interligne-titre);
+      margin-bottom: var(--fi-e2); /* 16 px : même groupe que l'intro */
+    }
+    .section p { font-size: var(--fi-t0); margin-bottom: var(--fi-e2); } /* 17 px ; 16 px entre paragraphes */
+    .section h3 { font-size: var(--fi-t1); line-height: var(--fi-interligne-h3); } /* un seul rôle, une seule taille (17,6 à 27,8 px avant) */
+
+    /* En-tête › contenu = changement de groupe : 48 px partout (32 à 40 avant). */
+    .offre-story__pastilles,
+    .demos,
+    .etapes,
+    .partenaires { margin-top: var(--fi-e6); }
+    .etapes__geste { margin-top: var(--fi-e6); } /* contenu › geste suivant : autre groupe */
+
+    /* Entre cartes : 24 px sur mobile, 32 px dès la tablette. */
+    .demos__cartes, .etapes, .partenaires { gap: var(--fi-e3); }
+    .demos { gap: var(--fi-e8); } /* 64 px entre groupes d'usage : plus large que les 24 px entre cartes */
+    .demos__groupe { gap: var(--fi-e2); } /* étiquette › ses cartes : même groupe */
+    .fondateur__grille { gap: var(--fi-e4); }
+    @media (min-width: 768px) {
+      .demos__cartes, .etapes, .partenaires { gap: var(--fi-e4); }
+      .fondateur__grille { gap: var(--fi-e6); }
+    }
+
+    /* ── Les cartes : un padding, une hiérarchie interne ──────────────── */
+    .section .etape,
+    .section .partenaire,
+    .section .boussole,
+    .section .offre__corps,
+    .section .demo__corps { padding: var(--fi-e3); } /* 24 px sur mobile (24 à 32 avant, selon la carte) */
+    @media (min-width: 768px) {
+      .section .etape,
+      .section .partenaire,
+      .section .boussole,
+      .section .offre__corps,
+      .section .demo__corps { padding: var(--fi-e4); } /* 32 px dès que la carte a de la place */
+    }
+    /* Étiquettes en capitales : le plancher de lecture, pas plus. */
+    .section .offre__eyebrow,
+    .section .bloc-titre,
+    .section .boussole__titre,
+    .section .fi-groupe__etiquette { font-size: var(--fi-t-1); margin-bottom: var(--fi-e1); }
+    .section .tag,
+    .section .badge-cas { font-size: var(--fi-t-1); } /* 12 et 11,5 px avant : sous le plancher */
+    .section .tag { padding: var(--fi-e05) calc(var(--fi-e1) + var(--fi-e05)); } /* 12 px de côté : la demi-hauteur de la pastille, l'arrondi ne mord pas le texte */
+    /* Titre de carte + sous-titre = une paire collée (4 px), puis 16 px. */
+    .section .etape h3,
+    .section .demo h3,
+    .section .partenaire h3 { margin-bottom: var(--fi-e05); }
+    .section .offre h3 {
+      font-size: clamp(var(--fi-t1), 1.135rem + 0.824vw, var(--fi-t2)); /* carte unique : 21 › 26,6 px, un palier au-dessus des autres h3 */
+      margin-bottom: var(--fi-e2);
+    }
+    .section .etape__court,
+    .section .demo__sous-titre,
+    .section .partenaire__role { font-size: var(--fi-t-05); margin-bottom: var(--fi-e2); }
+    /* Texte de carte : le demi-pas, plus discret que l'intro de la section. */
+    .section .etape__texte,
+    .section .demo__accroche,
+    .section .partenaire__texte,
+    .section .offre__preuve,
+    .section .demo__points li,
+    .section .repere,
+    .section .boussole li { font-size: var(--fi-t-05); }
+    .section .etape__texte,
+    .section .partenaire__texte { margin-bottom: var(--fi-e3); } /* texte › tags : autre bloc */
+    .section .demo__accroche { margin-bottom: var(--fi-e2); }
+    .section .demo__points { gap: var(--fi-e1); margin-bottom: var(--fi-e3); }
+    .section .offre__texte { font-size: var(--fi-t0); margin-bottom: var(--fi-e2); } /* la carte de l'offre est le contenu principal : texte courant */
+    .section .offre__preuve { margin-bottom: 0; }
+    .section .offre__actions { margin-top: var(--fi-e3); }
+    .offres { margin-top: var(--fi-e3); } /* pastilles › carte : même groupe */
+    .section .etape__num {
+      font-size: var(--fi-t2); /* gros chiffre : 26,6 px (rendu à 16,8 px avant, écrasé par .section p) */
+      margin-bottom: var(--fi-e1);
+    }
+    .section .partenaire__logo { margin-bottom: var(--fi-e3); }
+
+    /* ── Le fondateur ────────────────────────────────────────────────── */
+    .section .fondateur__role { margin-bottom: var(--fi-e1); }
+    .section .ligne-mono { font-size: var(--fi-t-1); margin-bottom: var(--fi-e3); }
+    .reperes { gap: var(--fi-e1); margin-bottom: var(--fi-e4); }
+    .section .boussole { margin-top: var(--fi-e6); }
+    .section .boussole__sous-titre { font-size: var(--fi-t1); line-height: var(--fi-interligne-h3); margin-bottom: var(--fi-e2); }
+    .boussole ul { gap: var(--fi-e1); }
+
+    /* ── Le hero ─────────────────────────────────────────────────────── */
+    .hero__titre {
+      /* 41,5 px à 375 px › 72,4 px à 1280 px. Plafond au demi-pas t6,5 :
+         le titre d'affiche domine sans pousser le choix sous la ligne de
+         flottaison sur un portable de 800 px de haut. */
+      font-size: clamp(var(--fi-t4), 1.794rem + 3.414vw, var(--fi-t65));
+      line-height: var(--fi-interligne-titre);
+    }
+    .hero__lead { font-size: clamp(var(--fi-t0), 0.9525rem + 0.47vw, var(--fi-t1)); } /* chapeau : 17 › 21,25 px */
+    .hero__contenu { gap: var(--fi-e3); } /* 24 px entre pastille, titre, chapeau */
+    .situations { margin-top: var(--fi-e3); gap: var(--fi-e2); } /* 24 + 24 = 48 px : le choix est un autre groupe */
+    .situations__liste.fi-choix { gap: var(--fi-e1); } /* piliers empilés : groupe serré */
+    @media (min-width: 768px) { .situations__liste.fi-choix { gap: var(--fi-e2); } }
+    .situations__question,
+    .situations__regarder,
+    .hero__nom { font-size: var(--fi-t-05); }
+    .hero__role, .hero__pastille { font-size: var(--fi-t-1); }
+    .hero-cta__btn,
+    .etapes__geste .hero-cta__btn { font-size: var(--fi-t0); } /* un seul corps de bouton ; la 2e ligne bat `.etapes__geste button { font: inherit }` */
+    @media (max-width: 480px) {
+      .offre-story .fi-pastille { font-size: var(--fi-t-1); } /* 14,08 px avant : les trois pastilles tiennent sur une rangée à 360 px */
+    }
+    .situations__regarder {
+      display: inline-flex; align-items: center;
+      min-height: var(--fi-cible); padding-inline: var(--fi-e1); /* 23 px de haut avant : sous la cible tactile */
+    }
+
+    /* ── Le contact ──────────────────────────────────────────────────── */
+    .contact h2 {
+      font-size: clamp(var(--fi-t3), 1.775rem + 1.279vw, var(--fi-t4)); /* 33,2 › 41,5 px : le titre de fin, un palier au-dessus des h2 */
+      line-height: var(--fi-interligne-titre);
+    }
+    .contact__who { margin-bottom: var(--fi-e4); }
+    .contact__who strong { font-size: var(--fi-t0); }
+    .contact__who span { font-size: var(--fi-t-1); }
+    .contact__lead, .contact__primary { font-size: var(--fi-t0); }
+    .contact__lead { margin-bottom: var(--fi-e4); }
+    .contact__actions { gap: var(--fi-e2); }
+    .contact__atelier { margin-top: 0; font-size: var(--fi-t-05); } /* la note colle au bouton : le gap de 16 px suffit */
+    .contact__or { margin-top: var(--fi-e2); font-size: var(--fi-t-1); } /* 16 + 16 px : les liens forment un autre groupe */
+    .contact__links a { height: auto; min-height: var(--fi-cible); font-size: var(--fi-t-05); } /* 42 px avant */
+
+    /* ── Le pied de page ─────────────────────────────────────────────── */
+    .footer p, .footer__titre, .footer__bas { font-size: var(--fi-t-1); }
+    .footer__pages a { font-size: var(--fi-t-05); }
+    @media (pointer: coarse) {
+      /* Au doigt, un lien isolé prend la cible entière (17 à 18 px avant).
+         Réservé au tactile : à la souris, la liste reste compacte. */
+      .footer__pages a,
+      .footer p > a { display: inline-flex; align-items: center; min-height: var(--fi-cible); }
+    }
   </style>
 </head>
 
@@ -2797,6 +2960,29 @@
         window.addEventListener('resize', verifierRangeeNav);
         verifierRangeeNav();
       }
+
+      /* ── Garde de la passe typographique (27/09/2026). Deux règles qui ont
+         une raison, donc des dents : aucun défilement horizontal (mobile
+         dès 360 px) et aucune cible isolée sous 44 px au doigt. Muet hors
+         `?debug=1`. Un lien DANS une phrase est exempté (WCAG 2.5.8) :
+         on ne mesure que les liens et boutons qui ne sont pas au fil d'un
+         paragraphe. Le bandeau et le dock ont leurs propres règles. */
+      function verifierPasse() {
+        if (!DEBUG) return;
+        var trop = document.documentElement.scrollWidth - window.innerWidth;
+        if (trop > 0) journal('⚠️ défilement horizontal de ' + trop + ' px à ' + window.innerWidth + ' px');
+        if (!window.matchMedia('(pointer: coarse)').matches) return;
+        var petites = [];
+        document.querySelectorAll('main a, main button, footer a').forEach(function (el) {
+          if (el.closest('p:not(.footer p), li.repere, .dock, .masthead')) return;
+          var r = el.getBoundingClientRect();
+          if (r.width && r.height && r.height < 44) petites.push((el.textContent.trim() || el.getAttribute('aria-label') || el.tagName).slice(0, 30) + ' (' + Math.round(r.height) + ' px)');
+        });
+        if (petites.length) journal('⚠️ cibles sous 44 px :', petites);
+        else journal('passe : aucune cible isolée sous 44 px, débordement ' + Math.max(trop, 0) + ' px');
+      }
+      window.addEventListener('load', verifierPasse);
+      window.addEventListener('resize', verifierPasse);
 
       /* ── Le lien de navigation de la section courante ──────────────────
          ⚠️ /stand/ n'utilise PAS d'IntersectionObserver ici, et c'est un

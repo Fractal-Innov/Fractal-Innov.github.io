@@ -425,3 +425,64 @@ Une PR par étape, chacune vérifiée et finie (découpage du 27/09/2026) :
 - Des échantillons audio : la synthèse suffit tant qu'elle convainc.
 - L'extraction de `composants/` vers le socle Needle5 : à envisager quand
   un deuxième site l'utilisera.
+
+## 14. La passe typographique et le relevé transverse (27/09/2026)
+
+Passe transversale, avant les PR par section du § 11 : celles-ci partiront
+de ces jetons au lieu d'inventer leurs tailles.
+
+### Le modèle (validé en questions fermées)
+
+| Sujet | Décision | Jetons (`composants/composants.css`) |
+|---|---|---|
+| Échelle | 1,25 (tierce majeure), base 17 px ; un demi-pas (× √1,25) pour le texte de carte | `--fi-t-1` 13,6 · `--fi-t-05` 15,2 · `--fi-t0` 17 · `--fi-t1` 21,25 · `--fi-t2` 26,6 · `--fi-t3` 33,2 · `--fi-t4` 41,5 · `--fi-t65` 72,4 px |
+| Interlignage | 1,45 texte, 1,1 h1 / h2, **1,2 h3** (à 21 px, 1,1 collait les deux lignes d'un titre de carte) | `--fi-interligne`, `--fi-interligne-titre`, `--fi-interligne-h3` |
+| Espacement | grille de 8 px groupée : 8 / 16 dans un groupe, 24 / 32 entre blocs, 48 / 64 / 96 entre groupes | `--fi-e05` à `--fi-e12`, `--fi-section` (64 › 96 px) |
+| Titre mobile | h2 sur 3 lignes au plus dès 360 px | `clamp(t2, …, t3)` |
+| Cible tactile | 44 px pour un lien ou un bouton isolé ; un lien dans une phrase est exempté (WCAG 2.5.8) | `--fi-cible` |
+
+**Écart assumé** : le chapeau du hero plafonne à t1 (21,25 px) et non à t2
+(26,6 px) comme la question l'annonçait. À 27 px, le chapeau de trois
+lignes concurrençait le titre. À rediscuter sur le rendu.
+
+**Garde à dents** : en `?debug=1`, le journal signale tout défilement
+horizontal et, au doigt, toute cible isolée sous 44 px (éprouvée : une cible
+cassée à 20 px est bien signalée).
+
+**Cause racine trouvée en passant** : `.section p` (0,1,1) battait toute
+classe seule posée sur un paragraphe. Les étiquettes en capitales, les
+numéros d'étape et les textes de carte s'affichaient tous à 16,8 px, quelle
+que soit leur taille écrite. La surcharge écrit donc `.section .x` (0,2,0).
+
+### Le relevé, section par section
+
+Ce qui existe et qu'un futur site récupère : le visuel qui porte la
+section, sa structure, son intonation (d'après `composants/son.js`), et
+les jetons qu'elle consomme.
+
+| Section | Visuel | Structure | Intonation | Jetons |
+|---|---|---|---|---|
+| Hero (`#top`) | halos haut et bas, pastille à point, accent en dégradé | titre d'affiche, chapeau, `choix` de piliers, lien « Juste regarder », `bascule-son` | pilier : `situation` (monte vers le degré de la situation) ; son allumé : deux gongs | t65 › t4, t1 › t0, t-05, t-1 ; e3, cible |
+| Offre | média 16:9, jauge de pastille | `story` à pastilles › une carte eyebrow / h3 / texte / preuve / actions | pastille cliquée : `etape` (acquit, deux notes serrées) ; minuteur : silence | t2 › t1 (h3), t0, t-05, t-1 ; e6, e3 |
+| Démos | média 16:9, étiquette de groupe à icône et filet | `groupe` › cartes h3 / sous-titre / accroche / points / action | « Ouvrir » : `ouvre` (deux notes qui montent dans la salle) | t1, t-05, t-1 ; e8 entre groupes, e2, e3 |
+| Approche | carte allumée, gros numéro, tags | trois cartes d'étape, bouton « Étape suivante » + CTA | `etape` (acquit) ; « Réserver » : `rdv` | t2 (numéro), t1, t-05, t-1 ; e6, e4 |
+| Partenaires | monogrammes et sigles, constellation SVG | cartes logo / h3 / rôle / texte / tags | `constellation` : **aucun symbole** | t1, t-05, t-1 ; e3 |
+| Fondateur | portrait en arche dégradée, barre de tags, repères à icône | grille portrait + texte, repères, boussole | **aucun geste** | t1, t0, t-05, t-1 ; e6, e4, e3 |
+| Contact | anneau du portrait, aurore | qui / titre / chapeau / CTA primaire / note / liens pilules | « Réserver » : `rdv` (résolution, doublure à l'octave) | t4 › t3, t0, t-05, t-1 ; e4, e2, cible |
+
+### À récupérer lors des passes suivantes
+
+- **Partenaires** : la constellation émet `constellation`, que le moteur
+  ne connaît pas. Le § 4 prévoyait `relie` (tintement) : c'est à trancher
+  avec la PR du `fil`.
+- **Fondateur** : aucun geste, donc aucun son. La PR `carte-etiquette`
+  pourra en porter un (le repère de la situation qui se pose).
+- **Logos des partenaires** (33,6 et 18,4 px) : ce sont des visuels, pas
+  du texte. Ils sont laissés hors échelle.
+- **Hors de cette passe** : le bandeau (règle « une seule rangée »,
+  rupture mesurée sur les libellés ; marque à 36 px et burger à 42 px de
+  haut) et le dock (largeurs réglées sur ses libellés). Ils seront à
+  passer sur l'échelle avec leur propre garde.
+- **Pastille du dock sur mobile** : elle recouvre le bas du texte pendant
+  la lecture. Comportement antérieur, à regarder avec la télécommande
+  (sous-projet 3).
