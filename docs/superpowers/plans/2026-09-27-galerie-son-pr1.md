@@ -762,9 +762,10 @@ Expected : `"undefined"`
 }
 
 /* ── ÉCLAT : huit particules en étoile ──────────────────────────────────
-   La boîte est posée DANS l'élément (elle défile avec lui) au point du
-   clic ; chaque particule part dans son angle (--fi-angle) et s'éteint. */
-.fi-eclat { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 2; }
+   La boîte est posée dans <body>, aux coordonnées de la page (elle défile
+   avec l'élément, sans être rognée par son `overflow`) ; chaque particule
+   part dans son angle (--fi-angle) et s'éteint. */
+.fi-eclat { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 95; }
 .fi-eclat > span {
   position: absolute; left: -3px; top: -3px;
   width: 6px; height: 6px; border-radius: 50%;
@@ -870,22 +871,26 @@ Expected : `"undefined"`
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, duree);
   }
 
-  /* ── ÉCLAT ───────────────────────────────────────────────────────── */
+  /* ── ÉCLAT ─────────────────────────────────────────────────────────
+     ⚠️ La boîte est posée dans <body>, aux coordonnées de la PAGE, et non
+     dans l'élément : un bouton en `overflow: hidden` (le CTA primaire de
+     l'accueil, par exemple) rognerait les particules à son bord. En
+     coordonnées de page, elle défile quand même avec l'élément. */
   var PARTICULES = 8;
   function eclat(el, x, y) {
     if (!el || sobre(el)) return;
-    assurerPositionnement(el);
+    var r = el.getBoundingClientRect();
     var boite = document.createElement('span');
     boite.className = 'fi-eclat';
     boite.setAttribute('aria-hidden', 'true');
-    boite.style.left = (x == null ? el.offsetWidth / 2 : x) + 'px';
-    boite.style.top = (y == null ? el.offsetHeight / 2 : y) + 'px';
+    boite.style.left = (window.scrollX + r.left + (x == null ? r.width / 2 : x)) + 'px';
+    boite.style.top = (window.scrollY + r.top + (y == null ? r.height / 2 : y)) + 'px';
     for (var i = 0; i < PARTICULES; i++) {
       var p = document.createElement('span');
       p.style.setProperty('--fi-angle', (i * 360 / PARTICULES) + 'deg');
       boite.appendChild(p);
     }
-    el.appendChild(boite);
+    document.body.appendChild(boite);
     retirerApres(boite, 700);
     journal('éclat sur', el.tagName.toLowerCase() + (el.id ? '#' + el.id : ''));
   }

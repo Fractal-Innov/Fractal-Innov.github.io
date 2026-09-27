@@ -1,0 +1,162 @@
+/* ══════════════════════════════════════════════════════════════════════
+   LES COMPOSANTS (composants/composants.css)
+   spec : docs/superpowers/specs/2026-09-27-galerie-affordance-son-design.md § 5, § 7
+   galerie vivante : /galerie/
+
+   ⚠️ Ce fichier ne lit QUE ses jetons --fi-*. Chacun retombe sur la charte
+   Fractal Innov (valeur de repli), et une page hôte peut les redéfinir
+   pour une autre charte sans toucher aux règles.
+   ⚠️ Chargé AVANT la feuille de la page : à spécificité égale, la page
+   gagne. Les règles qui doivent tenir face à une classe de page sont donc
+   écrites à deux classes (.fi-pilier .fi-pilier__icone).
+   ══════════════════════════════════════════════════════════════════════ */
+:root {
+  --fi-fx-court: 180ms;
+  --fi-fx-long: 700ms;
+  --fi-ease-morph: var(--ease-morph, cubic-bezier(0.34, 1.2, 0.64, 1));
+  --fi-ease-sortie: cubic-bezier(0.22, 1, 0.36, 1);
+  --fi-texte: var(--text-main, #f0f0f0);
+  --fi-texte-doux: var(--text-muted, rgba(240, 240, 240, 0.55));
+  --fi-accent: var(--accent-blue, #6ea8ff);
+  --fi-fond: var(--glass-bg, rgba(255, 255, 255, 0.03));
+  --fi-fond-survol: var(--glass-bg-hover, rgba(255, 255, 255, 0.06));
+  --fi-fond-plein: var(--bg-base-2, #0f1220);
+  --fi-bordure: var(--glass-border-highlight, rgba(255, 255, 255, 0.2));
+  --fi-degrade: var(--brand-gradient, linear-gradient(100deg, #6ea8ff 0%, #8b5cf6 52%, #f472b6 100%));
+  --fi-eclat: var(--accent-pink, #f472b6);
+  --fi-eclat-2: var(--accent-blue, #6ea8ff);
+}
+
+/* ── PILIER (d'après .hero-pillar de la landing STAND) ──────────────────
+   Une carte cliquable : icône, texte, flèche qui glisse au survol. La
+   flèche dit « ça mène quelque part » ; sur écran tactile (pas de
+   survol), elle reste visible à demi. */
+.fi-pilier {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.7rem;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--fi-bordure);
+  background: var(--fi-fond);
+  color: var(--fi-texte);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--fi-fx-court) ease, border-color var(--fi-fx-court) ease,
+              transform var(--fi-fx-court) var(--fi-ease-morph);
+}
+.fi-pilier .fi-pilier__icone {
+  width: 22px; height: 22px; flex-shrink: 0;
+  color: var(--fi-accent);
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.fi-pilier__texte { line-height: 1.3; font-size: 0.95rem; color: var(--fi-texte-doux); }
+.fi-pilier__texte strong { display: block; color: var(--fi-texte); font-weight: 600; font-size: 1rem; }
+.fi-pilier .fi-pilier__fleche {
+  width: 18px; height: 18px;
+  fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  color: var(--fi-texte-doux);
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity var(--fi-fx-court) ease, transform 300ms var(--fi-ease-sortie);
+}
+.fi-pilier:hover,
+.fi-pilier:focus-visible { background: var(--fi-fond-survol); border-color: var(--fi-accent); transform: translateY(-2px); }
+.fi-pilier:hover .fi-pilier__fleche,
+.fi-pilier:focus-visible .fi-pilier__fleche { opacity: 1; transform: none; }
+.fi-pilier:active { transform: scale(0.98); }
+@media (hover: none) { .fi-pilier .fi-pilier__fleche { opacity: 0.6; transform: none; } }
+/* Choisi : bordure au dégradé de la marque (pressé pour un bouton,
+   courant pour un lien). */
+.fi-pilier[aria-pressed="true"],
+.fi-pilier[aria-current="true"] {
+  border-color: transparent;
+  background: linear-gradient(var(--fi-fond-plein), var(--fi-fond-plein)) padding-box,
+              var(--fi-degrade) border-box;
+}
+
+/* ── CHOIX : une rangée de piliers de même largeur (règle 9) ──────────── */
+.fi-choix {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+.fi-choix > li { display: flex; }
+.fi-choix > li > .fi-pilier { flex: 1; }
+
+/* ── BOUTON SON ─────────────────────────────────────────────────────────
+   Icône ET libellé (règle 6) : les ondes quand il est allumé, la croix
+   quand il est coupé. `hidden` tant que le JS ne l'a pas activé. */
+.fi-bascule-son {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 44px; padding: 0 0.9rem;
+  border-radius: 999px; border: 1px solid var(--fi-bordure);
+  background: var(--fi-fond); color: var(--fi-texte);
+  font: inherit; font-size: 0.9rem; font-weight: 600; white-space: nowrap; cursor: pointer;
+}
+.fi-bascule-son[hidden] { display: none; }
+.fi-bascule-son:hover { background: var(--fi-fond-survol); }
+.fi-bascule-son .fi-bascule-son__icone {
+  width: 20px; height: 20px; overflow: visible;
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.fi-bascule-son[aria-pressed="true"] .fi-bascule-son__icone { color: var(--fi-accent); }
+.fi-bascule-son[aria-pressed="true"] .fi-bascule-son__coupe,
+.fi-bascule-son[aria-pressed="false"] .fi-bascule-son__ondes { display: none; }
+.fi-bascule-son__ondes { transform-origin: 30% 50%; }
+.fi-son--joue .fi-bascule-son__ondes { animation: fiOndes 900ms var(--fi-ease-sortie); }
+@keyframes fiOndes {
+  0% { opacity: 0; transform: scale(0.6); }
+  40% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ── ÉCLAT : huit particules en étoile ──────────────────────────────────
+   La boîte est posée dans <body>, aux coordonnées de la page (elle défile
+   avec l'élément, sans être rognée par son `overflow`) ; chaque particule
+   part dans son angle (--fi-angle) et s'éteint. */
+.fi-eclat { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 95; }
+.fi-eclat > span {
+  position: absolute; left: -3px; top: -3px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--fi-eclat);
+  transform: rotate(var(--fi-angle)) translateX(0) scale(1);
+  animation: fiEclat 520ms var(--fi-ease-sortie) forwards;
+}
+.fi-eclat > span:nth-child(even) { background: var(--fi-eclat-2); }
+@keyframes fiEclat {
+  to { transform: rotate(var(--fi-angle)) translateX(var(--fi-eclat-portee, 44px)) scale(0.2); opacity: 0; }
+}
+
+/* ── REFLET : une bande de lumière traverse l'élément, une fois ────────
+   Un <span> posé dans l'hôte, qui porte son propre `overflow: hidden` et
+   hérite du rayon : l'hôte n'a pas à changer son débordement. */
+.fi-reflet {
+  position: absolute; inset: 0; z-index: 2;
+  border-radius: inherit; overflow: hidden; pointer-events: none;
+}
+.fi-reflet::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 45%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.16) 50%, transparent);
+  transform: skewX(-12deg);
+  animation: fiReflet 900ms ease-out forwards;
+}
+@keyframes fiReflet { to { left: 120%; } }
+
+/* ── MOUVEMENT RÉDUIT ───────────────────────────────────────────────────
+   Préférence du système, ou démonstration forcée par la galerie
+   (.fi-sobre sur un ancêtre). États finaux, aucun mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  .fi-eclat, .fi-reflet { display: none; }
+  .fi-pilier, .fi-pilier .fi-pilier__fleche { transition: none; }
+  .fi-pilier:hover, .fi-pilier:focus-visible, .fi-pilier:active { transform: none; }
+  .fi-son--joue .fi-bascule-son__ondes { animation: none; }
+}
+.fi-sobre .fi-eclat, .fi-sobre .fi-reflet { display: none; }
+.fi-sobre .fi-pilier, .fi-sobre .fi-pilier .fi-pilier__fleche { transition: none; }
+.fi-sobre .fi-pilier:hover, .fi-sobre .fi-pilier:focus-visible, .fi-sobre .fi-pilier:active { transform: none; }
+.fi-sobre .fi-son--joue .fi-bascule-son__ondes { animation: none; }
