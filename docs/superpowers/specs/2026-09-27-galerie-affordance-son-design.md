@@ -155,6 +155,18 @@ elles, restent toutes visibles, groupées par usage).
 - Mouvement réduit : pas de minuteur, première pastille (ou celle de la
   situation). Sans JavaScript : les trois cartes l'une sous l'autre.
 
+### Le CTA son (piste B : une invitation dans le hero)
+
+Le dock est caché sur le hero : sans autre bouton, le son ne pouvait pas
+s'allumer avant le premier geste, alors que l'accord de la situation joue
+justement là.
+
+- Une invitation « Visite sonore » juste sous le choix de situation : le
+  même composant `bascule-son`, avec ses propres libellés (attributs
+  `data-libelle-coupe` / `data-libelle-allume`).
+- Ensuite, le dock prend le relais ; les deux boutons restent d'accord
+  (ils écoutent `fi:son`).
+
 ## 4. La correspondance sections / structures
 
 Une structure STAND par section, deux au plus, choisie par ce qui coince.
@@ -348,16 +360,20 @@ déclencheur. Même interrupteur `fi:debug` que le parcours.
 
 ## 11. La livraison
 
-Une PR par étape, chacune vérifiée et finie :
+Une PR par étape, chacune vérifiée et finie (découpage du 27/09/2026) :
 
 1. **Ordre + socle + hero** : le nouvel ordre des sections (§ 3 bis),
-   `composants/` (CSS, JS, `son.js`), le bouton son du
-   dock, la galerie avec `pilier`, `choix`, `eclat`, `reflet`,
-   `bascule-son` et le clavier sonore ; la passe sur le hero ; `fi:son` et
-   sa mesure ; `rdv` émis en geste et exclu de `geste`.
+   `composants/` (CSS, JS, `son.js`), le bouton son du dock et
+   l'invitation « Visite sonore » du hero (§ 3 ter), la galerie avec
+   `pilier`, `choix`, `eclat`, `reflet`, `bascule-son` et le clavier
+   sonore ; la passe sur le hero ; `fi:son` et sa mesure ; `rdv` émis en
+   geste et exclu de `geste`.
+1 bis. **La fenêtre** (§ 3 ter) : `fenetre` et ses variantes `agenda`,
+   `demo`, `carte` ; le QR arrive ici (carte de visite).
+1 ter. **L'offre en story** (§ 3 ter) : le sélecteur en pastilles.
 2. **Fondateur** : `carte-etiquette`.
 3. **Approche** : `frise`.
-4. **Offre** : `pivot`.
+4. **Offre** : `pivot` (dans la carte du sélecteur livré en 1 ter).
 5. **Démos** : `groupe`.
 6. **Partenaires** : `fil` (remplace le tracé de constellation actuel).
 7. **Contact** : `partage` + QR.

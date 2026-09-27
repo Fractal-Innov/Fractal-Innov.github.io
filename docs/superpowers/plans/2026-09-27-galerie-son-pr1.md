@@ -634,7 +634,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Interfaces :**
 - Consumes : `window.FiSon` (tâche 2) ; événement `fi:son`.
-- Produces : `window.FiComposants = { eclat(el: Element, x?: number, y?: number): void, reflet(el: Element): void, activer(racine?: ParentNode): void }` ; attributs `data-composant="choix|bascule-son"`, `data-choix-item`, `data-eclat`, `data-reflet`, `data-geste="nom"`, `data-bascule-libelle` ; classes `.fi-pilier` (+ `__icone`, `__texte`, `__fleche`), `.fi-choix`, `.fi-bascule-son` (+ `__icone`, `__ondes`, `__coupe`), `.fi-eclat`, `.fi-reflet`, `.fi-sobre` ; jetons `--fi-*`.
+- Produces : `window.FiComposants = { eclat(el: Element, x?: number, y?: number): void, reflet(el: Element): void, activer(racine?: ParentNode): void }` ; attributs `data-composant="choix|bascule-son"`, `data-choix-item`, `data-eclat`, `data-reflet`, `data-geste="nom"`, `data-bascule-libelle`, `data-libelle-coupe`, `data-libelle-allume` ; classes `.fi-pilier` (+ `__icone`, `__texte`, `__fleche`), `.fi-choix`, `.fi-bascule-son` (+ `__icone`, `__ondes`, `__coupe`), `.fi-eclat`, `.fi-reflet`, `.fi-sobre` ; jetons `--fi-*`.
 
 - [ ] **Step 1 : Vérifier que rien n'existe encore**
 
@@ -940,9 +940,13 @@ Expected : `"undefined"`
   function activerBasculeSon(btn) {
     if (!window.FiSon) { journal('bascule-son : FiSon absent, le bouton reste caché'); return; }
     var libelle = btn.querySelector('[data-bascule-libelle]');
+    /* Chaque bouton peut porter ses mots (l'invitation du hero dit
+       « Visite sonore ») ; sinon, les libellés par défaut. */
+    var coupe = btn.getAttribute('data-libelle-coupe') || 'Son coupé';
+    var allume = btn.getAttribute('data-libelle-allume') || 'Son allumé';
     var maj = function (actif) {
       btn.setAttribute('aria-pressed', actif ? 'true' : 'false');
-      if (libelle) libelle.textContent = actif ? 'Son allumé' : 'Son coupé';
+      if (libelle) libelle.textContent = actif ? allume : coupe;
     };
     maj(window.FiSon.actif());
     btn.hidden = false;
@@ -1050,7 +1054,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 ---
 
-### Task 4 : Le bouton son dans le dock, et sa mesure
+### Task 4 : Le bouton son (dock et invitation du hero), et sa mesure
 
 **Files :**
 - Modify : `index.html` : balisage du dock, CSS du dock (grand écran et pastille), second script (`MESURES`, écoute `fi:son`, exclusion de `rdv`, émission du geste `rdv`)
@@ -1094,7 +1098,37 @@ par :
        son sous-projet n'est pas livré. -->
 ```
 
+- [ ] **Step 2 bis : L'invitation « Visite sonore » du hero (spec § 3 ter)**
+
+Le dock est caché sur le hero : c'est ce bouton qui permet d'allumer le
+son avant le premier geste. Juste après le lien « Juste regarder », ajouter :
+```html
+          <!-- Le son s'allume ici, avant le premier geste (spec § 3 ter) ;
+               ensuite le dock prend le relais. Même composant, ses mots à lui. -->
+          <button class="fi-bascule-son situations__son" type="button"
+                  data-composant="bascule-son" aria-pressed="false" hidden
+                  data-libelle-coupe="Visite sonore" data-libelle-allume="Visite sonore activée">
+            <svg class="fi-bascule-son__icone" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M11 5 6 9H3v6h3l5 4z"/>
+              <path class="fi-bascule-son__ondes" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+              <path class="fi-bascule-son__coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
+            </svg>
+            <span data-bascule-libelle>Visite sonore</span>
+          </button>
+```
+**Point de co-conception** : montrer le hero rendu à Corentin (bordure
+pointillée, taille, libellés) avant de passer au CSS du dock ; ajuster
+selon son retour.
+
 - [ ] **Step 3 : Le CSS**
+
+Pour l'invitation du hero, dans le bloc PARCOURS :
+```css
+    /* L'invitation « Visite sonore » : une pilule discrète, en pointillé
+       tant que le son est coupé (une invitation, pas un bouton de plus). */
+    .situations__son { border-style: dashed; color: var(--text-soft); }
+    .situations__son[aria-pressed="true"] { border-style: solid; color: var(--text-main); }
+```
 
 ⚠️ `.dock button` (deux sélecteurs) bat `.fi-bascule-son` (une classe) : fond,
 bordure et couleur du dock s'appliquent, c'est voulu ; le survol se
@@ -1181,6 +1215,8 @@ var s = document.querySelector('#dock .fi-bascule-son'), r = s.getBoundingClient
 [getComputedStyle(s).display !== 'none', Math.round(r.height) >= 44, document.documentElement.scrollWidth]
 ```
 Expected : `[true, true, 375]`. Capture d'écran du dock déplié. Revenir en preset `desktop`.
+
+Sur le hero, cliquer « Visite sonore » : son libellé passe à « Visite sonore activée », et celui du dock (plus bas) à « Son allumé » ; recliquer l'un éteint les deux.
 
 - [ ] **Step 7 : Commit**
 
