@@ -2102,14 +2102,14 @@
     }
 
     /* ══════════════════════════════════════════════════════════════════
-       PASSE HERO (27/09/2026) : comprendre ce que le site offre en un
-       instant, et voir que la page s'adapte au besoin choisi.
-       - un visuel qui suit le choix (bureau) / une vignette par pilier
-         (sous 1024 px, pas de survol au doigt) ;
+       PASSE HERO (27/09/2026, reprise après retour d'usage)
+       Le hero sert à UNE chose : faire le premier choix, et le faire lire
+       comme un choix. Contenu centré, aucune image : le fond vidéo (à
+       produire) montre que les expériences sont en 3D et vivantes.
+       - le choix dans un panneau de verre, chaque pilier avec un rond de
+         sélection (vide › pointé au survol › plein une fois choisi) ;
        - le verbe du chapeau s'allume avec son pilier ;
-       - le choix devient l'action principale, « Réserver » passe second ;
-       - le son monte à côté de la pastille.
-       Tout l'état visuel est en CSS (:has + body[data-situation]).
+       - « Réserver 30 min » en secondaire, le son près de la pastille.
        ══════════════════════════════════════════════════════════════════ */
 
     /* ── La rangée du haut : pastille + son ──────────────────────────── */
@@ -2118,14 +2118,42 @@
       gap: var(--fi-e1) var(--fi-e2); /* 8 px si la rangée passe à la ligne, 16 px côte à côte */
     }
 
-    /* ── Le choix, action principale ─────────────────────────────────── */
-    .situations__question { font-size: var(--fi-t0); font-weight: 600; color: var(--text-main); } /* l'invitation se lit avant les piliers (15,2 px grisé avant) */
+    /* ── Le choix : un panneau, une question, des réponses ───────────── */
+    .situations {
+      width: min(100%, 48rem); /* 768 px : trois piliers de ~230 px, le texte tient sur deux lignes */
+      margin-top: var(--fi-e3); /* 24 + 24 de gap = 48 px : le choix est un autre groupe que le chapeau */
+      padding: var(--fi-e3) var(--fi-e2) var(--fi-e2); /* 24 en haut pour la question, 16 ailleurs : le panneau serre ses réponses */
+      gap: var(--fi-e2);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--glass-border-highlight);
+      background: rgba(15, 18, 32, 0.62); /* verre sombre : le choix reste net devant la vidéo, quelle que soit l'image */
+      backdrop-filter: blur(var(--blur-verre, 20px));
+      -webkit-backdrop-filter: blur(var(--blur-verre, 20px));
+    }
+    @media (min-width: 768px) { .situations { padding: var(--fi-e4) var(--fi-e3) var(--fi-e3); } } /* 32 / 24 dès qu'il y a de la place */
+    @media (max-width: 767px) {
+      /* À 375 × 812, la rangée pastille + son passe sur deux lignes et le
+         panneau ajoute son rembourrage : sans ces 56 px, le 3e pilier
+         tombait sous la ligne de flottaison (827 px). */
+      .hero__contenu { padding-top: var(--fi-e4); } /* 32 px au lieu de 64 */
+      .situations { margin-top: 0; } /* 24 px de gap seulement : le cadre du panneau marque déjà le changement de groupe */
+    }
+    .situations__question { font-size: var(--fi-t0); font-weight: 600; color: var(--text-main); } /* la question se lit avant les réponses */
     .situations .fi-pilier {
       border-color: color-mix(in oklab, var(--accent-blue) 45%, transparent); /* bord bleu au repos : ce sont LES boutons du hero */
       background: color-mix(in oklab, var(--accent-blue) 7%, transparent);
     }
     .situations .fi-pilier:hover,
     .situations .fi-pilier:focus-visible { border-color: var(--accent-blue); }
+    /* « ou juste regarder » : la sortie du panneau, discrète mais pleine cible. */
+    .situations__regarder { gap: var(--fi-e1); color: var(--text-soft); }
+    .situations__fleche {
+      width: 16px; height: 16px;
+      fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+      transition: transform 300ms var(--fi-ease-sortie);
+    }
+    .situations__regarder:hover .situations__fleche,
+    .situations__regarder:focus-visible .situations__fleche { transform: translateX(4px); }
 
     /* ── Les verbes du chapeau ───────────────────────────────────────── */
     .hero__verbe {
@@ -2135,11 +2163,11 @@
       background-size: 0 2px; /* le soulignement au dégradé part de zéro */
       transition: color var(--fi-fx-court) ease, background-size 300ms var(--fi-ease-sortie);
     }
-    /* Allumé par la situation choisie… */
+    /* Allumé par la situation choisie (0,3,1)… */
     body[data-situation="convaincre"] .hero__verbe[data-verbe="convaincre"],
     body[data-situation="former"] .hero__verbe[data-verbe="former"],
     body[data-situation="garder"] .hero__verbe[data-verbe="garder"],
-    /* …ou par le pilier survolé, qui l'emporte (spécificité 0,5,0). */
+    /* …ou par le pilier survolé, qui l'emporte (0,5,0). */
     .hero:has([data-situation-choix="convaincre"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="convaincre"],
     .hero:has([data-situation-choix="former"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="former"],
     .hero:has([data-situation-choix="garder"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="garder"] {
@@ -2147,70 +2175,43 @@
       background-size: 100% 2px;
     }
     /* Un pilier survolé éteint le verbe de la situation s'il n'est pas le
-       sien (0,4,0 bat le 0,3,1 de la situation) : un seul verbe à la fois. */
-    .hero:has(.fi-pilier:is(:hover, :focus-visible)) .hero__verbe {
-      color: inherit; background-size: 0 2px;
-    }
+       sien (0,4,0 bat 0,3,1) : un seul verbe allumé à la fois. */
+    .hero:has(.fi-pilier:is(:hover, :focus-visible)) .hero__verbe { color: inherit; background-size: 0 2px; }
 
-    /* ── Le visuel qui suit le choix (bureau) ────────────────────────── */
-    .hero__visuel { display: none; margin: 0; position: relative; width: 100%; aspect-ratio: 16 / 10; } /* 16:10 : entre les formats des trois images, le recadrage reste léger */
-    .hero__vue {
-      position: absolute; inset: 0;
-      overflow: hidden;
-      border-radius: var(--radius-card);
+    /* ── Le fond vidéo ───────────────────────────────────────────────── */
+    .hero__fond { position: absolute; inset: 0; pointer-events: none; }
+    .hero__video { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .hero__voile { position: absolute; inset: 0; display: none; }
+    .hero--video .hero__voile {
+      display: block;
+      /* Plus sombre au centre, là où sont le titre et le choix ; les bords
+         laissent voir la 3D. Réglé sur une boucle claire (le pire cas). */
+      background:
+        radial-gradient(ellipse 60% 55% at 50% 48%, rgba(9, 11, 19, 0.88), rgba(9, 11, 19, 0.5)), /* 0,88 : le chapeau gris reste lisible sur une scène blanche */
+        linear-gradient(rgba(9, 11, 19, 0.35), transparent 30%, transparent 70%, var(--bg-base, #090b13));
+    }
+    .hero--video .hero__halo { opacity: 0.5; } /* les halos teintent la vidéo sans la noyer */
+    .hero__contenu { z-index: 1; } /* au-dessus du fond et du voile */
+    .hero__pause {
+      position: absolute; z-index: 2;
+      right: var(--fi-e3); bottom: var(--fi-e3);
+      display: inline-grid; place-items: center;
+      width: var(--fi-cible); height: var(--fi-cible); /* 44 px : cible tactile */
+      border-radius: 50%;
       border: 1px solid var(--glass-border-highlight);
-      opacity: 0;
-      transition: opacity 300ms ease; /* fondu court : on voit que l'image répond, sans effet de diaporama */
+      background: rgba(15, 18, 32, 0.62);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: color var(--fi-fx-court) ease, border-color var(--fi-fx-court) ease;
     }
-    .hero__vue img { display: block; width: 100%; height: 100%; object-fit: cover; }
-    .hero__legende {
-      position: absolute; inset: auto 0 0 0;
-      padding: var(--fi-e4) var(--fi-e3) var(--fi-e2);
-      background: linear-gradient(transparent, rgba(9, 11, 19, 0.88)); /* le texte reste lisible quelle que soit l'image */
-      font-size: var(--fi-t-05); line-height: 1.3; color: var(--text-soft);
-    }
-    .hero__legende strong { display: block; font-size: var(--fi-t0); color: var(--text-main); }
-    /* Qui est visible : STAND par défaut… */
-    .hero__vue[data-visuel="convaincre"] { opacity: 1; }
-    /* …celle de la situation si elle est choisie… */
-    body[data-situation="former"] .hero__vue[data-visuel="convaincre"],
-    body[data-situation="garder"] .hero__vue[data-visuel="convaincre"] { opacity: 0; }
-    body[data-situation="former"] .hero__vue[data-visuel="former"],
-    body[data-situation="garder"] .hero__vue[data-visuel="garder"] { opacity: 1; }
-    /* …et celle du pilier survolé, qui l'emporte sur tout (0,5,0 contre 0,4,0). */
-    .hero:has(.fi-pilier:is(:hover, :focus-visible)) .hero__vue { opacity: 0; }
-    .hero:has([data-situation-choix="convaincre"]:is(:hover, :focus-visible)) .hero__vue[data-visuel="convaincre"],
-    .hero:has([data-situation-choix="former"]:is(:hover, :focus-visible)) .hero__vue[data-visuel="former"],
-    .hero:has([data-situation-choix="garder"]:is(:hover, :focus-visible)) .hero__vue[data-visuel="garder"] { opacity: 1; }
-
-    /* ── Sous 1024 px : la vignette dans le pilier remplace le visuel ── */
-    @media (max-width: 1023px) {
-      .situations .fi-pilier .fi-pilier__icone { display: none; }
-      .situations .fi-pilier .fi-pilier__vignette { display: block; }
-      .situations .fi-pilier { padding-block: var(--fi-e1); padding-left: var(--fi-e1); } /* 8 px autour de la vignette : le pilier fait 66 px (48 + 16 + bordure) */
-      .hero__contenu { padding-top: var(--fi-e4); } /* 32 px au lieu de 64 : la rangée pastille + son passe sur deux lignes, les piliers restent visibles à 375 × 812 */
-    }
-
-    /* ── Dès 1024 px : deux colonnes, texte et choix à gauche, visuel à droite */
-    @media (min-width: 1024px) {
-      .hero__contenu {
-        width: 100%;
-        max-width: 70rem; /* 1 120 px : la largeur de la pilule du bandeau, les deux s'alignent */
-        padding-top: var(--fi-e6); /* 48 px au lieu de 112 : les piliers restent au-dessus de 800 px de haut */
-        display: grid;
-        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); /* le texte un peu plus large : c'est lui qui se lit d'abord */
-        column-gap: var(--fi-e8); /* 64 px : deux groupes distincts */
-        row-gap: var(--fi-e3);
-        justify-items: start;
-        text-align: left;
-      }
-      .hero__contenu > * { grid-column: 1; }
-      .hero__visuel { display: block; grid-column: 2; grid-row: 1 / span 6; align-self: center; }
-      .hero__haut { justify-content: flex-start; }
-      .hero__titre { font-size: clamp(var(--fi-t4), 1.2rem + 3.2vw, var(--fi-t5)); } /* demi-page : plafond t5 (52 px), le titre tient en 3 lignes */
-      .situations { align-items: flex-start; width: 100%; }
-      .situations__liste.fi-choix { grid-template-columns: 1fr; width: min(100%, 28rem); } /* piliers empilés, face au visuel qu'ils pilotent */
-    }
+    .hero__pause[hidden] { display: none; }
+    .hero__pause:hover, .hero__pause:focus-visible { color: var(--text-main); border-color: var(--accent-blue); }
+    .hero__pause:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }
+    .hero__pause svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .hero__lecture-icone { display: none; }
+    .hero__pause[aria-pressed="true"] .hero__pause-icone { display: none; }
+    .hero__pause[aria-pressed="true"] .hero__lecture-icone { display: inline; fill: currentColor; }
   </style>
 </head>
 
@@ -2316,6 +2317,28 @@
   <main id="contenu">
     <!-- ══ HERO ════════════════════════════════════════════════════════ -->
     <section class="hero" id="top">
+      <!-- Le fond vidéo : montrer que les expériences sont en 3D et vivantes,
+           sans rien dire. Contrat, pour quand la boucle sera produite
+           (préréglage `hero` de Needle5/scripts/encoder-video.sh) :
+             1. déposer <base>.mp4, <base>.webm et <base>.webp (le poster), tels que
+                l'encodeur les nomme (--preset hero --sortie <base>.mp4) ;
+             2. écrire <base> dans data-hero-video (ex. /media/accueil/hero/boucle).
+           Tant qu'il vaut « aucune », aucune requête n'est faite et les halos
+           restent seuls. Sous 768 px, en mouvement réduit ou en économie de
+           données : le poster seul. En ?debug=1, ?video=<base> essaie une
+           autre boucle sans toucher au fichier (script « LE HERO »). -->
+      <div class="hero__fond" aria-hidden="true">
+        <video class="hero__video" data-hero-video="aucune" muted loop playsinline preload="none"></video>
+        <div class="hero__voile"></div>
+      </div>
+      <!-- WCAG 2.2.2 : un mouvement de plus de 5 s doit pouvoir s'arrêter.
+           `hidden` tant que la vidéo ne joue pas. -->
+      <button class="hero__pause" type="button" aria-pressed="false" aria-label="Mettre la vidéo en pause" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path class="hero__pause-icone" d="M8 5v14M16 5v14"/>
+          <path class="hero__lecture-icone" d="M7 5l12 7-12 7z"/>
+        </svg>
+      </button>
       <div class="hero__halo hero__halo--haut" aria-hidden="true"></div>
       <div class="hero__halo hero__halo--bas" aria-hidden="true"></div>
 
@@ -2353,25 +2376,6 @@
           <span class="hero__verbe" data-verbe="garder">il reste</span>.
           Dans le navigateur, sans application.</p>
 
-        <!-- Le visuel qui suit le choix (bureau seulement ; sous 1024 px, la
-             vignette de chaque pilier prend le relais). Les trois vues sont
-             là, une seule est visible : celle du pilier survolé, sinon celle
-             de la situation, sinon STAND. Tout en CSS (:has), aucun script.
-             Mêmes fichiers que les démos : déjà en cache plus bas. -->
-        <figure class="hero__visuel" aria-hidden="true">
-          <div class="hero__vue" data-visuel="convaincre">
-            <img src="/media/accueil/demos/stand.webp" alt="" width="1600" height="1063" loading="lazy" decoding="async">
-            <span class="hero__legende"><strong>STAND</strong> le produit sur le stand sans le transporter</span>
-          </div>
-          <div class="hero__vue" data-visuel="former">
-            <img src="/media/accueil/demos/rayon-x.webp" alt="" width="1200" height="630" loading="lazy" decoding="async">
-            <span class="hero__legende"><strong>Rayon X</strong> la formation à l'échangeur thermique</span>
-          </div>
-          <div class="hero__vue" data-visuel="garder">
-            <img src="/media/accueil/demos/moulage.webp" alt="" width="1080" height="606" loading="lazy" decoding="async">
-            <span class="hero__legende"><strong>À fleur d'écorce</strong> une performance de Mathilde Thiennot</span>
-          </div>
-        </figure>
 
         <!-- Le premier geste du parcours. Sans JavaScript, chaque bouton est un
              lien vers la section suivante (#offre), où sa carte est ; avec, il
@@ -2381,25 +2385,23 @@
           <p class="situations__question" id="situationsQuestion">Votre savoir doit d'abord :</p>
           <ul class="situations__liste fi-choix" aria-labelledby="situationsQuestion" data-composant="choix">
             <li><a class="fi-pilier" href="#offre" data-situation-choix="convaincre" data-choix-item data-eclat>
+              <span class="fi-pilier__rond" aria-hidden="true"></span>
               <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
-              <img class="fi-pilier__vignette" src="/media/accueil/demos/stand.webp" alt="" width="56" height="56" loading="lazy" decoding="async">
               <span class="fi-pilier__texte"><strong>Convaincre</strong> un acheteur</span>
-              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a></li>
             <li><a class="fi-pilier" href="#offre" data-situation-choix="former" data-choix-item data-eclat>
+              <span class="fi-pilier__rond" aria-hidden="true"></span>
               <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-former"></use></svg>
-              <img class="fi-pilier__vignette" src="/media/accueil/demos/rayon-x.webp" alt="" width="56" height="56" loading="lazy" decoding="async">
               <span class="fi-pilier__texte"><strong>Former</strong> un nouvel arrivant</span>
-              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a></li>
             <li><a class="fi-pilier" href="#offre" data-situation-choix="garder" data-choix-item data-eclat>
+              <span class="fi-pilier__rond" aria-hidden="true"></span>
               <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-garder"></use></svg>
-              <img class="fi-pilier__vignette" src="/media/accueil/demos/moulage.webp" alt="" width="56" height="56" loading="lazy" decoding="async">
               <span class="fi-pilier__texte"><strong>Garder</strong> un savoir-faire</span>
-              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </a></li>
           </ul>
-          <a class="situations__regarder" href="#offre" data-situation-choix="aucune">Juste regarder</a>
+          <a class="situations__regarder" href="#offre" data-situation-choix="aucune">ou juste regarder
+            <svg class="situations__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
 
         <div class="hero__actions">
@@ -3129,16 +3131,93 @@
       window.addEventListener('load', verifierPasse);
       window.addEventListener('resize', verifierPasse);
 
-      /* ── Le hero suit la situation. Aucun script ne change le visuel ni
-         le verbe du chapeau : le CSS lit `body[data-situation]` (posé par
-         le parcours) et `:has(pilier:hover)`. Ce journal dit seulement
-         ce que le CSS va montrer, pour suivre le flux en `?debug=1`. */
-      var VISUELS = { convaincre: 'STAND', former: 'Rayon X', garder: 'À fleur d\'écorce' };
+      /* ── LE HERO ──────────────────────────────────────────────────────
+         1. Le verbe du chapeau suit la situation : c'est le CSS qui l'allume
+            (`body[data-situation]`, `:has(pilier:hover)`). Le journal dit
+            seulement ce qu'il va montrer.
+         2. Le fond vidéo. Décidé UNE fois, au chargement :
+              data-hero-video="aucune"  › rien, aucune requête, les halos ;
+              moins de 768 px, mouvement réduit ou économie de données
+                                        › le poster seul (une image) ;
+              sinon                     › WebM (plus léger), MP4 en secours,
+                                          en boucle, avec le bouton pause.
+            La vidéo se met en pause hors écran (batterie, processeur) et
+            reprend au retour, sauf si le visiteur l'a arrêtée lui-même. */
       document.addEventListener('fi:situation', function (e) {
         var id = (e.detail && e.detail.id) || 'aucune';
-        journal('hero : visuel « ' + (VISUELS[id] || 'STAND (défaut)') + ' », verbe allumé : ' +
-          (VISUELS[id] ? id : 'aucun') + ' (CSS, via body[data-situation])');
+        journal('hero : verbe du chapeau allumé : ' + (id === 'aucune' ? 'aucun' : id) + ' (CSS, via body[data-situation])');
       });
+
+      (function brancherVideoHero() {
+        var hero = document.querySelector('.hero');
+        var video = hero && hero.querySelector('[data-hero-video]');
+        var bouton = hero && hero.querySelector('.hero__pause');
+        if (!video || !bouton) return;
+
+        var base = video.getAttribute('data-hero-video');
+        if (DEBUG) {
+          var essai = new URLSearchParams(location.search).get('video');
+          if (essai) { base = essai; journal('hero : boucle d\'essai demandée par ?video=, ' + essai); }
+        }
+        if (!base || base === 'aucune') {
+          journal('hero : pas de vidéo de fond (data-hero-video="aucune"), les halos restent seuls');
+          return;
+        }
+
+        video.poster = base + '.webp'; /* le poster, nommé comme le sort l'encodeur */
+        hero.classList.add('hero--video');
+        var raison = window.matchMedia('(max-width: 767px)').matches ? 'écran de moins de 768 px'
+          : sobre ? 'mouvement réduit demandé'
+          : (navigator.connection && navigator.connection.saveData) ? 'économie de données'
+          : '';
+        if (raison) { journal('hero : poster seul (' + raison + ')'); return; }
+
+        [['webm', 'video/webm'], ['mp4', 'video/mp4']].forEach(function (f) {
+          var source = document.createElement('source');
+          source.src = base + '.' + f[0];
+          source.type = f[1];
+          video.appendChild(source);
+        });
+        video.load();
+
+        var arreteeParLeVisiteur = false;
+        function jouer() {
+          var p = video.play();
+          if (p && typeof p.catch === 'function') p.catch(function () { journal('hero : lecture refusée par le navigateur, le poster reste'); });
+        }
+        function majBouton() {
+          var enPause = video.paused;
+          bouton.setAttribute('aria-pressed', enPause ? 'true' : 'false');
+          bouton.setAttribute('aria-label', enPause ? 'Relancer la vidéo' : 'Mettre la vidéo en pause');
+        }
+        video.addEventListener('playing', function () { bouton.hidden = false; majBouton(); journal('hero : vidéo en lecture (' + video.currentSrc.split('/').pop() + ')'); });
+        video.addEventListener('pause', majBouton);
+        /* Une <source> qui échoue émet `error` sur elle-même (d'où la
+           capture). Tant qu'il en reste une, le navigateur passe à la
+           suivante ; si la DERNIÈRE échoue, plus rien ne jouera : on rend
+           au hero son état sans vidéo (halos pleins, pas de voile). */
+        video.addEventListener('error', function (e) {
+          if (e.target !== video.lastElementChild) { journal('hero : ' + e.target.src.split('/').pop() + ' illisible, source suivante'); return; }
+          hero.classList.remove('hero--video');
+          video.removeAttribute('poster');
+          journal('hero : aucune source lisible, retour aux halos');
+        }, true);
+        bouton.addEventListener('click', function () {
+          arreteeParLeVisiteur = !video.paused;
+          if (arreteeParLeVisiteur) video.pause(); else jouer();
+          journal('hero : vidéo ' + (arreteeParLeVisiteur ? 'arrêtée' : 'relancée') + ' par le visiteur');
+        });
+
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(function (entrees) {
+            var visible = entrees[0].isIntersecting;
+            if (!visible && !video.paused) { video.pause(); journal('hero : hors écran, vidéo en pause'); }
+            else if (visible && video.paused && !arreteeParLeVisiteur) jouer();
+          }, { threshold: 0.1 }).observe(hero);
+        } else {
+          jouer();
+        }
+      })();
 
       /* ── Le lien de navigation de la section courante ──────────────────
          ⚠️ /stand/ n'utilise PAS d'IntersectionObserver ici, et c'est un

@@ -489,36 +489,56 @@ les jetons qu'elle consomme.
 
 ## 15. La passe du hero (27/09/2026)
 
-But : comprendre en un instant ce que le site offre, et voir que la page
-s'adapte au besoin choisi. Décisions prises en questions fermées :
+But : le hero sert à UNE chose, faire le premier choix, et le faire lire
+comme un choix. Le fond vidéo montre que les expériences sont en 3D et
+vivantes ; le contenu reste centré, sans image.
+
+> ⚠️ **Reprise après retour d'usage (même jour).** Une première version
+> montrait un visuel qui suivait le pilier survolé (bureau) et une vignette
+> dans chaque pilier (mobile), en deux colonnes. Retirée : trop chargée,
+> et elle détournait le hero de son rôle (le choix). Elle reste lisible
+> dans l'historique git (commit `feat(hero): montrer l'offre…`).
 
 | Sujet | Décision | Écartée |
 |---|---|---|
-| Visuel | **un visuel qui suit le choix** (bureau) : STAND, Rayon X, À fleur d'écorce, mêmes fichiers que les démos | vignettes seules ; pas de visuel |
-| Image au repos | celle de la situation (`body[data-situation]`), sinon STAND | le village ; une mosaïque |
-| Mobile et tablette (< 1024 px) | **une vignette de 48 px dans chaque pilier**, à la place de l'icône | grand visuel fixe (piliers sous la ligne de flottaison) ; rien |
-| Action principale | **le choix du besoin** : piliers à bord bleu, invitation en blanc ; « Réserver 30 min » passe en secondaire | Réserver en premier ; les deux à égalité |
-| Adaptation visible | le verbe du chapeau s'allume avec son pilier (« il vend » › Convaincre, « il forme » › Former, « il reste » › Garder), texte inchangé | une ligne qui le dit ; aligner les mots |
-| Son | l'invitation « Visite sonore » **monte à côté de la pastille** (remplace « sous le choix » du § 3 ter) | sous le choix ; avec l'identité |
+| Mise en page | **centrée**, aucune image dans le hero | deux colonnes avec visuel ; vignettes dans les piliers |
+| Lire « c'est un choix » | **un panneau de verre** (la question et ses réponses ensemble) ; chaque pilier porte un **rond de sélection** (vide › pointé au survol › plein une fois choisi, via `aria-current`) et garde son icône d'usage ; la flèche part (elle disait « aller plus bas », pas « choisir ») | radios sans panneau ; quiz numéroté ; rond seul ; tout garder |
+| Sortie du panneau | « ou juste regarder », avec sa flèche (texte retouché : « ou » ajouté) | |
+| Gardé de la première version | verbe du chapeau allumé avec son pilier ; « Réserver 30 min » en secondaire ; « Visite sonore » près de la pastille ; bord bleu des piliers | |
+| Fond | **vidéo en boucle**, voile sombre plus dense au centre, halos atténués | image fixe |
+| Mouvement (WCAG 2.2.2) | **bouton pause** en bas à droite (44 px) ; pause automatique hors écran, reprise au retour sauf si le visiteur l'a arrêtée | une seule lecture ; pause au survol du choix |
+| Mobile | **poster seul sous 768 px**, et partout en mouvement réduit ou économie de données | vidéo partout ; rien |
+| En attendant la vidéo | **emplacement câblé, halos seuls** : `data-hero-video="aucune"`, aucune requête | boucle provisoire commitée |
 
-**Mécanique** : tout l'état visuel est en CSS. `body[data-situation]` règle
-le repos, `.hero:has(pilier:is(:hover, :focus-visible))` règle le survol
-et l'emporte (spécificité 0,5,0 contre 0,4,0). Un seul verbe allumé à la
-fois. Aucun script, hormis une ligne de journal en `?debug=1`.
+### Le contrat de la vidéo
 
-**Mise en page** : dès 1024 px, deux colonnes alignées sur la pilule du
-bandeau (70 rem), h1 plafonné à t5, piliers empilés face au visuel.
+- Encoder avec `Needle5/scripts/encoder-video.sh <source> --preset hero
+  --sortie <base>.mp4` : sortent `<base>.mp4`, `<base>.webm` (servi en
+  premier) et `<base>.webp` (le poster).
+- Déposer les trois fichiers (par exemple dans `media/accueil/hero/`), puis
+  écrire `<base>` dans `data-hero-video` du `<video class="hero__video">`.
+- Essayer une boucle sans toucher au fichier : `?debug=1&video=<base>`.
+- Si la dernière source échoue, le hero revient seul à son état sans vidéo
+  (halos pleins, pas de voile) ; le journal le dit.
 
-**Mesures** : 1440 × 800, bas des piliers à 740 px ; 375 × 812, à 764 px ;
-820 px, trois piliers sur une rangée, largeur égale ; débordement 0 partout.
+### Le brief de la boucle (à produire)
 
-### À produire (assets)
+- **Contenu** : un montage des trois usages, dans l'ordre des piliers :
+  STAND (convaincre), Rayon X (former), À fleur d'écorce (garder). Trois
+  plans lents, caméra qui glisse ou tourne, aucune coupe brutale.
+- **Durée** : 12 à 15 s, la dernière image raccorde avec la première.
+- **Sans texte ni interface incrustés** : l'essai avec une boucle promo a
+  montré qu'un titre dans la vidéo se bat avec le h1.
+- **Tons sombres de préférence** : le voile est réglé pour tenir sur une
+  scène blanche (le pire cas), mais une vidéo sombre garde plus de 3D
+  visible.
+- **Poids** : le préréglage `hero` (720p, ≤ 1,2 Mb/s) donne environ 1,5 à
+  2 Mo pour 15 s. L'essai : 59 s, 3,1 Mo.
 
-- **Rayon X** : `rayon-x.webp` est le logo du client, pas une vue de la
-  scène. Au survol de « Former », le hero montre un logo. Il faut une
-  capture 3D de l'échangeur (16:10, ≥ 1 200 px de large).
-- **À fleur d'écorce** : `moulage.webp` est très sombre, le sujet petit au
-  centre. Une capture plus claire, ou cadrée plus serré, rendrait la
-  vignette de 48 px lisible.
-- Idéalement, une vignette carrée par usage (96 × 96, cadrée sur le sujet)
-  plutôt que le recadrage automatique des images 16:9.
+### Mesures
+
+- 1440 × 900 : bas des piliers à 715 px, panneau de 768 px.
+- 375 × 812 : bas des piliers à 771 px (le rembourrage du haut et l'écart
+  du panneau réduits sous 768 px) ; poster seul, zéro requête vidéo.
+- Vidéo d'essai : WebM retenu, pause, pause hors écran et reprise vérifiées ;
+  débordement horizontal 0 partout.

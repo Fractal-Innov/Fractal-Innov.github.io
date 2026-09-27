@@ -94,16 +94,33 @@
   color: var(--fi-accent);
   fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
-/* Vignette (option) : une image à la place de l'icône, dans la même case
-   de grille. Cachée par défaut ; la page hôte l'affiche quand l'image
-   doit porter le sens (sur mobile, sans survol, par exemple). */
-.fi-pilier .fi-pilier__vignette {
-  display: none;
-  grid-column: 1; grid-row: 1;
-  width: 48px; height: 48px; /* 48 px : 6 crans de 8, lisible sans grandir le pilier au-delà de 72 px */
-  border-radius: 10px;
-  object-fit: cover;
+/* Rond de sélection (option) : le signe universel de « un seul parmi
+   plusieurs ». Vide au repos, pointé au survol / focus, plein une fois
+   choisi (aria-current ou aria-pressed). Il se place avant l'icône ; le
+   pilier passe alors à quatre colonnes (rond, icône, texte, flèche). */
+.fi-pilier:has(> .fi-pilier__rond) { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+.fi-pilier .fi-pilier__rond {
+  position: relative;
+  width: 18px; height: 18px; /* 18 px : lisible à côté d'une icône de 22 px sans lui voler la place */
+  border-radius: 50%;
+  border: 2px solid var(--fi-texte-doux);
+  transition: border-color var(--fi-fx-court) ease;
 }
+.fi-pilier .fi-pilier__rond::after {
+  content: ""; position: absolute; inset: 3px;
+  border-radius: 50%;
+  background: var(--fi-accent);
+  transform: scale(0);
+  transition: transform var(--fi-fx-court) var(--fi-ease-morph);
+}
+.fi-pilier:hover .fi-pilier__rond,
+.fi-pilier:focus-visible .fi-pilier__rond { border-color: var(--fi-accent); }
+.fi-pilier:hover .fi-pilier__rond::after,
+.fi-pilier:focus-visible .fi-pilier__rond::after { transform: scale(0.5); } /* pointé : « celui-ci ? » */
+.fi-pilier[aria-current="true"] .fi-pilier__rond,
+.fi-pilier[aria-pressed="true"] .fi-pilier__rond { border-color: var(--fi-accent); }
+.fi-pilier[aria-current="true"] .fi-pilier__rond::after,
+.fi-pilier[aria-pressed="true"] .fi-pilier__rond::after { transform: scale(1); } /* plein : « celui-ci » */
 .fi-pilier__texte { line-height: 1.3; font-size: var(--fi-t-05, 0.95rem); color: var(--fi-texte-doux); }
 .fi-pilier__texte strong { display: block; color: var(--fi-texte); font-weight: 600; font-size: var(--fi-t0, 1rem); }
 .fi-pilier .fi-pilier__fleche {
@@ -266,12 +283,12 @@
 @media (prefers-reduced-motion: reduce) {
   .fi-eclat, .fi-reflet { display: none; }
   .fi-story--entree { animation: none; }
-  .fi-pilier, .fi-pilier .fi-pilier__fleche { transition: none; }
+  .fi-pilier, .fi-pilier .fi-pilier__fleche, .fi-pilier .fi-pilier__rond, .fi-pilier .fi-pilier__rond::after { transition: none; }
   .fi-pilier:hover, .fi-pilier:focus-visible, .fi-pilier:active { transform: none; }
   .fi-son--joue .fi-bascule-son__ondes { animation: none; }
 }
 .fi-sobre .fi-eclat, .fi-sobre .fi-reflet { display: none; }
 .fi-sobre .fi-story--entree { animation: none; }
-.fi-sobre .fi-pilier, .fi-sobre .fi-pilier .fi-pilier__fleche { transition: none; }
+.fi-sobre .fi-pilier, .fi-sobre .fi-pilier .fi-pilier__fleche, .fi-sobre .fi-pilier .fi-pilier__rond, .fi-sobre .fi-pilier .fi-pilier__rond::after { transition: none; }
 .fi-sobre .fi-pilier:hover, .fi-sobre .fi-pilier:focus-visible, .fi-sobre .fi-pilier:active { transform: none; }
 .fi-sobre .fi-son--joue .fi-bascule-son__ondes { animation: none; }
