@@ -136,6 +136,26 @@
   to { transform: scale(1) rotate(90deg); opacity: 0; }
 }
 
+/* ── GROUPE : une étiquette au-dessus d'une grille de cartes ────────────
+   D'après .tour__group-label de la landing STAND : petite capitale
+   espacée, icône à gauche, filet qui file jusqu'au bord. Le filet dit
+   « ce qui suit va ensemble » sans encadrer. */
+.fi-groupe__etiquette {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0;
+  font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  /* Une ligne, toujours : une étiquette sur deux lignes décalerait les
+     cartes de son groupe par rapport à celles du voisin. Le filet cède. */
+  white-space: nowrap;
+  color: var(--fi-texte-doux);
+  transition: color var(--fi-fx-court) ease;
+}
+.fi-groupe__etiquette .pic { width: 16px; height: 16px; color: var(--fi-accent); flex-shrink: 0; }
+.fi-groupe__etiquette::after {
+  content: ""; flex: 1; height: 1px; min-width: 0;
+  background: linear-gradient(90deg, var(--fi-bordure), transparent);
+}
+
 /* ── STORY : des pastilles qui font défiler des panneaux ────────────────
    La pastille active porte une jauge qui se remplit en --fi-story-duree ;
    sa fin fait avancer (composants.js). Les panneaux s'empilent dans la

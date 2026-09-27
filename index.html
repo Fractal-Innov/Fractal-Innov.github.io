@@ -1259,6 +1259,31 @@
     .demo .hero-cta__btn span[aria-hidden] { transition: transform 0.2s ease; }
     .demo .hero-cta__btn:hover span[aria-hidden] { transform: translateX(3px); }
 
+    /* Les groupes par usage. Grand écran : trois colonnes, un groupe de
+       deux démos en prend deux. Tablette : deux. Téléphone : une. Pas de
+       `auto-fit` ici : un groupe qui « span 2 » dans une grille d'une
+       colonne créerait une colonne implicite et déborderait. */
+    .demos { grid-template-columns: minmax(0, 1fr); gap: 2rem 1.25rem; }
+    .demos__groupe { display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+    .demos__cartes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; flex: 1; }
+    @media (min-width: 700px) {
+      .demos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .demos__groupe { grid-column: span var(--n, 1); }
+      .demos__cartes { grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr)); }
+    }
+    @media (min-width: 1000px) {
+      .demos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    /* Le groupe de la situation passe en tête, son étiquette s'allume. */
+    body[data-situation="convaincre"] .demos__groupe[data-groupe="convaincre"],
+    body[data-situation="former"] .demos__groupe[data-groupe="former"],
+    body[data-situation="garder"] .demos__groupe[data-groupe="garder"] { order: -1; }
+    body[data-situation="convaincre"] .demos__groupe[data-groupe="convaincre"] .fi-groupe__etiquette,
+    body[data-situation="former"] .demos__groupe[data-groupe="former"] .fi-groupe__etiquette,
+    body[data-situation="garder"] .demos__groupe[data-groupe="garder"] .fi-groupe__etiquette { color: var(--text-main); }
+    /* Les cartes entrent en cascade dans leur groupe. */
+    .js .demos__cartes > .reveal:nth-child(2) { transition-delay: 0.12s; }
+
     /* ══════════════════════════════════════════════════════════════════════
        PARTENAIRES
        ══════════════════════════════════════════════════════════════════════ */
@@ -2209,116 +2234,136 @@
         <p class="reveal">Chacune tourne dans le navigateur, sans rien installer et sans casque.
           Ce qu'on y voit fonctionner est ce qui est réalisable pour votre projet.</p>
 
+        <!-- Les démos groupées par usage (spec 2026-09-27 § 4) : chaque groupe
+             répond à une des trois cartes de l'offre. L'étiquette porte
+             `data-groupe` et non `data-usages`, qui allumerait le groupe entier
+             comme une carte. Le groupe de la situation passe en tête (ordre
+             CSS, le DOM ne bouge pas). -->
         <div class="demos">
-
-          <article class="carte demo reveal" id="demo-stand" data-usages="convaincre">
-            <div class="media-16x9">
-              <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
-                   width="1200" height="675" loading="lazy" decoding="async">
+          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-convaincre" data-groupe="convaincre" style="--n: 2">
+            <p class="fi-groupe__etiquette reveal" id="groupe-convaincre"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</p>
+            <div class="demos__cartes">
+              <article class="carte demo reveal" id="demo-stand" data-usages="convaincre">
+                <div class="media-16x9">
+                  <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
+                       width="1200" height="675" loading="lazy" decoding="async">
+                </div>
+                <div class="demo__corps">
+                  <p class="badge-cas" hidden>Pour votre cas</p>
+                  <h3>STAND</h3>
+                  <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
+                  <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
+                  <ul class="demo__points">
+                  <li>Vos vidéos et vos fiches dans une interface soignée</li>
+                  <li>Les médias se changent depuis un espace d'administration</li>
+                  <li>Une télécommande pilote la borne depuis un téléphone</li>
+                  </ul>
+                  <div class="demo__actions">
+                    <a class="hero-cta__btn" href="/stand/" data-demo="stand" data-geste="ouvre">Voir la page
+                      <span aria-hidden="true">→</span></a>
+                  </div>
+                </div>
+              </article>
+              <article class="carte demo reveal" id="demo-midipile" data-usages="convaincre">
+                <div class="media-16x9">
+                  <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
+                       width="1200" height="675" loading="lazy" decoding="async">
+                </div>
+                <div class="demo__corps">
+                  <p class="badge-cas" hidden>Pour votre cas</p>
+                  <h3>Midipile</h3>
+                  <p class="demo__sous-titre">le démonstrateur produit</p>
+                  <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
+                  <ul class="demo__points">
+                  <li>Trois carrosseries se comparent : plateau, pick-up, fourgonnette</li>
+                  <li>Le véhicule se pose dans votre cour, à sa taille réelle</li>
+                  <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
+                  </ul>
+                  <div class="demo__actions">
+                    <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener" data-demo="midipile" data-geste="ouvre">Ouvrir la démo
+                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+                  </div>
+                </div>
+              </article>
             </div>
-            <div class="demo__corps">
-              <p class="badge-cas" hidden>Pour votre cas</p>
-              <h3>STAND</h3>
-              <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
-              <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
-              <ul class="demo__points">
-              <li>Vos vidéos et vos fiches dans une interface soignée</li>
-              <li>Les médias se changent depuis un espace d'administration</li>
-              <li>Une télécommande pilote la borne depuis un téléphone</li>
-              </ul>
-              <div class="demo__actions">
-                <a class="hero-cta__btn" href="/stand/" data-demo="stand">Voir la page
-                  <span aria-hidden="true">→</span></a>
-              </div>
+          </div>
+          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-former" data-groupe="former" style="--n: 1">
+            <p class="fi-groupe__etiquette reveal" id="groupe-former"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</p>
+            <div class="demos__cartes">
+              <article class="carte demo reveal" id="demo-rayon-x" data-usages="former">
+                <div class="media-16x9">
+                  <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
+                       width="1200" height="675" loading="lazy" decoding="async">
+                </div>
+                <div class="demo__corps">
+                  <p class="badge-cas" hidden>Pour votre cas</p>
+                  <h3>Rayon X</h3>
+                  <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
+                  <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
+                  <ul class="demo__points">
+                  <li>Des points de vue guidés amènent le regard là où ça se passe</li>
+                  <li>La silhouette d'un opérateur s'affiche ou se masque, pour l'échelle</li>
+                  <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
+                  </ul>
+                  <div class="demo__actions">
+                    <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener" data-demo="rayon-x" data-geste="ouvre">Ouvrir la démo
+                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+                  </div>
+                </div>
+              </article>
             </div>
-          </article>
-
-          <article class="carte demo reveal" id="demo-rayon-x" data-usages="former">
-            <div class="media-16x9">
-              <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
-                   width="1200" height="675" loading="lazy" decoding="async">
+          </div>
+          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-garder" data-groupe="garder" style="--n: 1">
+            <p class="fi-groupe__etiquette reveal" id="groupe-garder"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</p>
+            <div class="demos__cartes">
+              <article class="carte demo reveal" id="demo-moulage" data-usages="garder">
+                <div class="media-16x9">
+                  <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
+                       width="1200" height="675" loading="lazy" decoding="async">
+                </div>
+                <div class="demo__corps">
+                  <p class="badge-cas" hidden>Pour votre cas</p>
+                  <h3>À fleur d'écorce</h3>
+                  <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
+                  <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
+                  <ul class="demo__points">
+                  <li>Une roue temporelle remonte et redescend la performance</li>
+                  <li>Le son fait partie de l'œuvre : un casque est recommandé</li>
+                  <li>La caméra suit des points de vue composés, comme un storyboard</li>
+                  </ul>
+                  <div class="demo__actions">
+                    <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener" data-demo="moulage" data-geste="ouvre">Ouvrir la démo
+                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+                  </div>
+                </div>
+              </article>
             </div>
-            <div class="demo__corps">
-              <p class="badge-cas" hidden>Pour votre cas</p>
-              <h3>Rayon X</h3>
-              <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
-              <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
-              <ul class="demo__points">
-              <li>Des points de vue guidés amènent le regard là où ça se passe</li>
-              <li>La silhouette d'un opérateur s'affiche ou se masque, pour l'échelle</li>
-              <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
-              </ul>
-              <div class="demo__actions">
-                <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener" data-demo="rayon-x">Ouvrir la démo
-                  <span aria-hidden="true">→</span></a>
-              </div>
+          </div>
+          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-site" data-groupe="site" style="--n: 1">
+            <p class="fi-groupe__etiquette reveal" id="groupe-site"><svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Le site lui-même</p>
+            <div class="demos__cartes">
+              <article class="carte demo reveal" id="demo-village">
+                <div class="media-16x9">
+                  <img src="/media/accueil/demos/village.webp" alt="Le village Fractal Innov : le site présenté comme un monde 3D à parcourir"
+                       width="1200" height="675" loading="lazy" decoding="async">
+                </div>
+                <div class="demo__corps">
+                  <h3>Le village</h3>
+                  <p class="demo__sous-titre">le site lui-même comme expérience 3D</p>
+                  <p class="demo__accroche">Une visite guidée de l'offre, en douze arrêts dans un monde 3D.</p>
+                  <ul class="demo__points">
+                  <li>La caméra se déplace d'un arrêt à l'autre, comme un storyboard</li>
+                  <li>Un configurateur compose votre projet et en sort un code court</li>
+                  <li>Français et anglais, au même endroit</li>
+                  </ul>
+                  <div class="demo__actions">
+                    <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener" data-demo="village" data-geste="ouvre">Ouvrir la démo
+                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+                  </div>
+                </div>
+              </article>
             </div>
-          </article>
-
-          <article class="carte demo reveal" id="demo-midipile" data-usages="convaincre">
-            <div class="media-16x9">
-              <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
-                   width="1200" height="675" loading="lazy" decoding="async">
-            </div>
-            <div class="demo__corps">
-              <p class="badge-cas" hidden>Pour votre cas</p>
-              <h3>Midipile</h3>
-              <p class="demo__sous-titre">le démonstrateur produit</p>
-              <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
-              <ul class="demo__points">
-              <li>Trois carrosseries se comparent : plateau, pick-up, fourgonnette</li>
-              <li>Le véhicule se pose dans votre cour, à sa taille réelle</li>
-              <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
-              </ul>
-              <div class="demo__actions">
-                <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener" data-demo="midipile">Ouvrir la démo
-                  <span aria-hidden="true">→</span></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="carte demo reveal" id="demo-moulage" data-usages="garder">
-            <div class="media-16x9">
-              <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
-                   width="1200" height="675" loading="lazy" decoding="async">
-            </div>
-            <div class="demo__corps">
-              <p class="badge-cas" hidden>Pour votre cas</p>
-              <h3>À fleur d'écorce</h3>
-              <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
-              <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
-              <ul class="demo__points">
-              <li>Une roue temporelle remonte et redescend la performance</li>
-              <li>Le son fait partie de l'œuvre : un casque est recommandé</li>
-              <li>La caméra suit des points de vue composés, comme un storyboard</li>
-              </ul>
-              <div class="demo__actions">
-                <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener" data-demo="moulage">Ouvrir la démo
-                  <span aria-hidden="true">→</span></a>
-              </div>
-            </div>
-          </article>
-
-          <article class="carte demo reveal" id="demo-village">
-            <div class="media-16x9">
-              <img src="/media/accueil/demos/village.webp" alt="Le village Fractal Innov : le site présenté comme un monde 3D à parcourir"
-                   width="1200" height="675" loading="lazy" decoding="async">
-            </div>
-            <div class="demo__corps">
-              <h3>Le village</h3>
-              <p class="demo__sous-titre">le site lui-même comme expérience 3D</p>
-              <p class="demo__accroche">Une visite guidée de l'offre, en douze arrêts dans un monde 3D.</p>
-              <ul class="demo__points">
-              <li>La caméra se déplace d'un arrêt à l'autre, comme un storyboard</li>
-              <li>Un configurateur compose votre projet et en sort un code court</li>
-              <li>Français et anglais, au même endroit</li>
-              </ul>
-              <div class="demo__actions">
-                <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener" data-demo="village">Ouvrir la démo
-                  <span aria-hidden="true">→</span></a>
-              </div>
-            </div>
-          </article>
+          </div>
         </div>
       </section>
 
@@ -3046,6 +3091,8 @@
         /* ⚠️ La réservation est déjà comptée par `rdv-demande` : la
            compter aussi en `geste` la doublerait sous un autre nom. */
         if (d.geste === 'rdv') return;
+        /* Pareil pour une démo ouverte : `demo-ouverte` la compte déjà. */
+        if (d.geste === 'ouvre') return;
         /* Un panneau qui défile tout seul n'est pas un geste du visiteur. */
         if (d.auto) return;
         mesurerUneFois('geste:' + d.chapitre + ':' + d.geste, MESURES.geste, { chapitre: d.chapitre, geste: d.geste });
