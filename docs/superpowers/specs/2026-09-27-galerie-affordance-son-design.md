@@ -77,23 +77,52 @@ Rien de ce que la spec du parcours a posé ne change (`fi:chapitre`,
 - **Le son n'écoute que des `fi:*`.** Il ne connaît aucun composant, aucun
   sélecteur. Un composant nouveau sonne donc sans toucher au moteur.
 - **La réservation devient un geste** : le parcours émet
-  `fi:geste {chapitre: 'contact', geste: 'rdv'}` au clic sur `[data-rdv]`,
-  pour que le son la résolve. ⚠️ La mesure automatique des gestes **ignore
-  `rdv`**, déjà compté par `rdv-demande` : sans cette exclusion, la
-  conversion serait comptée deux fois sous deux noms.
+  `fi:geste {chapitre: <id de la section du bouton>, geste: 'rdv'}` au clic
+  sur `[data-rdv]`, pour que le son la résolve. ⚠️ La mesure automatique
+  des gestes **ignore `rdv`**, déjà compté par `rdv-demande` : sans cette
+  exclusion, la conversion serait comptée deux fois sous deux noms.
+- **Le rang du chapitre se lit aussi sur `<body data-chapitre-rang>`**,
+  écrit avec `data-chapitre` : `son.js` se charge après le premier
+  `fi:chapitre` (arrivée par `/#demos`) et doit connaître le degré courant.
+
+## 3 bis. L'ordre des sections (décidé le 27/09/2026)
+
+Le fondateur était au milieu : entre le choix de situation et la réponse à
+ce choix, sans qu'aucune interaction n'y mène. Nouvel ordre, du type
+réponse, preuve, méthode, confiance :
+
+| Rang | Chapitre (`id`) | Titre du dock | Pourquoi là |
+|---|---|---|---|
+| 1 | `top` | Accueil | la question |
+| 2 | `offre` | Trois usages | la réponse au choix : la carte allumée |
+| 3 | `demos` | Ça tourne déjà | la preuve, juste après la promesse |
+| 4 | `approche` | L'approche | comment on travaille, une fois convaincu |
+| 5 | `partenaires` | Partenaires | qui renforce l'équipe |
+| 6 | `fondateur` | Le fondateur | celui qu'on aura en face pendant les 30 min |
+| 7 | `contact` | Contact | la réservation |
+
+- **Les CTA du hero mènent à la section suivante, `#offre`** : les trois
+  piliers de situation et « Juste regarder ». « Réserver 30 min » reste la
+  conversion et ouvre l'agenda.
+- **Ce qui mène au fondateur** : le lien de la nav, le dock, et le bloc
+  d'identité du hero (portrait + nom), qui devient un lien vers
+  `#fondateur`.
+- Les liens de la nav suivent le même ordre. La spec du parcours
+  (`2026-09-25`) garde l'historique ; celle-ci fait foi pour l'ordre.
 
 ## 4. La correspondance sections / structures
 
 Une structure STAND par section, deux au plus, choisie par ce qui coince.
+Dans l'ordre de la page (§ 3 bis) ; la colonne # garde le numéro de PR.
 
-| # | Section | Structure reprise | Adaptation | Effet | Son |
+| PR | Section | Structure reprise | Adaptation | Effet | Son |
 |---|---|---|---|---|---|
-| 1 | Hero (`#top`) | `hero-pillar` | les 3 boutons de situation deviennent des piliers (icône, texte, flèche qui glisse au survol) ; « Juste regarder » reste un lien | `eclat` au choix ; `reflet` sur le CTA quand il prend le nom de la situation | accord de la situation (§ 6) |
-| 2 | Fondateur | `kit-card` | les 3 repères deviennent des cartes à étiquette ; celui de la situation d'abord (déjà le cas) | le repère choisi se pose en « tampon », les autres en cascade | note du chapitre |
-| 3 | Approche | `timeline` + `step-gain` | les 3 étapes sur une frise dont le fil se remplit ; un gain nommé par étape, en vert, **paraphrasé du texte existant** ; le bouton `#etapeSuivante` pilote la frise | fil qui se remplit, marqueur qui s'allume | `etape` : arpège montant |
-| 4 | Offre | `friction-card`, tons `section--defi` / `section--gains` | chaque carte lue douleur (ton chaud) › pivot › gain (vert) ; les trois restent ouvertes | `reflet` sur la carte de la situation quand elle s'allume | geste `allume` (ornement par défaut) |
+| 1 | Hero (`#top`) | `hero-pillar` | les 3 boutons de situation deviennent des piliers (icône, texte, flèche qui glisse au survol) ; le clic choisit, joue l'éclat, puis descend à `#offre` | `eclat` au choix ; `reflet` sur la carte de la situation à l'arrivée dans l'offre | accord de la situation (§ 6) |
+| 4 | Offre | `friction-card`, tons `section--defi` / `section--gains` | chaque carte lue douleur (ton chaud) › pivot › gain (vert) ; les trois restent ouvertes | `reflet` sur la carte de la situation quand elle s'allume (posé dès la PR 1) | geste `allume` (ornement par défaut) |
 | 5 | Démos | `tour__group-label` | cartes groupées sous des étiquettes d'usage, toutes visibles ; le groupe de la situation passe en tête visuellement (ordre CSS, pas DOM) | cascade d'entrée par groupe | note du chapitre |
+| 3 | Approche | `timeline` + `step-gain` | les 3 étapes sur une frise dont le fil se remplit ; un gain nommé par étape, en vert, **paraphrasé du texte existant** ; le bouton `#etapeSuivante` pilote la frise | fil qui se remplit, marqueur qui s'allume | `etape` : arpège montant |
 | 6 | Partenaires | `wiring__cable` | la ligne de constellation devient le composant `fil` : une impulsion la parcourt au survol | impulsion le long du câble | `relie` : tintement |
+| 2 | Fondateur | `kit-card` | les 3 repères deviennent des cartes à étiquette ; celui de la situation d'abord (déjà le cas) | le repère choisi se pose en « tampon », les autres en cascade | note du chapitre |
 | 7 | Contact | `share` | bouton « Emporter cette page » : QR du lien de relance réglé (`?situation=…`), lien copiable | le QR se déplie depuis le bouton | `ouvre` ; `rdv` : accord résolu |
 | · | Dock | aucune | bouton son, coupé par défaut, libellé, dans le dock et la pastille mobile | ondes à l'activation | accord de confirmation |
 
@@ -153,11 +182,11 @@ dans la galerie. Noms en français, préfixe de classe du composant.
 | Rang | Chapitre | Note | Hz |
 |---|---|---|---|
 | 1 | Accueil | do4 | 261,63 |
-| 2 | Le fondateur | ré4 | 293,66 |
-| 3 | L'approche | mi4 | 329,63 |
-| 4 | Trois usages | sol4 | 392,00 |
-| 5 | Ça tourne déjà | la4 | 440,00 |
-| 6 | Partenaires | do5 | 523,25 |
+| 2 | Trois usages | ré4 | 293,66 |
+| 3 | Ça tourne déjà | mi4 | 329,63 |
+| 4 | L'approche | sol4 | 392,00 |
+| 5 | Partenaires | la4 | 440,00 |
+| 6 | Le fondateur | do5 | 523,25 |
 | 7 | Contact | ré5 | 587,33 |
 
 - **Timbre par situation** :
@@ -186,8 +215,13 @@ dans la galerie. Noms en français, préfixe de classe du composant.
 ### La discrétion
 
 - Volume maître bas (gain 0,12), jamais réglé par la page hôte.
-- 3 voix au plus en même temps ; une note au plus toutes les 80 ms.
-- `visibilitychange` : suspendu en arrière-plan, repris au retour.
+- 4 voix au plus en même temps (l'accord de la réservation en compte 4) ;
+  un déclenchement au plus toutes les 80 ms (les notes d'un même arpège
+  ne comptent pas).
+- Aucune note n'est lancée quand l'onglet est caché. Le moteur se suspend
+  **1,5 s après** le passage en arrière-plan, et reprend au retour :
+  « Réserver 30 min » ouvre l'agenda dans un nouvel onglet, et une
+  suspension immédiate couperait l'accord de la réservation.
 - Le son est **indépendant du mouvement réduit** : il n'est piloté que par
   son bouton.
 
@@ -271,7 +305,8 @@ déclencheur. Même interrupteur `fi:debug` que le parcours.
 
 Une PR par étape, chacune vérifiée et finie :
 
-1. **Socle + hero** : `composants/` (CSS, JS, `son.js`), le bouton son du
+1. **Ordre + socle + hero** : le nouvel ordre des sections (§ 3 bis),
+   `composants/` (CSS, JS, `son.js`), le bouton son du
    dock, la galerie avec `pilier`, `choix`, `eclat`, `reflet`,
    `bascule-son` et le clavier sonore ; la passe sur le hero ; `fi:son` et
    sa mesure ; `rdv` émis en geste et exclu de `geste`.
@@ -302,6 +337,13 @@ Une PR par étape, chacune vérifiée et finie :
    copiable ; elle porte `noindex`.
 10. Poids au démarrage sous 500 Ko (valeur relevée dans la PR).
 11. Le journal (`?debug=1`) montre chaque note avec son déclencheur.
+12. Les sections se suivent dans l'ordre du § 3 bis, dans la page, la nav
+    et le dock (« 2 / 7 · Trois usages » juste après le hero).
+13. Un clic sur un pilier du hero ou sur « Juste regarder » descend à
+    `#offre` ; le focus clavier y arrive aussi. Sans JavaScript, le lien
+    mène au même endroit.
+14. L'accord de la réservation s'entend en entier même si l'agenda s'ouvre
+    dans un nouvel onglet.
 
 ## 13. Hors périmètre
 
