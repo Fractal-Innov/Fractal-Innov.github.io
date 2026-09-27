@@ -1640,6 +1640,13 @@
     }
     .situations__regarder { font-size: 0.9rem; color: var(--text-muted); text-underline-offset: 3px; }
     .situations__regarder:hover { color: var(--text-main); }
+    /* Le bloc d'identité du hero est un lien vers le fondateur (spec
+       2026-09-27 § 3 bis) : il garde son allure, le nom se souligne au
+       survol pour dire qu'il se clique. */
+    a.hero__identite { color: var(--text-main); border-radius: 999px; }
+    a.hero__identite:hover .hero__nom,
+    a.hero__identite:focus-visible .hero__nom { text-decoration: underline; text-underline-offset: 3px; }
+    a.hero__identite:hover .hero__avatar { border-color: var(--accent-blue); }
 
     /* Les repères du fondateur. */
     .reperes { list-style: none; margin: 0 0 1.5rem; padding: 0; display: flex; flex-direction: column; gap: 0.6rem; }
@@ -1913,11 +1920,11 @@
 
       <nav class="main-nav" id="mainNav" aria-label="Navigation principale">
         <div class="main-nav-links">
-          <a href="#fondateur" class="nav-link">Fondateur</a>
-          <a href="#approche" class="nav-link">Approche</a>
           <a href="#offre" class="nav-link">Agence WebXR</a>
           <a href="#demos" class="nav-link">Démos</a>
+          <a href="#approche" class="nav-link">Approche</a>
           <a href="#partenaires" class="nav-link">Partenaires</a>
+          <a href="#fondateur" class="nav-link">Fondateur</a>
         </div>
         <a href="#contact" class="masthead-cta">Contact</a>
       </nav>
@@ -1991,28 +1998,31 @@
           il reste. Dans le navigateur, sans application.</p>
 
         <!-- Le premier geste du parcours. Sans JavaScript, chaque bouton est un
-             lien vers la carte de sa situation ; avec, il règle aussi toute la
-             page sur ce cas (script « LE PARCOURS », section LA SITUATION). -->
+             lien vers la section suivante (#offre), où sa carte est ; avec, il
+             règle aussi toute la page sur ce cas (script « LE PARCOURS »,
+             section LA SITUATION). -->
         <div class="situations">
           <p class="situations__question" id="situationsQuestion">Votre savoir doit d'abord :</p>
           <ul class="situations__liste" aria-labelledby="situationsQuestion">
-            <li><a class="situation-btn" href="#usage-convaincre" data-situation-choix="convaincre">
+            <li><a class="situation-btn" href="#offre" data-situation-choix="convaincre">
               <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</a></li>
-            <li><a class="situation-btn" href="#usage-former" data-situation-choix="former">
+            <li><a class="situation-btn" href="#offre" data-situation-choix="former">
               <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</a></li>
-            <li><a class="situation-btn" href="#usage-garder" data-situation-choix="garder">
+            <li><a class="situation-btn" href="#offre" data-situation-choix="garder">
               <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</a></li>
           </ul>
-          <a class="situations__regarder" href="#fondateur" data-situation-choix="aucune">Juste regarder</a>
+          <a class="situations__regarder" href="#offre" data-situation-choix="aucune">Juste regarder</a>
         </div>
 
         <div class="hero__actions">
-          <a class="hero-cta__btn hero-cta__btn--primary"
-             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-             target="_blank" rel="noopener" data-rdv="hero"><span>Réserver 30 min</span></a>
+          <!-- Reste dans le site (décision du 27/09/2026) : il descend au
+               contact, dont le bouton ouvre l'agenda. ⚠️ Pas de `data-rdv` :
+               ce clic n'est pas encore une demande de rendez-vous, et le
+               compter ici doublerait `rdv-demande` avec celui du contact. -->
+          <a class="hero-cta__btn hero-cta__btn--primary" href="#contact"><span>Réserver 30 min</span></a>
         </div>
 
-        <div class="hero__identite">
+        <a class="hero__identite" href="#fondateur">
           <span class="hero__avatar">
             <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
           </span>
@@ -2020,135 +2030,12 @@
             <span class="hero__nom">Corentin Duboc</span><br>
             <span class="hero__role">Architecte d'expériences WebXR &amp; 3D temps réel</span>
           </span>
-        </div>
+        </a>
       </div>
     </section>
 
     <!-- Tout ce qui suit le hero baigne dans le halo global de /stand/. -->
     <div class="page-rest">
-
-      <!-- ══ FONDATEUR ═══════════════════════════════════════════════════ -->
-      <section class="section" id="fondateur">
-        <div class="fondateur__grille">
-
-          <div class="portrait reveal">
-            <div class="portrait__cadre">
-              <img src="/media/accueil/portrait.webp"
-                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
-              <ul class="portrait__barre tag-liste" aria-label="Trois usages">
-                <li class="tag">Convaincre</li>
-                <li class="tag">Former</li>
-                <li class="tag">Garder</li>
-              </ul>
-            </div>
-          </div>
-
-          <div>
-            <p class="section-number reveal">Le fondateur</p>
-            <h2 class="reveal">Corentin Duboc</h2>
-            <p class="fondateur__role reveal">Architecte d'expériences WebXR &amp; 3D temps réel</p>
-            <p class="ligne-mono reveal">Consultant 3D/WebXR B2B · Freelance · Catalyseur POLD</p>
-
-            <p class="fondateur__bio reveal">J'accompagne les industriels
-              (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
-              dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
-              force de vente et réduire leurs coûts logistiques événementiels.</p>
-
-            <p class="bloc-titre reveal">Pour votre cas</p>
-            <ul class="reperes reveal">
-              <li class="repere" data-usages="convaincre">
-                <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
-                <span><strong>Convaincre</strong> : vos équipements lourds et encombrants,
-                  présentés sans le coût ni l'impact logistique du transport</span></li>
-              <li class="repere" data-usages="former">
-                <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>
-                <span><strong>Former</strong> : des parcours sur équipement qui mettent en valeur
-                  un savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)</span></li>
-              <li class="repere" data-usages="garder">
-                <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
-                <span><strong>Garder</strong> : processus de fabrication, savoir-faire, geste
-                  d'une artiste, rejouables étape par étape (Mathilde Thiennot)</span></li>
-            </ul>
-
-            <p class="bloc-titre reveal">Compétences</p>
-            <ul class="tag-liste reveal" aria-label="Compétences">
-              <li class="tag">Unity</li>
-              <li class="tag">WebXR</li>
-              <li class="tag">AR/VR</li>
-              <li class="tag">Blender</li>
-              <li class="tag">Procreate</li>
-            </ul>
-
-            <div class="carte boussole reveal">
-              <p class="boussole__titre">Ma boussole</p>
-              <p class="boussole__sous-titre">Le design cognitif</p>
-              <ul>
-                <li>L'objectif n'est jamais la prouesse technologique, mais la clarté</li>
-                <li>Réduire la charge mentale, maximiser l'engagement par l'action</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ══ APPROCHE ════════════════════════════════════════════════════ -->
-      <section class="section" id="approche">
-        <p class="section-number reveal">L'approche</p>
-        <h2 class="reveal">Trois étapes, de l'idée à l'outil que vous gardez</h2>
-        <p class="reveal">Trois temps, trois livrables. Vous savez à chaque étape ce que vous
-          recevez, et ce qu'il vous reste à fournir.</p>
-
-        <div class="etapes">
-          <article class="carte etape reveal">
-            <p class="etape__num" aria-hidden="true">01</p>
-            <h3>Partir de votre situation</h3>
-            <p class="etape__court">L'atelier de 30 min</p>
-            <p class="etape__texte">Nous partons de votre besoin et du socle qui tourne déjà. Vos
-              fichiers 3D, photos et vidéos sont regardés ensemble, et vous repartez en sachant
-              par quel usage commencer. C'est gratuit.</p>
-            <ul class="tag-liste">
-              <li class="tag">Recherche &amp; Innovation</li>
-              <li class="tag">Ateliers</li>
-              <li class="tag">Charge cognitive</li>
-            </ul>
-          </article>
-
-          <article class="carte etape reveal">
-            <p class="etape__num" aria-hidden="true">02</p>
-            <h3>Création</h3>
-            <p class="etape__court">La 3D au service de la clarté</p>
-            <p class="etape__texte">Scène 3D temps réel, parcours guidé, contenus au bon moment :
-              l'expérience se construit sur vos fichiers existants.</p>
-            <ul class="tag-liste">
-              <li class="tag">Contenus WebXR</li>
-              <li class="tag">3D temps réel</li>
-              <li class="tag">AR / VR</li>
-            </ul>
-          </article>
-
-          <article class="carte etape reveal">
-            <p class="etape__num" aria-hidden="true">03</p>
-            <h3>Structuration</h3>
-            <p class="etape__court">Un outil qui vous reste</p>
-            <p class="etape__texte">L'expérience est livrée, documentée et mesurée. Vos équipes la
-              font vivre et la réutilisent, sans développeur.</p>
-            <ul class="tag-liste">
-              <li class="tag">Gestion de Projet</li>
-              <li class="tag">Déploiement</li>
-              <li class="tag">Mesure d'usage</li>
-            </ul>
-          </article>
-        </div>
-
-        <!-- Le geste de l'approche. « Étape suivante » est masqué sans
-             JavaScript : les trois temps sont alors tous visibles. -->
-        <div class="etapes__geste">
-          <button class="hero-cta__btn hero-cta__btn--secondary" id="etapeSuivante" type="button" hidden>Étape suivante</button>
-          <a class="hero-cta__btn hero-cta__btn--primary"
-             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-             target="_blank" rel="noopener" data-rdv="approche"><span>Réserver 30 min</span></a>
-        </div>
-      </section>
 
       <!-- ══ TROIS USAGES ════════════════════════════════════════════════
            Un savoir, trois usages. Les trois cartes sont TOUJOURS dans le
@@ -2354,6 +2241,65 @@
         </div>
       </section>
 
+      <!-- ══ APPROCHE ════════════════════════════════════════════════════ -->
+      <section class="section" id="approche">
+        <p class="section-number reveal">L'approche</p>
+        <h2 class="reveal">Trois étapes, de l'idée à l'outil que vous gardez</h2>
+        <p class="reveal">Trois temps, trois livrables. Vous savez à chaque étape ce que vous
+          recevez, et ce qu'il vous reste à fournir.</p>
+
+        <div class="etapes">
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">01</p>
+            <h3>Partir de votre situation</h3>
+            <p class="etape__court">L'atelier de 30 min</p>
+            <p class="etape__texte">Nous partons de votre besoin et du socle qui tourne déjà. Vos
+              fichiers 3D, photos et vidéos sont regardés ensemble, et vous repartez en sachant
+              par quel usage commencer. C'est gratuit.</p>
+            <ul class="tag-liste">
+              <li class="tag">Recherche &amp; Innovation</li>
+              <li class="tag">Ateliers</li>
+              <li class="tag">Charge cognitive</li>
+            </ul>
+          </article>
+
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">02</p>
+            <h3>Création</h3>
+            <p class="etape__court">La 3D au service de la clarté</p>
+            <p class="etape__texte">Scène 3D temps réel, parcours guidé, contenus au bon moment :
+              l'expérience se construit sur vos fichiers existants.</p>
+            <ul class="tag-liste">
+              <li class="tag">Contenus WebXR</li>
+              <li class="tag">3D temps réel</li>
+              <li class="tag">AR / VR</li>
+            </ul>
+          </article>
+
+          <article class="carte etape reveal">
+            <p class="etape__num" aria-hidden="true">03</p>
+            <h3>Structuration</h3>
+            <p class="etape__court">Un outil qui vous reste</p>
+            <p class="etape__texte">L'expérience est livrée, documentée et mesurée. Vos équipes la
+              font vivre et la réutilisent, sans développeur.</p>
+            <ul class="tag-liste">
+              <li class="tag">Gestion de Projet</li>
+              <li class="tag">Déploiement</li>
+              <li class="tag">Mesure d'usage</li>
+            </ul>
+          </article>
+        </div>
+
+        <!-- Le geste de l'approche. « Étape suivante » est masqué sans
+             JavaScript : les trois temps sont alors tous visibles. -->
+        <div class="etapes__geste">
+          <button class="hero-cta__btn hero-cta__btn--secondary" id="etapeSuivante" type="button" hidden>Étape suivante</button>
+          <a class="hero-cta__btn hero-cta__btn--primary"
+             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
+             target="_blank" rel="noopener" data-rdv="approche"><span>Réserver 30 min</span></a>
+        </div>
+      </section>
+
       <!-- ══ PARTENAIRES ═════════════════════════════════════════════════ -->
       <section class="section" id="partenaires">
         <p class="section-number reveal">Les partenaires</p>
@@ -2431,6 +2377,70 @@
                 <li class="tag">Mise en relation</li>
             </ul>
           </article>
+        </div>
+      </section>
+
+      <!-- ══ FONDATEUR ═══════════════════════════════════════════════════ -->
+      <section class="section" id="fondateur">
+        <div class="fondateur__grille">
+
+          <div class="portrait reveal">
+            <div class="portrait__cadre">
+              <img src="/media/accueil/portrait.webp"
+                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
+              <ul class="portrait__barre tag-liste" aria-label="Trois usages">
+                <li class="tag">Convaincre</li>
+                <li class="tag">Former</li>
+                <li class="tag">Garder</li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <p class="section-number reveal">Le fondateur</p>
+            <h2 class="reveal">Corentin Duboc</h2>
+            <p class="fondateur__role reveal">Architecte d'expériences WebXR &amp; 3D temps réel</p>
+            <p class="ligne-mono reveal">Consultant 3D/WebXR B2B · Freelance · Catalyseur POLD</p>
+
+            <p class="fondateur__bio reveal">J'accompagne les industriels
+              (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
+              dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
+              force de vente et réduire leurs coûts logistiques événementiels.</p>
+
+            <p class="bloc-titre reveal">Pour votre cas</p>
+            <ul class="reperes reveal">
+              <li class="repere" data-usages="convaincre">
+                <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
+                <span><strong>Convaincre</strong> : vos équipements lourds et encombrants,
+                  présentés sans le coût ni l'impact logistique du transport</span></li>
+              <li class="repere" data-usages="former">
+                <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>
+                <span><strong>Former</strong> : des parcours sur équipement qui mettent en valeur
+                  un savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)</span></li>
+              <li class="repere" data-usages="garder">
+                <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
+                <span><strong>Garder</strong> : processus de fabrication, savoir-faire, geste
+                  d'une artiste, rejouables étape par étape (Mathilde Thiennot)</span></li>
+            </ul>
+
+            <p class="bloc-titre reveal">Compétences</p>
+            <ul class="tag-liste reveal" aria-label="Compétences">
+              <li class="tag">Unity</li>
+              <li class="tag">WebXR</li>
+              <li class="tag">AR/VR</li>
+              <li class="tag">Blender</li>
+              <li class="tag">Procreate</li>
+            </ul>
+
+            <div class="carte boussole reveal">
+              <p class="boussole__titre">Ma boussole</p>
+              <p class="boussole__sous-titre">Le design cognitif</p>
+              <ul>
+                <li>L'objectif n'est jamais la prouesse technologique, mais la clarté</li>
+                <li>Réduire la charge mentale, maximiser l'engagement par l'action</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
     </div>
@@ -2678,12 +2688,14 @@
          peut émettre des dizaines d'événements par seconde, le navigateur ne
          repeint que soixante fois. */
       var liensNav = document.querySelectorAll('#mainNav .nav-link');
-      var idsSections = ['fondateur', 'approche', 'offre', 'demos', 'partenaires'];
+      /* ⚠️ Même ordre que la page (spec 2026-09-27 § 3 bis) : réponse,
+         preuve, méthode, confiance. */
+      var idsSections = ['offre', 'demos', 'approche', 'partenaires', 'fondateur'];
       /* Les SEPT chapitres du parcours (le hero et le contact en plus des
          liens de la nav). ⚠️ Même liste, même ordre que CHAPITRES dans le
          script « LE PARCOURS » : ce sont aussi les `navItemId` que la
          télécommande enverra. */
-      var idsChapitres = ['top', 'fondateur', 'approche', 'offre', 'demos', 'partenaires', 'contact'];
+      var idsChapitres = ['top', 'offre', 'demos', 'approche', 'partenaires', 'fondateur', 'contact'];
       var rafNav = 0;
       var dernierActif = null;
 
@@ -2722,6 +2734,10 @@
           journal('chapitre :', (dernierActif || '(départ)') + ' → ' + chapitre, '(' + rang + ' / ' + idsChapitres.length + ')');
           dernierActif = chapitre;
           document.body.setAttribute('data-chapitre', chapitre);
+          /* Le rang aussi, pour qui se charge APRÈS l'événement : le son
+             (defer) doit connaître le degré de départ à l'arrivée par
+             `/#demos`. */
+          document.body.setAttribute('data-chapitre-rang', String(rang));
           document.dispatchEvent(new CustomEvent('fi:chapitre', {
             detail: { id: chapitre, rang: rang, total: idsChapitres.length }
           }));
@@ -2864,11 +2880,11 @@
          Même ordre que `idsChapitres` dans le premier script. */
       var CHAPITRES = [
         { id: 'top', titre: 'Accueil' },
-        { id: 'fondateur', titre: 'Le fondateur' },
-        { id: 'approche', titre: "L'approche" },
         { id: 'offre', titre: 'Trois usages' },
         { id: 'demos', titre: 'Ça tourne déjà' },
+        { id: 'approche', titre: "L'approche" },
         { id: 'partenaires', titre: 'Partenaires' },
+        { id: 'fondateur', titre: 'Le fondateur' },
         { id: 'contact', titre: 'Contact' }
       ];
       var IDS = CHAPITRES.map(function (c) { return c.id; });

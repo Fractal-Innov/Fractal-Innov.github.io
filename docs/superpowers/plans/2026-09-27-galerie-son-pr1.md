@@ -191,6 +191,13 @@ Remplacer le commentaire au-dessus de `<div class="situations">` par :
              section LA SITUATION). -->
 ```
 
+- [ ] **Step 6 bis : « Réserver 30 min » du hero reste dans le site**
+
+Décision du 27/09/2026 : il descend au contact au lieu d'ouvrir l'agenda
+dans un nouvel onglet. Son `href` devient `#contact`, et il perd
+`target`, `rel` et `data-rdv` (ce clic n'est pas encore la demande de
+rendez-vous ; le compter doublerait `rdv-demande` avec le contact).
+
 - [ ] **Step 7 : Le bloc d'identité du hero mène au fondateur**
 
 Le fondateur est désormais avant le contact ; le portrait et le nom du hero

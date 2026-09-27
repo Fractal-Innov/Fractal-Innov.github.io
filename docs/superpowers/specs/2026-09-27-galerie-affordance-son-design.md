@@ -102,8 +102,12 @@ réponse, preuve, méthode, confiance :
 | 7 | `contact` | Contact | la réservation |
 
 - **Les CTA du hero mènent à la section suivante, `#offre`** : les trois
-  piliers de situation et « Juste regarder ». « Réserver 30 min » reste la
-  conversion et ouvre l'agenda.
+  piliers de situation et « Juste regarder ».
+- **« Réserver 30 min » du hero reste dans le site** : il descend au
+  contact (`#contact`), dont le bouton ouvre l'agenda. Il perd son
+  `data-rdv` : ce clic n'est pas encore la demande, et le compter
+  doublerait `rdv-demande` avec celui du contact. Les autres « Réserver
+  30 min » (approche, offre, contact) ouvrent toujours l'agenda.
 - **Ce qui mène au fondateur** : le lien de la nav, le dock, et le bloc
   d'identité du hero (portrait + nom), qui devient un lien vers
   `#fondateur`.
