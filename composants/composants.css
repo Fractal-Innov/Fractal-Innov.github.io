@@ -136,6 +136,46 @@
   to { transform: scale(1) rotate(90deg); opacity: 0; }
 }
 
+/* ── STORY : des pastilles qui font défiler des panneaux ────────────────
+   La pastille active porte une jauge qui se remplit en --fi-story-duree ;
+   sa fin fait avancer (composants.js). Les panneaux s'empilent dans la
+   même case de grille : la scène garde la hauteur du plus grand, rien ne
+   saute sous le doigt quand le panneau change. */
+.fi-story__pastilles { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.fi-story__pastilles[hidden] { display: none; }
+.fi-pastille {
+  position: relative; overflow: hidden;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 44px; padding: 0 1.1rem;
+  border-radius: 999px; border: 1px solid var(--fi-bordure);
+  background: var(--fi-fond); color: var(--fi-texte-doux);
+  font: inherit; font-weight: 600; font-size: 0.95rem; cursor: pointer;
+  transition: background var(--fi-fx-court) ease, color var(--fi-fx-court) ease;
+}
+.fi-pastille:hover { background: var(--fi-fond-survol); color: var(--fi-texte); }
+.fi-pastille[aria-selected="true"] {
+  color: var(--fi-texte); border-color: transparent;
+  background: linear-gradient(var(--fi-fond-plein), var(--fi-fond-plein)) padding-box,
+              var(--fi-degrade) border-box;
+}
+.fi-pastille__jauge {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--fi-degrade);
+  transform: scaleX(0); transform-origin: left center;
+  pointer-events: none;
+}
+[data-story-etat="joue"] .fi-pastille[aria-selected="true"] .fi-pastille__jauge,
+[data-story-etat="pause"] .fi-pastille[aria-selected="true"] .fi-pastille__jauge {
+  animation: fiJauge var(--fi-story-duree, 5000ms) linear forwards;
+}
+[data-story-etat="pause"] .fi-pastille[aria-selected="true"] .fi-pastille__jauge { animation-play-state: paused; }
+@keyframes fiJauge { to { transform: scaleX(1); } }
+[data-story-actif] [data-story-scene] { display: grid; grid-template-columns: minmax(0, 1fr); }
+[data-story-actif] [data-story-scene] > [data-story-panneau] { grid-area: 1 / 1; }
+[data-story-actif] [data-story-panneau][inert] { visibility: hidden; }
+.fi-story--entree { animation: fiStoryEntree 450ms var(--fi-ease-sortie); }
+@keyframes fiStoryEntree { from { opacity: 0; transform: translateY(10px); } }
+
 /* ── REFLET : une bande de lumière traverse l'élément, une fois ────────
    Un <span> posé dans l'hôte, qui porte son propre `overflow: hidden` et
    hérite du rayon : l'hôte n'a pas à changer son débordement. */
@@ -156,11 +196,13 @@
    (.fi-sobre sur un ancêtre). États finaux, aucun mouvement. */
 @media (prefers-reduced-motion: reduce) {
   .fi-eclat, .fi-reflet { display: none; }
+  .fi-story--entree { animation: none; }
   .fi-pilier, .fi-pilier .fi-pilier__fleche { transition: none; }
   .fi-pilier:hover, .fi-pilier:focus-visible, .fi-pilier:active { transform: none; }
   .fi-son--joue .fi-bascule-son__ondes { animation: none; }
 }
 .fi-sobre .fi-eclat, .fi-sobre .fi-reflet { display: none; }
+.fi-sobre .fi-story--entree { animation: none; }
 .fi-sobre .fi-pilier, .fi-sobre .fi-pilier .fi-pilier__fleche { transition: none; }
 .fi-sobre .fi-pilier:hover, .fi-sobre .fi-pilier:focus-visible, .fi-sobre .fi-pilier:active { transform: none; }
 .fi-sobre .fi-son--joue .fi-bascule-son__ondes { animation: none; }

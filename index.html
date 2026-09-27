@@ -1168,6 +1168,24 @@
       gap: 0.75rem;
       margin-top: auto;
     }
+    /* L'offre en story : les pastilles au-dessus, une carte à la fois. Sur
+       grand écran la carte passe en largeur (image à gauche, texte à
+       droite) : une carte seule en 16:9 pleine largeur serait immense. */
+    .offre-story__pastilles { margin-top: 2rem; }
+    /* Sur téléphone, les trois pastilles tiennent sur une rangée : une
+       pastille seule sur la deuxième ligne aurait l'air d'une autre offre. */
+    @media (max-width: 480px) {
+      .offre-story__pastilles { flex-wrap: nowrap; gap: 0.35rem; }
+      .offre-story .fi-pastille { padding: 0 0.7rem; font-size: 0.88rem; gap: 0.35rem; }
+    }
+    .offre-story .offres { margin-top: 1.25rem; }
+    @media (min-width: 900px) {
+      .offre-story[data-story-actif] .offre { flex-direction: row; }
+      .offre-story[data-story-actif] .offre .media-16x9 {
+        flex: 0 0 48%; aspect-ratio: auto; min-height: 22rem;
+        border-bottom: 0; border-right: 1px solid var(--glass-border);
+      }
+    }
 
     /* ══════════════════════════════════════════════════════════════════════
        CE QUI TOURNE DÉJÀ — le catalogue des démonstrateurs en ligne
@@ -1679,8 +1697,9 @@
     .contact__atelier { margin: 0.75rem 0 0; font-size: 0.9rem; color: var(--text-muted); }
 
     /* ── Ce que la situation allume ─────────────────────────────────────
-       ⚠️ Rien n'est masqué ni réordonné dans les offres et les démos :
-       réordonner ferait sauter le contenu sous le doigt. On allume. */
+       ⚠️ Rien n'est réordonné dans les offres et les démos : réordonner
+       ferait sauter le contenu sous le doigt. On allume. (L'offre, en
+       story, montre en plus la carte de la situation : composants.js.) */
     body[data-situation="convaincre"] [data-usages~="convaincre"],
     body[data-situation="former"] [data-usages~="former"],
     body[data-situation="garder"] [data-usages~="garder"] {
@@ -2086,8 +2105,31 @@
         <p class="reveal">Chaque usage part du même socle, qui tourne déjà dans cinq
           démonstrateurs. L'atelier de 30 min sert à choisir par lequel commencer.</p>
 
-        <div class="offres">
-          <article class="carte offre reveal" id="usage-convaincre" data-usages="convaincre">
+        <!-- Les trois usages en story (composants/composants.js, « story ») :
+             une carte à la fois, 5 s chacune, en boucle, tant que la section
+             est à l'écran et que rien ne la retient (survol, focus). Figée
+             sur la carte de la situation si le visiteur en a choisi une ; un
+             clic sur une pastille la fige ici, sans changer la situation.
+             Sans JavaScript, les pastilles restent cachées et les trois
+             cartes s'affichent l'une après l'autre. -->
+        <div class="fi-story offre-story" id="offreStory" data-composant="story"
+             data-story-duree="5000" data-story-situation data-story-geste="etape">
+          <div class="fi-story__pastilles offre-story__pastilles" data-story-pastilles aria-label="Les trois usages" hidden>
+            <button class="fi-pastille" type="button" data-story-pastille aria-controls="usage-convaincre">
+              <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre
+              <span class="fi-pastille__jauge" aria-hidden="true"></span>
+            </button>
+            <button class="fi-pastille" type="button" data-story-pastille aria-controls="usage-former">
+              <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former
+              <span class="fi-pastille__jauge" aria-hidden="true"></span>
+            </button>
+            <button class="fi-pastille" type="button" data-story-pastille aria-controls="usage-garder">
+              <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder
+              <span class="fi-pastille__jauge" aria-hidden="true"></span>
+            </button>
+          </div>
+        <div class="offres" data-story-scene>
+          <article class="carte offre reveal" id="usage-convaincre" data-usages="convaincre" data-story-panneau>
             <div class="media-16x9">
               <img src="/media/accueil/offre-stand.webp"
                    alt="La borne STAND sur un stand de salon, vue d'ensemble de la scène 3D"
@@ -2112,7 +2154,7 @@
             </div>
           </article>
 
-          <article class="carte offre reveal" id="usage-former" data-usages="former">
+          <article class="carte offre reveal" id="usage-former" data-usages="former" data-story-panneau>
             <div class="media-16x9">
               <img src="/media/accueil/demos/rayon-x.webp"
                    alt="Rayon X : un échangeur thermique industriel en 3D, parcouru comme en formation"
@@ -2134,7 +2176,7 @@
             </div>
           </article>
 
-          <article class="carte offre reveal" id="usage-garder" data-usages="garder">
+          <article class="carte offre reveal" id="usage-garder" data-usages="garder" data-story-panneau>
             <div class="media-16x9">
               <img src="/media/accueil/demos/moulage.webp"
                    alt="À fleur d'écorce : le geste de l'artiste Mathilde Thiennot, rejouable en 3D"
@@ -2156,6 +2198,7 @@
               </div>
             </div>
           </article>
+        </div>
         </div>
       </section>
 
@@ -3003,6 +3046,8 @@
         /* ⚠️ La réservation est déjà comptée par `rdv-demande` : la
            compter aussi en `geste` la doublerait sous un autre nom. */
         if (d.geste === 'rdv') return;
+        /* Un panneau qui défile tout seul n'est pas un geste du visiteur. */
+        if (d.auto) return;
         mesurerUneFois('geste:' + d.chapitre + ':' + d.geste, MESURES.geste, { chapitre: d.chapitre, geste: d.geste });
       });
       document.addEventListener('fi:son', function (e) {

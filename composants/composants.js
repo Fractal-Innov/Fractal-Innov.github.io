@@ -6,6 +6,7 @@
    Un comportement par attribut, rien d'autre :
      data-composant="choix"        groupe de piliers, flèches du clavier
      data-composant="bascule-son"  le bouton son (lit window.FiSon)
+     data-composant="story"        des pastilles qui font défiler des panneaux
      data-eclat                    une onde iridescente au clic
      data-reflet                   un reflet unique quand l'élément paraît
      data-geste="nom"              émet fi:geste {chapitre, geste} au clic
@@ -149,8 +150,138 @@
     });
   }
 
+  /* ── STORY : des pastilles qui font défiler des panneaux ─────────────
+     Balisage attendu, dans l'élément data-composant="story" :
+       [data-story-pastilles]  la rangée d'onglets, `hidden` au départ
+         button[data-story-pastille][aria-controls=<id du panneau>]
+           .fi-pastille__jauge  la jauge qui se remplit
+       [data-story-scene]      le conteneur des panneaux
+         [data-story-panneau]  un panneau, avec son id
+     Options : data-story-duree (ms, 5000 par défaut) ; data-story-situation
+     (le panneau dont data-usages contient la situation se fige, via
+     fi:situation) ; data-story-geste="etape" (chaque changement émet
+     fi:geste {etape: n}, `auto: true` s'il vient du minuteur).
+     ⚠️ Le temps, c'est la jauge : son animation CSS dure `--fi-story-duree`
+     et sa fin (animationend) fait avancer. Mettre en pause = figer
+     l'animation (data-story-etat="pause") ; aucun minuteur JS à resynchroniser.
+     Sans JavaScript, rien ne change : les pastilles restent cachées et
+     tous les panneaux s'affichent. */
+  function activerStory(boite) {
+    var rangee = boite.querySelector('[data-story-pastilles]');
+    var pastilles = Array.prototype.slice.call(boite.querySelectorAll('[data-story-pastille]'));
+    var panneaux = pastilles.map(function (p) { return document.getElementById(p.getAttribute('aria-controls')); });
+    if (!rangee || !pastilles.length || panneaux.indexOf(null) >= 0) {
+      journal('story : balisage incomplet, rien n\'est activé'); return;
+    }
+    var duree = parseInt(boite.getAttribute('data-story-duree'), 10) || 5000;
+    var geste = boite.getAttribute('data-story-geste');
+    boite.style.setProperty('--fi-story-duree', duree + 'ms');
+    var courant = -1;
+    /* Ce qui arrête le défilement. Figé : il ne repartira pas tout seul
+       (un choix du visiteur). En pause : il repartira (survol, focus,
+       hors de l'écran, onglet caché). */
+    var fige = { local: false, situation: false };
+    var pause = { survol: false, focus: false, horsEcran: true, onglet: document.hidden };
+
+    rangee.setAttribute('role', 'tablist');
+    pastilles.forEach(function (p, i) {
+      if (!p.id) p.id = panneaux[i].id + '-pastille';
+      p.setAttribute('role', 'tab');
+      panneaux[i].setAttribute('role', 'tabpanel');
+      panneaux[i].setAttribute('aria-labelledby', p.id);
+    });
+
+    function etat() {
+      if (fige.local || fige.situation || sobre(boite)) return 'fige';
+      if (pause.survol || pause.focus || pause.horsEcran || pause.onglet) return 'pause';
+      return 'joue';
+    }
+    function majEtat() {
+      var e = etat();
+      if (boite.getAttribute('data-story-etat') !== e) {
+        boite.setAttribute('data-story-etat', e);
+        journal('story', boite.id || '', ':', e, JSON.stringify({ fige: fige, pause: pause }));
+      }
+    }
+    function montrer(i, origine) {
+      if (i === courant) return;
+      courant = i;
+      pastilles.forEach(function (p, j) {
+        p.setAttribute('aria-selected', j === i ? 'true' : 'false');
+        p.tabIndex = j === i ? 0 : -1;
+        if (j === i) { panneaux[j].removeAttribute('inert'); panneaux[j].removeAttribute('aria-hidden'); }
+        else { panneaux[j].setAttribute('inert', ''); panneaux[j].setAttribute('aria-hidden', 'true'); }
+      });
+      if (origine !== 'depart' && !sobre(boite)) rejouer(panneaux[i], 'fi-story--entree', 500);
+      /* La situation a déjà son accord : le panneau change en silence. */
+      if (geste && (origine === 'clic' || origine === 'auto')) {
+        emettre('fi:geste', { chapitre: chapitreDe(boite), geste: geste, etape: i + 1, auto: origine === 'auto' });
+      }
+      journal('story : panneau', panneaux[i].id, '(' + origine + ')');
+    }
+
+    /* Le minuteur : la jauge de la pastille active a fini de se remplir. */
+    boite.addEventListener('animationend', function (e) {
+      if (!e.target.classList.contains('fi-pastille__jauge') || etat() !== 'joue') return;
+      montrer((courant + 1) % pastilles.length, 'auto');
+    });
+    /* Un clic fige ici seulement : la situation de la page ne change pas. */
+    rangee.addEventListener('click', function (e) {
+      var p = e.target.closest('[data-story-pastille]');
+      if (!p) return;
+      fige.local = true;
+      montrer(pastilles.indexOf(p), 'clic');
+      majEtat();
+    });
+    rangee.addEventListener('keydown', function (e) {
+      var sens = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+      if (!sens) return;
+      e.preventDefault();
+      var i = (courant + sens + pastilles.length) % pastilles.length;
+      pastilles[i].focus();
+      pastilles[i].click();
+    });
+    boite.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { pause.survol = true; majEtat(); } });
+    boite.addEventListener('pointerleave', function () { pause.survol = false; majEtat(); });
+    boite.addEventListener('focusin', function () { pause.focus = true; majEtat(); });
+    boite.addEventListener('focusout', function (e) {
+      if (!boite.contains(e.relatedTarget)) { pause.focus = false; majEtat(); }
+    });
+    document.addEventListener('visibilitychange', function () { pause.onglet = document.hidden; majEtat(); });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entrees) {
+        pause.horsEcran = !entrees[entrees.length - 1].isIntersecting;
+        majEtat();
+      }, { threshold: 0.35 }).observe(boite);
+    } else {
+      pause.horsEcran = false;
+    }
+
+    /* La situation de la page, si le composant la suit. */
+    function suivreSituation(id, origine) {
+      var i = -1;
+      if (id) panneaux.forEach(function (pan, j) {
+        if (i < 0 && (' ' + (pan.getAttribute('data-usages') || '') + ' ').indexOf(' ' + id + ' ') >= 0) i = j;
+      });
+      fige.local = false;
+      fige.situation = i >= 0;
+      if (i >= 0) montrer(i, origine);
+      majEtat();
+    }
+    var suitSituation = boite.hasAttribute('data-story-situation');
+
+    boite.setAttribute('data-story-actif', '');
+    rangee.hidden = false;
+    montrer(0, 'depart');
+    if (suitSituation) {
+      suivreSituation(document.body.getAttribute('data-situation'), 'depart');
+      document.addEventListener('fi:situation', function (e) { suivreSituation(e.detail.id, 'situation'); });
+    }
+    majEtat();
+  }
+
   /* ── L'ACTIVATION ────────────────────────────────────────────────── */
-  var ACTIVATEURS = { 'choix': activerChoix, 'bascule-son': activerBasculeSon };
+  var ACTIVATEURS = { 'choix': activerChoix, 'bascule-son': activerBasculeSon, 'story': activerStory };
   function activer(racine) {
     racine = racine || document;
     var n = 0;
