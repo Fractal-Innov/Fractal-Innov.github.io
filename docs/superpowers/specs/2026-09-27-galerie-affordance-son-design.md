@@ -486,3 +486,39 @@ les jetons qu'elle consomme.
 - **Pastille du dock sur mobile** : elle recouvre le bas du texte pendant
   la lecture. Comportement antérieur, à regarder avec la télécommande
   (sous-projet 3).
+
+## 15. La passe du hero (27/09/2026)
+
+But : comprendre en un instant ce que le site offre, et voir que la page
+s'adapte au besoin choisi. Décisions prises en questions fermées :
+
+| Sujet | Décision | Écartée |
+|---|---|---|
+| Visuel | **un visuel qui suit le choix** (bureau) : STAND, Rayon X, À fleur d'écorce, mêmes fichiers que les démos | vignettes seules ; pas de visuel |
+| Image au repos | celle de la situation (`body[data-situation]`), sinon STAND | le village ; une mosaïque |
+| Mobile et tablette (< 1024 px) | **une vignette de 48 px dans chaque pilier**, à la place de l'icône | grand visuel fixe (piliers sous la ligne de flottaison) ; rien |
+| Action principale | **le choix du besoin** : piliers à bord bleu, invitation en blanc ; « Réserver 30 min » passe en secondaire | Réserver en premier ; les deux à égalité |
+| Adaptation visible | le verbe du chapeau s'allume avec son pilier (« il vend » › Convaincre, « il forme » › Former, « il reste » › Garder), texte inchangé | une ligne qui le dit ; aligner les mots |
+| Son | l'invitation « Visite sonore » **monte à côté de la pastille** (remplace « sous le choix » du § 3 ter) | sous le choix ; avec l'identité |
+
+**Mécanique** : tout l'état visuel est en CSS. `body[data-situation]` règle
+le repos, `.hero:has(pilier:is(:hover, :focus-visible))` règle le survol
+et l'emporte (spécificité 0,5,0 contre 0,4,0). Un seul verbe allumé à la
+fois. Aucun script, hormis une ligne de journal en `?debug=1`.
+
+**Mise en page** : dès 1024 px, deux colonnes alignées sur la pilule du
+bandeau (70 rem), h1 plafonné à t5, piliers empilés face au visuel.
+
+**Mesures** : 1440 × 800, bas des piliers à 740 px ; 375 × 812, à 764 px ;
+820 px, trois piliers sur une rangée, largeur égale ; débordement 0 partout.
+
+### À produire (assets)
+
+- **Rayon X** : `rayon-x.webp` est le logo du client, pas une vue de la
+  scène. Au survol de « Former », le hero montre un logo. Il faut une
+  capture 3D de l'échangeur (16:10, ≥ 1 200 px de large).
+- **À fleur d'écorce** : `moulage.webp` est très sombre, le sujet petit au
+  centre. Une capture plus claire, ou cadrée plus serré, rendrait la
+  vignette de 48 px lisible.
+- Idéalement, une vignette carrée par usage (96 × 96, cadrée sur le sujet)
+  plutôt que le recadrage automatique des images 16:9.

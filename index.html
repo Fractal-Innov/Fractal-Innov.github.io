@@ -2100,6 +2100,117 @@
       .footer__pages a,
       .footer p > a { display: inline-flex; align-items: center; min-height: var(--fi-cible); }
     }
+
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE HERO (27/09/2026) : comprendre ce que le site offre en un
+       instant, et voir que la page s'adapte au besoin choisi.
+       - un visuel qui suit le choix (bureau) / une vignette par pilier
+         (sous 1024 px, pas de survol au doigt) ;
+       - le verbe du chapeau s'allume avec son pilier ;
+       - le choix devient l'action principale, « Réserver » passe second ;
+       - le son monte à côté de la pastille.
+       Tout l'état visuel est en CSS (:has + body[data-situation]).
+       ══════════════════════════════════════════════════════════════════ */
+
+    /* ── La rangée du haut : pastille + son ──────────────────────────── */
+    .hero__haut {
+      display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+      gap: var(--fi-e1) var(--fi-e2); /* 8 px si la rangée passe à la ligne, 16 px côte à côte */
+    }
+
+    /* ── Le choix, action principale ─────────────────────────────────── */
+    .situations__question { font-size: var(--fi-t0); font-weight: 600; color: var(--text-main); } /* l'invitation se lit avant les piliers (15,2 px grisé avant) */
+    .situations .fi-pilier {
+      border-color: color-mix(in oklab, var(--accent-blue) 45%, transparent); /* bord bleu au repos : ce sont LES boutons du hero */
+      background: color-mix(in oklab, var(--accent-blue) 7%, transparent);
+    }
+    .situations .fi-pilier:hover,
+    .situations .fi-pilier:focus-visible { border-color: var(--accent-blue); }
+
+    /* ── Les verbes du chapeau ───────────────────────────────────────── */
+    .hero__verbe {
+      background-image: var(--fi-degrade);
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      background-size: 0 2px; /* le soulignement au dégradé part de zéro */
+      transition: color var(--fi-fx-court) ease, background-size 300ms var(--fi-ease-sortie);
+    }
+    /* Allumé par la situation choisie… */
+    body[data-situation="convaincre"] .hero__verbe[data-verbe="convaincre"],
+    body[data-situation="former"] .hero__verbe[data-verbe="former"],
+    body[data-situation="garder"] .hero__verbe[data-verbe="garder"],
+    /* …ou par le pilier survolé, qui l'emporte (spécificité 0,5,0). */
+    .hero:has([data-situation-choix="convaincre"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="convaincre"],
+    .hero:has([data-situation-choix="former"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="former"],
+    .hero:has([data-situation-choix="garder"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="garder"] {
+      color: var(--text-main);
+      background-size: 100% 2px;
+    }
+    /* Un pilier survolé éteint le verbe de la situation s'il n'est pas le
+       sien (0,4,0 bat le 0,3,1 de la situation) : un seul verbe à la fois. */
+    .hero:has(.fi-pilier:is(:hover, :focus-visible)) .hero__verbe {
+      color: inherit; background-size: 0 2px;
+    }
+
+    /* ── Le visuel qui suit le choix (bureau) ────────────────────────── */
+    .hero__visuel { display: none; margin: 0; position: relative; width: 100%; aspect-ratio: 16 / 10; } /* 16:10 : entre les formats des trois images, le recadrage reste léger */
+    .hero__vue {
+      position: absolute; inset: 0;
+      overflow: hidden;
+      border-radius: var(--radius-card);
+      border: 1px solid var(--glass-border-highlight);
+      opacity: 0;
+      transition: opacity 300ms ease; /* fondu court : on voit que l'image répond, sans effet de diaporama */
+    }
+    .hero__vue img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .hero__legende {
+      position: absolute; inset: auto 0 0 0;
+      padding: var(--fi-e4) var(--fi-e3) var(--fi-e2);
+      background: linear-gradient(transparent, rgba(9, 11, 19, 0.88)); /* le texte reste lisible quelle que soit l'image */
+      font-size: var(--fi-t-05); line-height: 1.3; color: var(--text-soft);
+    }
+    .hero__legende strong { display: block; font-size: var(--fi-t0); color: var(--text-main); }
+    /* Qui est visible : STAND par défaut… */
+    .hero__vue[data-visuel="convaincre"] { opacity: 1; }
+    /* …celle de la situation si elle est choisie… */
+    body[data-situation="former"] .hero__vue[data-visuel="convaincre"],
+    body[data-situation="garder"] .hero__vue[data-visuel="convaincre"] { opacity: 0; }
+    body[data-situation="former"] .hero__vue[data-visuel="former"],
+    body[data-situation="garder"] .hero__vue[data-visuel="garder"] { opacity: 1; }
+    /* …et celle du pilier survolé, qui l'emporte sur tout (0,5,0 contre 0,4,0). */
+    .hero:has(.fi-pilier:is(:hover, :focus-visible)) .hero__vue { opacity: 0; }
+    .hero:has([data-situation-choix="convaincre"]:is(:hover, :focus-visible)) .hero__vue[data-visuel="convaincre"],
+    .hero:has([data-situation-choix="former"]:is(:hover, :focus-visible)) .hero__vue[data-visuel="former"],
+    .hero:has([data-situation-choix="garder"]:is(:hover, :focus-visible)) .hero__vue[data-visuel="garder"] { opacity: 1; }
+
+    /* ── Sous 1024 px : la vignette dans le pilier remplace le visuel ── */
+    @media (max-width: 1023px) {
+      .situations .fi-pilier .fi-pilier__icone { display: none; }
+      .situations .fi-pilier .fi-pilier__vignette { display: block; }
+      .situations .fi-pilier { padding-block: var(--fi-e1); padding-left: var(--fi-e1); } /* 8 px autour de la vignette : le pilier fait 66 px (48 + 16 + bordure) */
+      .hero__contenu { padding-top: var(--fi-e4); } /* 32 px au lieu de 64 : la rangée pastille + son passe sur deux lignes, les piliers restent visibles à 375 × 812 */
+    }
+
+    /* ── Dès 1024 px : deux colonnes, texte et choix à gauche, visuel à droite */
+    @media (min-width: 1024px) {
+      .hero__contenu {
+        width: 100%;
+        max-width: 70rem; /* 1 120 px : la largeur de la pilule du bandeau, les deux s'alignent */
+        padding-top: var(--fi-e6); /* 48 px au lieu de 112 : les piliers restent au-dessus de 800 px de haut */
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); /* le texte un peu plus large : c'est lui qui se lit d'abord */
+        column-gap: var(--fi-e8); /* 64 px : deux groupes distincts */
+        row-gap: var(--fi-e3);
+        justify-items: start;
+        text-align: left;
+      }
+      .hero__contenu > * { grid-column: 1; }
+      .hero__visuel { display: block; grid-column: 2; grid-row: 1 / span 6; align-self: center; }
+      .hero__haut { justify-content: flex-start; }
+      .hero__titre { font-size: clamp(var(--fi-t4), 1.2rem + 3.2vw, var(--fi-t5)); } /* demi-page : plafond t5 (52 px), le titre tient en 3 lignes */
+      .situations { align-items: flex-start; width: 100%; }
+      .situations__liste.fi-choix { grid-template-columns: 1fr; width: min(100%, 28rem); } /* piliers empilés, face au visuel qu'ils pilotent */
+    }
   </style>
 </head>
 
@@ -2209,44 +2320,15 @@
       <div class="hero__halo hero__halo--bas" aria-hidden="true"></div>
 
       <div class="hero__contenu">
-        <span class="hero__pastille">
-          <span class="hero__point" aria-hidden="true"></span>
-          <span>Agence &amp; conseil WebXR</span>
-        </span>
-
-        <h1 class="hero__titre">Transmettre les savoirs
-          <span class="hero__accent">par l'expérience</span>
-        </h1>
-
-        <p class="hero__lead">Votre savoir est mis en 3D une fois. Ensuite, il vend, il forme,
-          il reste. Dans le navigateur, sans application.</p>
-
-        <!-- Le premier geste du parcours. Sans JavaScript, chaque bouton est un
-             lien vers la section suivante (#offre), où sa carte est ; avec, il
-             règle aussi toute la page sur ce cas (script « LE PARCOURS »,
-             section LA SITUATION). -->
-        <div class="situations">
-          <p class="situations__question" id="situationsQuestion">Votre savoir doit d'abord :</p>
-          <ul class="situations__liste fi-choix" aria-labelledby="situationsQuestion" data-composant="choix">
-            <li><a class="fi-pilier" href="#offre" data-situation-choix="convaincre" data-choix-item data-eclat>
-              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
-              <span class="fi-pilier__texte"><strong>Convaincre</strong> un acheteur</span>
-              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a></li>
-            <li><a class="fi-pilier" href="#offre" data-situation-choix="former" data-choix-item data-eclat>
-              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-former"></use></svg>
-              <span class="fi-pilier__texte"><strong>Former</strong> un nouvel arrivant</span>
-              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a></li>
-            <li><a class="fi-pilier" href="#offre" data-situation-choix="garder" data-choix-item data-eclat>
-              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-garder"></use></svg>
-              <span class="fi-pilier__texte"><strong>Garder</strong> un savoir-faire</span>
-              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a></li>
-          </ul>
-          <a class="situations__regarder" href="#offre" data-situation-choix="aucune">Juste regarder</a>
-          <!-- Le son s'allume ici, avant le premier geste (spec § 3 ter) ;
-               ensuite le dock prend le relais. Même composant, ses mots à lui. -->
+        <!-- La pastille et le son, sur une rangée : le son s'allume AVANT le
+             premier geste (l'accord de la situation joue au clic d'un
+             pilier), sans couper le fil choix › suite (passe du 27/09/2026,
+             remplace la place « sous le choix » du spec § 3 ter). -->
+        <div class="hero__haut">
+          <span class="hero__pastille">
+            <span class="hero__point" aria-hidden="true"></span>
+            <span>Agence &amp; conseil WebXR</span>
+          </span>
           <button class="fi-bascule-son situations__son" type="button"
                   data-composant="bascule-son" aria-pressed="false" hidden
                   data-libelle-coupe="Visite sonore" data-libelle-allume="Visite sonore activée">
@@ -2259,12 +2341,75 @@
           </button>
         </div>
 
+        <h1 class="hero__titre">Transmettre les savoirs
+          <span class="hero__accent">par l'expérience</span>
+        </h1>
+
+        <!-- Chaque verbe porte la situation qu'il annonce : survoler un
+             pilier (ou l'avoir choisi) l'allume ici. Le texte ne change pas. -->
+        <p class="hero__lead">Votre savoir est mis en 3D une fois. Ensuite,
+          <span class="hero__verbe" data-verbe="convaincre">il vend</span>,
+          <span class="hero__verbe" data-verbe="former">il forme</span>,
+          <span class="hero__verbe" data-verbe="garder">il reste</span>.
+          Dans le navigateur, sans application.</p>
+
+        <!-- Le visuel qui suit le choix (bureau seulement ; sous 1024 px, la
+             vignette de chaque pilier prend le relais). Les trois vues sont
+             là, une seule est visible : celle du pilier survolé, sinon celle
+             de la situation, sinon STAND. Tout en CSS (:has), aucun script.
+             Mêmes fichiers que les démos : déjà en cache plus bas. -->
+        <figure class="hero__visuel" aria-hidden="true">
+          <div class="hero__vue" data-visuel="convaincre">
+            <img src="/media/accueil/demos/stand.webp" alt="" width="1600" height="1063" loading="lazy" decoding="async">
+            <span class="hero__legende"><strong>STAND</strong> le produit sur le stand sans le transporter</span>
+          </div>
+          <div class="hero__vue" data-visuel="former">
+            <img src="/media/accueil/demos/rayon-x.webp" alt="" width="1200" height="630" loading="lazy" decoding="async">
+            <span class="hero__legende"><strong>Rayon X</strong> la formation à l'échangeur thermique</span>
+          </div>
+          <div class="hero__vue" data-visuel="garder">
+            <img src="/media/accueil/demos/moulage.webp" alt="" width="1080" height="606" loading="lazy" decoding="async">
+            <span class="hero__legende"><strong>À fleur d'écorce</strong> une performance de Mathilde Thiennot</span>
+          </div>
+        </figure>
+
+        <!-- Le premier geste du parcours. Sans JavaScript, chaque bouton est un
+             lien vers la section suivante (#offre), où sa carte est ; avec, il
+             règle aussi toute la page sur ce cas (script « LE PARCOURS »,
+             section LA SITUATION). -->
+        <div class="situations">
+          <p class="situations__question" id="situationsQuestion">Votre savoir doit d'abord :</p>
+          <ul class="situations__liste fi-choix" aria-labelledby="situationsQuestion" data-composant="choix">
+            <li><a class="fi-pilier" href="#offre" data-situation-choix="convaincre" data-choix-item data-eclat>
+              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
+              <img class="fi-pilier__vignette" src="/media/accueil/demos/stand.webp" alt="" width="56" height="56" loading="lazy" decoding="async">
+              <span class="fi-pilier__texte"><strong>Convaincre</strong> un acheteur</span>
+              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a></li>
+            <li><a class="fi-pilier" href="#offre" data-situation-choix="former" data-choix-item data-eclat>
+              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-former"></use></svg>
+              <img class="fi-pilier__vignette" src="/media/accueil/demos/rayon-x.webp" alt="" width="56" height="56" loading="lazy" decoding="async">
+              <span class="fi-pilier__texte"><strong>Former</strong> un nouvel arrivant</span>
+              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a></li>
+            <li><a class="fi-pilier" href="#offre" data-situation-choix="garder" data-choix-item data-eclat>
+              <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-garder"></use></svg>
+              <img class="fi-pilier__vignette" src="/media/accueil/demos/moulage.webp" alt="" width="56" height="56" loading="lazy" decoding="async">
+              <span class="fi-pilier__texte"><strong>Garder</strong> un savoir-faire</span>
+              <svg class="fi-pilier__fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </a></li>
+          </ul>
+          <a class="situations__regarder" href="#offre" data-situation-choix="aucune">Juste regarder</a>
+        </div>
+
         <div class="hero__actions">
           <!-- Reste dans le site (décision du 27/09/2026) : il descend au
                contact, dont le bouton ouvre l'agenda. ⚠️ Pas de `data-rdv` :
                ce clic n'est pas encore une demande de rendez-vous, et le
-               compter ici doublerait `rdv-demande` avec celui du contact. -->
-          <a class="hero-cta__btn hero-cta__btn--primary" href="#contact"><span>Réserver 30 min</span></a>
+               compter ici doublerait `rdv-demande` avec celui du contact.
+               Secondaire depuis la passe du 27/09/2026 : l'action principale
+               du hero est le choix du besoin, pas la réservation. -->
+          <a class="hero-cta__btn hero-cta__btn--secondary" href="#contact"><span>Réserver 30 min</span></a>
         </div>
 
         <a class="hero__identite" href="#fondateur">
@@ -2983,6 +3128,17 @@
       }
       window.addEventListener('load', verifierPasse);
       window.addEventListener('resize', verifierPasse);
+
+      /* ── Le hero suit la situation. Aucun script ne change le visuel ni
+         le verbe du chapeau : le CSS lit `body[data-situation]` (posé par
+         le parcours) et `:has(pilier:hover)`. Ce journal dit seulement
+         ce que le CSS va montrer, pour suivre le flux en `?debug=1`. */
+      var VISUELS = { convaincre: 'STAND', former: 'Rayon X', garder: 'À fleur d\'écorce' };
+      document.addEventListener('fi:situation', function (e) {
+        var id = (e.detail && e.detail.id) || 'aucune';
+        journal('hero : visuel « ' + (VISUELS[id] || 'STAND (défaut)') + ' », verbe allumé : ' +
+          (VISUELS[id] ? id : 'aucun') + ' (CSS, via body[data-situation])');
+      });
 
       /* ── Le lien de navigation de la section courante ──────────────────
          ⚠️ /stand/ n'utilise PAS d'IntersectionObserver ici, et c'est un
