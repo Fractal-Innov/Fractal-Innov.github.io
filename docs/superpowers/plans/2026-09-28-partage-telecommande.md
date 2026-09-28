@@ -1179,8 +1179,8 @@ rm msg-telecommande-page.txt
 - Modify: `docs/superpowers/specs/2026-09-28-partage-telecommande-design.md` (§ 13 « Bilan » : décisions des boucles 🎨, mesures, écarts)
 - Modify: ce plan (cases cochées)
 
-- [ ] **Étape 1 : parcours complet sur de vrais appareils** : ordinateur + téléphone de l'utilisateur, en production après fusion ou en local sur le réseau ; noter la durée du premier réveil du relais.
+- [x] **Étape 1 : parcours complet sur de vrais appareils** : ordinateur + téléphone de l'utilisateur, en production après fusion ou en local sur le réseau ; noter la durée du premier réveil du relais.
 - [x] **Étape 2 : garde** : `FiDock.verifier()` muet à 1440, 1280, 1024, 375 et 360 ; aucune erreur console ; `document.documentElement.scrollWidth === innerWidth` au téléphone.
   Et, onglet neuf (`sessionStorage` vide) : `read_network_requests` ne montre AUCUNE connexion au relais avant l'ouverture de l'onglet Télécommande (spec § 4, § 9).
 - [x] **Étape 3 : écrire le § 13 de la spec**, commit `docs(spec): …` (tapé par l'utilisateur, message dans un fichier).
-- [ ] **Étape 4 : PR** avec `finishing-a-development-branch` : `git push -u origin feat/partage-telecommande`, puis `gh pr create --base main --title 'feat(partage): partager la page et la tendre en télécommande' --body-file msg-pr.md` (corps terminé par la ligne « 🤖 Generated with [Claude Code](https://claude.com/claude-code) »).
+- [x] **Étape 4 : PR** avec `finishing-a-development-branch` : `git push -u origin feat/partage-telecommande`, puis `gh pr create --base main --title 'feat(partage): partager la page et la tendre en télécommande' --body-file msg-pr.md` (corps terminé par la ligne « 🤖 Generated with [Claude Code](https://claude.com/claude-code) »).
