@@ -604,3 +604,17 @@ la demande de l'utilisateur) :
     < 760 px de haut : titre en t3 et signature masquée le temps de la
     question. Mesuré de 360 × 740 à 1440 × 900 : de 16 à 193 px d'air
     entre le hero et le dock, aucun débordement.
+- **Retour du 28/09/2026, deuxième boucle** :
+  - « Conserver » partout où « Garder » s'affichait (carte d'offre, groupe
+    de démos, onglet du récit, tag et mot en gras de l'approche, « Parlons
+    du savoir-faire à conserver ») ; id technique `garder` inchangé ;
+  - chapeau en deux phrases, une par ligne (`.hero__lead-ligne`, 48 rem) :
+    deux lignes au bureau ; au téléphone la 2e se replie, la coupure reste ;
+  - rôle du fondateur : « Architecte d'expériences WebXR » (hero et section
+    Fondateur) ; le `jobTitle` des données structurées garde « et 3D temps
+    réel », à trancher.
+- **Logo en coin (28/09/2026)** : fixe en haut à gauche (z 80, sous le
+  dock), derrière lui une brume du verre du dock (flou 20 px + saturation
+  165 %, voile 72 %) au bord fondu par masque radial. `scroll-padding-top`
+  à 76 px pour qu'une ancre ne pose pas son titre sous le logo (vérifié sur
+  les six sections au téléphone). Voile plein si `prefers-reduced-transparency`.

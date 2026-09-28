@@ -189,11 +189,12 @@
 
     *, *::before, *::after { box-sizing: border-box; }
 
-/* Plus de pilule de navigation en haut (le dock est en bas) : une ancre
-       n'a qu'à laisser respirer son titre, 24 px (grille de 8). */
+    /* Plus de pilule de navigation en haut (le dock est en bas), mais le
+       logo reste FIXE en haut à gauche : une ancre pose son titre sous lui.
+       76 px = 44 de cible + 16 d'air de chaque côté. */
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: 1.5rem;
+      scroll-padding-top: calc(var(--fi-cible, 44px) + 2 * var(--fi-e2, 1rem));
     }
 
     body {
@@ -1718,10 +1719,41 @@
        en coin, la marge du bas, et les verbes du chapeau (les piliers ne
        sont plus DANS le hero, d'où `body:has()` au lieu de `.hero:has()`).
        ══════════════════════════════════════════════════════════════════ */
+    /* Le logo reste à l'écran pendant toute la lecture (décision du
+       28/09/2026) : la marque en haut, le dock en bas. Derrière lui, une
+       brume du même verre que le dock (flou + saturation), au bord FONDU :
+       pas de cadre qui concurrence le dock, le logo reste lisible sur une
+       section claire comme sur la vidéo. */
     .logo-coin {
-      position: absolute; z-index: 5;
+      position: fixed; z-index: 80; /* sous le dock (90) : un bandeau déplié passe devant, jamais l'inverse */
       top: var(--fi-e2); left: var(--fi-e2); /* 16 px : la gouttière mobile */
       display: inline-flex; align-items: center; min-height: var(--fi-cible); /* 44 px : cible tactile */
+      isolation: isolate; /* la brume (z-index -1) reste derrière le logo, pas derrière la page */
+    }
+    .logo-coin::before {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      inset: calc(-1 * var(--fi-e2)) calc(-1 * var(--fi-e3)); /* déborde de 16 px en haut et en bas, 24 sur les côtés : la brume enveloppe sans coller */
+      background: rgba(10, 11, 20, 0.72); /* 72 %, comme le dock : à 55 %, un titre blanc qui défilait dessous se lisait À TRAVERS le logo (mesuré le 28/09/2026) */
+      backdrop-filter: blur(20px) saturate(165%); /* la matière du dock */
+      -webkit-backdrop-filter: blur(20px) saturate(165%);
+      /* Le bord fondu : plein jusqu'à 62 % du rayon (le logo entier y tient),
+         puis transparent. Le masque découpe aussi le flou, d'où l'effet de
+         brume et non de cadre. */
+      -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent);
+      mask-image: radial-gradient(closest-side, #000 62%, transparent);
+    }
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .logo-coin::before { background: rgba(10, 11, 20, 0.9); } /* sans flou, le voile porte seul la lisibilité */
+    }
+    /* L'étiquette d'une carte d'offre, au téléphone : à 0,2 em d'espacement,
+       « CONSERVER UN SAVOIR-FAIRE » (et déjà « FORMER UN NOUVEL ARRIVANT »)
+       dépassait de 12 px et passait entière SOUS son pictogramme. 0,12 em
+       suffisait à 375 px mais pas à 360 (mesuré) ; 0,08 em rend ~40 px et
+       tient les trois étiquettes sur une ligne à 360 px, capitales toujours
+       espacées. */
+    @media (max-width: 400px) { .section .offre__eyebrow { letter-spacing: 0.08em; } }
+    @media (prefers-reduced-transparency: reduce) {
+      .logo-coin::before { background: rgb(10, 11, 20); backdrop-filter: none; -webkit-backdrop-filter: none; }
     }
     .logo-coin img { display: block; width: auto; height: 28px; } /* 28 px : lisible sans concurrencer le titre (place provisoire, à définir) */
     .logo-coin:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 4px; border-radius: 6px; }
@@ -1751,6 +1783,11 @@
       transition: padding-bottom 400ms var(--fi-ease-sortie); /* à la réponse, le hero redescend au lieu de sauter */
     }
     @media (prefers-reduced-motion: reduce) { .js .hero__contenu { transition: none; } }
+    /* Le chapeau : une phrase par ligne. 48 rem (768 px) laissent la 2e
+       phrase (~75 signes à 21 px) tenir sur UNE ligne au bureau ; au
+       téléphone elle se replie, mais la coupure entre les deux temps reste. */
+    .hero__lead { max-width: 48rem; }
+    .hero__lead-ligne { display: block; }
     /* Écran court (≤ 860 px de haut, un téléphone courant) : le rythme se
        resserre à 16 px partout plutôt que de laisser le dock couvrir la
        signature. Mesuré à 375 × 812 : il manquait 48 px, ces trois
@@ -1928,11 +1965,15 @@
 
         <!-- Chaque verbe porte la situation qu'il annonce : survoler un
              pilier (ou l'avoir choisi) l'allume ici. Le texte ne change pas. -->
-        <p class="hero__lead">Votre savoir est mis en 3D une fois. Ensuite,
+        <!-- Deux lignes, deux temps (retour du 28/09/2026) : ce que le savoir
+             devient, puis ce qu'il fait. -->
+        <p class="hero__lead">
+          <span class="hero__lead-ligne">Votre savoir est mis en 3D une fois.</span>
+          <span class="hero__lead-ligne">Ensuite,
           <span class="hero__verbe" data-verbe="convaincre">il vend</span>,
           <span class="hero__verbe" data-verbe="former">il forme</span>,
           <span class="hero__verbe" data-verbe="garder">il reste</span>.
-          Dans le navigateur, sans application.</p>
+          Dans le navigateur, sans application.</span></p>
 
 
         <!-- Le premier geste du parcours. Sans JavaScript, chaque bouton est un
@@ -1981,7 +2022,7 @@
           </span>
           <span>
             <span class="hero__nom">Corentin Duboc</span><br>
-            <span class="hero__role">Architecte d'expériences WebXR &amp; 3D temps réel</span>
+            <span class="hero__role">Architecte d'expériences WebXR</span>
           </span>
         </a>
       </div>
@@ -2020,7 +2061,7 @@
               <span class="fi-pastille__jauge" aria-hidden="true"></span>
             </button>
             <button class="fi-pastille" type="button" data-story-pastille aria-controls="usage-garder">
-              <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder
+              <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver
               <span class="fi-pastille__jauge" aria-hidden="true"></span>
             </button>
           </div>
@@ -2079,7 +2120,7 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver un savoir-faire
                 <span class="badge-cas" hidden>Votre situation</span></p>
               <h3>Vos savoir-faire partent avec ceux qui les ont ?</h3>
               <p class="offre__texte">Un processus de fabrication, un tour de main, le geste d'une
@@ -2185,7 +2226,7 @@
             </div>
           </div>
           <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-garder" data-groupe="garder" style="--n: 1">
-            <p class="fi-groupe__etiquette reveal" id="groupe-garder"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</p>
+            <p class="fi-groupe__etiquette reveal" id="groupe-garder"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver un savoir-faire</p>
             <div class="demos__cartes">
               <article class="carte demo reveal" id="demo-moulage" data-usages="garder">
                 <div class="media-16x9">
@@ -2388,7 +2429,7 @@
               <ul class="portrait__barre tag-liste" aria-label="Trois usages">
                 <li class="tag">Convaincre</li>
                 <li class="tag">Former</li>
-                <li class="tag">Garder</li>
+                <li class="tag">Conserver</li>
               </ul>
             </div>
           </div>
@@ -2396,7 +2437,7 @@
           <div>
             <p class="section-number reveal">Le fondateur</p>
             <h2 class="reveal">Corentin Duboc</h2>
-            <p class="fondateur__role reveal">Architecte d'expériences WebXR &amp; 3D temps réel</p>
+            <p class="fondateur__role reveal">Architecte d'expériences WebXR</p>
             <p class="ligne-mono reveal">Consultant 3D/WebXR B2B · Freelance · Catalyseur POLD</p>
 
             <p class="fondateur__bio reveal">J'accompagne les industriels
@@ -2416,7 +2457,7 @@
                   un savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)</span></li>
               <li class="repere" data-usages="garder">
                 <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
-                <span><strong>Garder</strong> : processus de fabrication, savoir-faire, geste
+                <span><strong>Conserver</strong> : processus de fabrication, savoir-faire, geste
                   d'une artiste, rejouables étape par étape (Mathilde Thiennot)</span></li>
             </ul>
 
@@ -2461,7 +2502,7 @@
           <span data-pour="aucune">Un projet ou une idée en tête ?</span>
           <span data-pour="convaincre" hidden>Parlons de l'équipement qui ne voyage pas</span>
           <span data-pour="former" hidden>Parlons de vos nouveaux arrivants</span>
-          <span data-pour="garder" hidden>Parlons du savoir-faire à garder</span>
+          <span data-pour="garder" hidden>Parlons du savoir-faire à conserver</span>
         </h2>
         <p class="contact__lead reveal">Décrivez votre produit et votre public : nous regardons
           ensemble ce qui existe et ce que l'expérience doit faire comprendre.</p>
@@ -2917,7 +2958,9 @@
         { id: 'contact', titre: 'Contact' }
       ];
       var IDS = CHAPITRES.map(function (c) { return c.id; });
-      var SITUATIONS = { convaincre: 'Convaincre', former: 'Former', garder: 'Garder' };
+      /* ⚠️ Les clés sont les id techniques (`garder` reste) ; les valeurs, les
+         mots affichés (« Conserver » depuis le 28/09/2026). */
+      var SITUATIONS = { convaincre: 'Convaincre', former: 'Former', garder: 'Conserver' };
 
       function emettre(nom, detail) {
         document.dispatchEvent(new CustomEvent(nom, { detail: detail }));
