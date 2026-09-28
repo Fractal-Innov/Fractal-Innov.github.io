@@ -777,11 +777,19 @@ open(p, 'w').write(s)
   }
 
   function connecter() {
-    if (!presente) changer('connexion');
-    clearTimeout(minuterieIndispo);
-    minuterieIndispo = setTimeout(function () {
-      if (etat === 'connexion') { journal('relais muet depuis ' + DELAI_INDISPONIBLE / 1000 + ' s'); changer('indisponible'); }
-    }, DELAI_INDISPONIBLE);
+    /* ⚠️ Le compte à rebours part UNE fois par épisode de connexion et ne
+       s'annule qu'à l'inscription réussie. Relancé à chaque essai, il ne
+       finissait jamais : un relais mort échoue tout de suite, et les
+       essais (1, 2, 4, 8, 10 s) sont plus rapprochés que 20 s (bug du
+       28/09/2026). Une fois « indisponible », on y reste jusqu'au succès :
+       l'essai suivant ne fait pas clignoter « Préparation… ». */
+    if (!presente && etat !== 'indisponible') changer('connexion');
+    if (!minuterieIndispo) {
+      minuterieIndispo = setTimeout(function () {
+        minuterieIndispo = 0;
+        if (etat === 'connexion') { journal('relais muet depuis ' + DELAI_INDISPONIBLE / 1000 + ' s'); changer('indisponible'); }
+      }, DELAI_INDISPONIBLE);
+    }
     journal('connexion au relais (le premier réveil peut prendre ~7 s)');
     try { ws = new WebSocket(RELAIS); } catch (e) { journal('⚠️ WebSocket refusé :', e.message); relancer(); return; }
     ws.onopen = function () { envoyer({ type: 'REGISTER', role: 'display', salle: salle }); };
@@ -791,6 +799,7 @@ open(p, 'w').write(s)
       if (m.type === 'REGISTER_OK') {
         attente = 1000;
         clearTimeout(minuterieIndispo);
+        minuterieIndispo = 0;
         journal('écran inscrit dans la salle ' + salle + ' : QR prêt');
         changer(presente ? 'connectee' : 'prete');
         envoyerEtat();

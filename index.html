@@ -55,6 +55,7 @@
   <script defer src="/composants/composants.js"></script>
   <script defer src="/composants/dock.js"></script>
   <script defer src="/composants/partage.js"></script> <!-- le bandeau « Partager » : cet endroit, la télécommande -->
+  <script defer src="/composants/telecommande-ecran.js"></script> <!-- la télécommande : l'écran obéit au téléphone -->
   <script defer src="/composants/demos.js"></script> <!-- les démos : une en avant, les autres en bande -->
   <script defer src="/composants/orbite.js"></script> <!-- l'équipe : le fondateur au centre, les fils vers le réseau -->
   <script defer src="/composants/garde-ecran.js"></script> <!-- ?debug=1 : ce qui tient à l'écran, section par section -->
@@ -3655,6 +3656,11 @@
         journal('situation :', (avant || 'aucune') + ' → ' + (id || 'aucune'), '(venue de : ' + origine + ')');
         emettre('fi:situation', { id: id, origine: origine });
       }
+
+      /* La porte du choix pour ce qui n'est pas un clic : la télécommande
+         (composants/telecommande-ecran.js) choisit par ici, avec son
+         origine, sans ouvrir le bandeau de situation sur l'écran. */
+      window.FiParcours = { choisirSituation: choisirSituation };
 
       /* Le hero : on choisit, l'onde et l'accord partent, PUIS on descend
          à la section suivante (#offre). 220 ms : le temps de voir l'onde
