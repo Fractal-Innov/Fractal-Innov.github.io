@@ -5,7 +5,8 @@
        suivant) tiennent dans son PREMIER écran.
 
    « Un écran » = ce que le visiteur voit vraiment quand une ancre pose la
-   section en haut : de `scroll-padding-top` jusqu'au haut du dock.
+   section en haut : de `scroll-padding-top` jusqu'au haut du dock. La
+   section est mesurée jusqu'au bas de son contenu (sans l'air du bas).
 
    Pour chaque section[id], la garde journalise :
      ✓ / ⚠️  #id : N écran(s), essentiels hors du premier écran : …
@@ -38,7 +39,13 @@
            l'élément aura quand la section est posée en haut de l'écran. */
         return el.getBoundingClientRect().bottom - r.top > utile;
       }).map(function (el) { return el.textContent.replace(/\s+/g, ' ').trim().slice(0, 40); });
-      return { section: s.id, ecrans: +(r.height / utile).toFixed(2), essentielsHors: hors,
+      /* La hauteur jugée va du haut de la section au bas de son DERNIER
+         contenu : le rembourrage du bas n'est que l'air avant la section
+         suivante, il peut passer sous le dock sans rien cacher. */
+      var bas = Array.prototype.reduce.call(s.children, function (m, el) {
+        return el.offsetParent ? Math.max(m, el.getBoundingClientRect().bottom) : m;
+      }, r.top);
+      return { section: s.id, ecrans: +((bas - r.top) / utile).toFixed(2), essentielsHors: hors,
                pleinEcran: s.getAttribute('data-garde') === 'plein-ecran' };
     });
   }

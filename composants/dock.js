@@ -125,8 +125,12 @@
     /* Le pictogramme de la situation, repris tel quel ; `id` vient d'une
        liste fermée (les trois boutons), l'innerHTML est sûr. */
     titre.insertAdjacentHTML('afterbegin', '<svg class="pic" aria-hidden="true"><use href="#pic-' + id + '"></use></svg>');
-    var nom = eyebrow ? Array.prototype.filter.call(eyebrow.childNodes, function (n) { return n.nodeType === 3; })
-      .map(function (n) { return n.textContent; }).join(' ').trim() : id;
+    /* Le nom de la situation : `.offre__eyebrow-texte` depuis la passe de
+       l'offre (28/09/2026) ; les nœuds texte nus en secours. */
+    var texteEyebrow = eyebrow && eyebrow.querySelector('.offre__eyebrow-texte');
+    var nom = texteEyebrow ? texteEyebrow.textContent.trim()
+      : eyebrow ? Array.prototype.filter.call(eyebrow.childNodes, function (n) { return n.nodeType === 3; })
+        .map(function (n) { return n.textContent; }).join(' ').trim() : id;
     titre.appendChild(document.createTextNode(nom));
     v.querySelector('[data-dock-texte]').textContent = accroche ? accroche.textContent.trim() : '';
     var zonePreuve = v.querySelector('[data-dock-preuve]');
