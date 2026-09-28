@@ -1,6 +1,6 @@
 # Partage et télécommande : plan d'implémentation
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Un bouton « Partager » (dock et contact) qui partage l'endroit où
 l'on est par QR ou lien, et qui tend la page en télécommande : un QR,
@@ -47,18 +47,18 @@ qrcode-generator 1.4.4 (MIT), Node 22 (outil de simulation du téléphone).
 **Files:**
 - Delete: `stand/index.html` (copie Tailwind du 08/09, masquée en ligne par le dépôt `Fractal-Innov/stand`, spec § 3)
 
-- [ ] **Étape 1 : vérifier qu'aucun fichier du dépôt ne dépend du dossier**
+- [x] **Étape 1 : vérifier qu'aucun fichier du dépôt ne dépend du dossier**
 
 Run: `grep -rn "stand/index\|/stand/assets" --include='*.html' --include='*.js' --include='*.json' . | grep -v '^./stand/'`
 Expected: aucune ligne (les liens `/stand/` vers la page en ligne restent valides : c'est le dépôt `stand` qui la sert).
 
-- [ ] **Étape 2 : l'utilisateur retire le dossier** (`git rm` retire le fichier du disque ET de l'index ; récupérable avec `git restore --source=HEAD stand/` tant que rien n'est commité)
+- [x] **Étape 2 : l'utilisateur retire le dossier** (`git rm` retire le fichier du disque ET de l'index ; récupérable avec `git restore --source=HEAD stand/` tant que rien n'est commité)
 
 ```bash
 git rm -r stand/
 ```
 
-- [ ] **Étape 3 : commit** (message dans `msg-stand.txt`)
+- [x] **Étape 3 : commit** (message dans `msg-stand.txt`)
 
 ```
 chore(stand): retirer la copie Tailwind masquée par le dépôt stand
@@ -90,7 +90,7 @@ rm msg-stand.txt
 **Interfaces:**
 - Produces : événement `fi:partager {mode: 'endroit' | 'telecommande'}` ; `FiDock.etat()` peut valoir `'partage'` ; attribut `data-telecommande="connectee"` lu par le CSS du témoin ; marqueurs `[data-partage-mode]`, `[data-partage-ou]`, `[data-partage-qr]`, `[data-partage-consigne]`, `[data-partage-lien]`, `[data-partage-copier]`, `[data-partage-envoyer]`, `[data-partage-etat]`, `[data-partage-annonce]` dans la vue.
 
-- [ ] **Étape 1 : 🎨 boucle de co-création, la place du bouton au téléphone**
+- [x] **Étape 1 : 🎨 boucle de co-création, la place du bouton au téléphone**
 
 Mesure : 7 cibles de 44 px font déjà ~335 px ; une 8e ne tient pas à 360 px.
 Montrer et demander :
@@ -100,7 +100,7 @@ Montrer et demander :
 Et le témoin de connexion : **point vert fixe** (recommandé, lisible d'un coup d'œil) ou **anneau qui respire une fois** à la connexion puis reste.
 Coder la suite selon la réponse (le code ci-dessous suit A + point vert).
 
-- [ ] **Étape 2 : le balisage** (python, une assertion par remplacement)
+- [x] **Étape 2 : le balisage** (python, une assertion par remplacement)
 
 ```python
 p = 'index.html'; s = open(p).read()
@@ -163,7 +163,7 @@ s = s[:j] + '''
 open(p, 'w').write(s)
 ```
 
-- [ ] **Étape 3 : dock.js**
+- [x] **Étape 3 : dock.js**
 
 Après `var boutonsSituation = …` :
 
@@ -209,7 +209,7 @@ Dans `verifier()`, avant `if (fautes.length)` :
 
 Mettre à jour l'en-tête du fichier : cinq états, `partage` ajouté, `fi:partager` dans « Écoute ».
 
-- [ ] **Étape 4 : composants.css**, bloc « partage » après celui du sommaire
+- [x] **Étape 4 : composants.css**, bloc « partage » après celui du sommaire
 
 ```css
 /* ── partage : Cet endroit / Télécommande (spec partage-telecommande § 5) ── */
@@ -265,7 +265,7 @@ Mettre à jour l'en-tête du fichier : cinq états, `partage` ajouté, `fi:parta
 @media (prefers-reduced-motion: reduce) { .fi-partage__qr--pli { animation: none; } }
 ```
 
-- [ ] **Étape 5 : vérifier dans le navigateur** (serveur `accueil-fi-revue`, `?debug=1`)
+- [x] **Étape 5 : vérifier dans le navigateur** (serveur `accueil-fi-revue`, `?debug=1`)
 
 ```js
 // Bureau 1440 : le bouton ouvre la vue, re-clic la ferme
@@ -280,7 +280,7 @@ document.dispatchEvent(new CustomEvent('fi:partager', { detail: { mode: 'endroit
 
 Puis `resize_window` 360 × 740 : `FiDock.verifier()` n'écrit aucune faute (pas de « rangée qui déborde ») ; la ligne « Partager cette page » est dans le sommaire.
 
-- [ ] **Étape 6 : l'utilisateur valide le rendu, puis commit** (`msg-partage-dock.txt`)
+- [x] **Étape 6 : l'utilisateur valide le rendu, puis commit** (`msg-partage-dock.txt`)
 
 ```
 feat(dock): ouvrir un bandeau « Partager » depuis la rangée
@@ -319,19 +319,19 @@ rm msg-partage-dock.txt
 - Consumes (facultatif, Tâche 4) : `window.FiTelecommande = { demarrer(): void, etat(): 'eteinte'|'connexion'|'prete'|'connectee'|'indisponible', url(): string }` et l'événement `fi:telecommande {etat, salle, url}`. Tant qu'il n'existe pas, l'onglet Télécommande reste masqué.
 - Produces : `[data-partager-endroit]` (tout bouton de la page qui ouvre le partage).
 
-- [ ] **Étape 1 : 🎨 boucle de co-création, la mise en page du bandeau et du bouton du contact**
+- [x] **Étape 1 : 🎨 boucle de co-création, la mise en page du bandeau et du bouton du contact**
 
 Montrer et demander :
   - Bandeau au bureau : **A (recommandée)** QR à gauche, texte à droite (le bandeau reste bas, la page reste visible) ; **B** empilé et centré comme /stand/ (QR au-dessus).
   - « Emporter cette page » dans le contact : **A (recommandée)** lien discret souligné, picto QR, sous « Vous repartez avec… » ; **B** une 5e icône dans la rangée des liens (carte, e-mail, LinkedIn, Instagram).
 Coder selon la réponse (le code suit A + A).
 
-- [ ] **Étape 2 : la bibliothèque QR**
+- [x] **Étape 2 : la bibliothèque QR**
 
 Run: `mkdir -p composants/vendor && cp ../stand/assets/js/qrcode.min.js composants/vendor/qrcode.min.js && head -c 120 composants/vendor/qrcode.min.js`
 Expected: `/* qrcode-generator 1.4.4, Kazuhiko Arase, licence MIT : https://github.com/kazuhikoarase/qrcode-generator */`
 
-- [ ] **Étape 3 : `composants/partage.js`**
+- [x] **Étape 3 : `composants/partage.js`**
 
 ```js
 /* ══ LE PARTAGE : CET ENDROIT, OU LA TÉLÉCOMMANDE ═════════════════════
@@ -526,7 +526,7 @@ Expected: `/* qrcode-generator 1.4.4, Kazuhiko Arase, licence MIT : https://gith
 })();
 ```
 
-- [ ] **Étape 4 : index.html** (python, une assertion par remplacement)
+- [x] **Étape 4 : index.html** (python, une assertion par remplacement)
 
 ```python
 p = 'index.html'; s = open(p).read()
@@ -581,7 +581,7 @@ s = s.replace('  </style>', css + '  </style>')
 open(p, 'w').write(s)
 ```
 
-- [ ] **Étape 5 : vérifier dans le navigateur** (`?debug=1&situation=former`, défiler jusqu'aux démos)
+- [x] **Étape 5 : vérifier dans le navigateur** (`?debug=1&situation=former`, défiler jusqu'aux démos)
 
 ```js
 document.dispatchEvent(new CustomEvent('fi:partager', { detail: { mode: 'endroit' } }));
@@ -594,7 +594,7 @@ await new Promise(r => setTimeout(r, 600));
 
 Puis : un défilement jusqu'à l'équipe met à jour « L'équipe, pour former » sans refermer ; le bouton « Emporter cette page » du contact ouvre le bandeau ; à 375 × 812, pas de QR, « Copier le lien » visible ; `read_network_requests` montre `qrcode.min.js` chargé une seule fois, et pas avant la première ouverture.
 
-- [ ] **Étape 6 : l'utilisateur valide le rendu (bureau, téléphone), puis commit** (`msg-partage-endroit.txt`)
+- [x] **Étape 6 : l'utilisateur valide le rendu (bureau, téléphone), puis commit** (`msg-partage-endroit.txt`)
 
 ```
 feat(partage): partager l'endroit où l'on est par QR ou lien
@@ -633,7 +633,7 @@ rm msg-partage-endroit.txt
 - Consumes : `fi:aller {chapitre}` (existant, défilement doux), `window.FiDock.etat()` / `.replier(raison)`, `fi:chapitre`, `fi:situation`, `body[data-chapitre]`, `body[data-situation]`.
 - Produces : `window.FiTelecommande = { demarrer(), etat(), url() }` ; `fi:telecommande {etat: 'connexion'|'prete'|'connectee'|'indisponible', salle, url}` ; `fi:geste {chapitre, geste: 'telecommande'}` ; `dock[data-telecommande="connectee"]` ; `window.FiParcours = { choisirSituation(id, origine) }`.
 
-- [ ] **Étape 1 : exposer le choix de situation** (python)
+- [x] **Étape 1 : exposer le choix de situation** (python)
 
 ```python
 p = 'index.html'; s = open(p).read()
@@ -652,7 +652,7 @@ s = s[:j] + '  <script defer src="/composants/telecommande-ecran.js"></script> <
 open(p, 'w').write(s)
 ```
 
-- [ ] **Étape 2 : `composants/telecommande-ecran.js`**
+- [x] **Étape 2 : `composants/telecommande-ecran.js`**
 
 ```js
 /* ══ LA TÉLÉCOMMANDE, CÔTÉ ÉCRAN ════════════════════════════════════════
@@ -839,7 +839,7 @@ open(p, 'w').write(s)
 })();
 ```
 
-- [ ] **Étape 3 : `outils/telephone-simule.mjs`**
+- [x] **Étape 3 : `outils/telephone-simule.mjs`**
 
 ```js
 /* Joue le TÉLÉPHONE contre le relais du Salon, pour tester l'écran sans
@@ -881,7 +881,7 @@ ws.onmessage = (e) => {
 ws.onclose = () => { log('fermé'); process.exit(0); };
 ```
 
-- [ ] **Étape 4 : ouvrir l'onglet Télécommande et lire la salle** (navigateur, `?debug=1`, bureau)
+- [x] **Étape 4 : ouvrir l'onglet Télécommande et lire la salle** (navigateur, `?debug=1`, bureau)
 
 ```js
 document.dispatchEvent(new CustomEvent('fi:partager', { detail: { mode: 'telecommande' } }));
@@ -890,22 +890,22 @@ await new Promise(r => setTimeout(r, 9000)); // réveil à froid du relais
 // { etat: 'prete', url: 'https://www.fractal-innov.fr/telecommande/?salle=xxxxxxxx', qr: true }
 ```
 
-- [ ] **Étape 5 : jouer le téléphone** (Review Focus 3)
+- [x] **Étape 5 : jouer le téléphone** (Review Focus 3)
 
 Run: `node outils/telephone-simule.mjs <salle lue à l'étape 4> demos situation:former inconnu:logiciel inconnu:situation:borne fin`
 Expected côté terminal : `‹ DISPLAY_STATE` avec `activeModalId: "demos"`, puis `situation: "former"`.
 Expected côté écran (journal) : « le téléphone demande « demos » : défilement doux », « le téléphone choisit la situation « former » », « chapitre inconnu, ignoré : logiciel », « situation inconnue, ignorée : borne » ; `FiDock.etat()` = `'replie'` (bandeau refermé à la connexion) ; `dock.dataset.telecommande` = `'connectee'`.
 
-- [ ] **Étape 6 : relais injoignable** (Review Focus 2) : charger `?debug=1&relais=wss://127.0.0.1:9/`, vider `fi:salle` (`sessionStorage.removeItem('fi:salle')`), ouvrir l'onglet Télécommande.
+- [x] **Étape 6 : relais injoignable** (Review Focus 2) : charger `?debug=1&relais=wss://127.0.0.1:9/`, vider `fi:salle` (`sessionStorage.removeItem('fi:salle')`), ouvrir l'onglet Télécommande.
 Expected : consigne « Préparation de la télécommande… », pas de QR ; à 20 s, « Télécommande indisponible pour le moment » ; l'onglet « Cet endroit » garde son QR et son lien.
 
-- [ ] **Étape 7 : présence et rechargement** (Review Focus 5)
+- [x] **Étape 7 : présence et rechargement** (Review Focus 5)
 
 Run: `node outils/telephone-simule.mjs <salle> silence attendre:50000 fin`
 Expected : le témoin s'éteint ~45 s après le dernier BONJOUR (`dock.dataset.telecommande` absent, journal « témoin éteint »).
 Puis recharger l'écran : journal « salle gardée par cet onglet, réinscription », même salle ; relancer le simulateur sans rescanner : l'écran obéit.
 
-- [ ] **Étape 8 : l'utilisateur valide, puis commit** (`msg-telecommande-ecran.txt`)
+- [x] **Étape 8 : l'utilisateur valide, puis commit** (`msg-telecommande-ecran.txt`)
 
 ```
 feat(telecommande): laisser un téléphone piloter la page
@@ -942,7 +942,7 @@ rm msg-telecommande-ecran.txt
 **Interfaces:**
 - Consumes : le protocole (spec § 6) ; salle dans `?salle=` ; l'écran de la Tâche 4 répond à `BONJOUR` par `DISPLAY_STATE {activeModalId, situation}`.
 
-- [ ] **Étape 1 : 🎨 boucle de co-création, la télécommande en main**
+- [x] **Étape 1 : 🎨 boucle de co-création, la télécommande en main**
 
 Montrer (maquettes rapides en ASCII ou rendu `?variante=`) et demander :
   - **A (recommandée)** : les six chapitres en **rail vertical**, comme le sommaire du dock que la personne vient de voir à l'écran (tuile 01 à 06 + libellé, lignes de 56 px pleine largeur, faciles au pouce), puis « Pour quoi faire ? » en trois pastilles.
@@ -950,7 +950,7 @@ Montrer (maquettes rapides en ASCII ou rendu `?variante=`) et demander :
   - La phrase d'accueil : « Vous avez la main : touchez un chapitre, l'écran vous suit » (spec) ou une variante proposée par l'utilisateur.
 Coder selon la réponse (le code suit A).
 
-- [ ] **Étape 2 : écrire la page** (python : le gabarit ci-dessous, les trois `<symbol>` copiés depuis `index.html`)
+- [x] **Étape 2 : écrire la page** (python : le gabarit ci-dessous, les trois `<symbol>` copiés depuis `index.html`)
 
 ```python
 import re
@@ -1137,15 +1137,15 @@ Gabarit passé sur l'entrée standard :
 </html>
 ```
 
-- [ ] **Étape 3 : ouvrir la page face à l'écran** : écran `?debug=1`, onglet Télécommande ouvert (salle `S`) ; second onglet du navigateur (ou le téléphone de l'utilisateur sur le même réseau via `http://<ip>:4100/telecommande/?salle=S&debug=1`), `resize_window` mobile.
+- [x] **Étape 3 : ouvrir la page face à l'écran** : écran `?debug=1`, onglet Télécommande ouvert (salle `S`) ; second onglet du navigateur (ou le téléphone de l'utilisateur sur le même réseau via `http://<ip>:4100/telecommande/?salle=S&debug=1`), `resize_window` mobile.
 Expected : « Connexion à l'écran… » puis « Connecté », le chapitre en cours allumé ; toucher « Démos » fait défiler l'écran, la tuile s'allume ; « Former » allume la situation et la pastille.
 
-- [ ] **Étape 4 : l'écran fermé** : fermer l'onglet de l'écran. Expected : ~45 s plus tard, « L'écran s'est fermé : scannez à nouveau le QR », commandes grisées.
+- [x] **Étape 4 : l'écran fermé** : fermer l'onglet de l'écran. Expected : ~45 s plus tard, « L'écran s'est fermé : scannez à nouveau le QR », commandes grisées.
 
-- [ ] **Étape 5 : lien incomplet** (Review Focus 1) : ouvrir `/telecommande/`, puis `/telecommande/?salle=borne`, puis `?salle=ABC`.
+- [x] **Étape 5 : lien incomplet** (Review Focus 1) : ouvrir `/telecommande/`, puis `/telecommande/?salle=borne`, puis `?salle=ABC`.
 Expected : « Lien incomplet : scannez le QR affiché sur l'écran » ; `read_network_requests` : aucune connexion au relais.
 
-- [ ] **Étape 6 : l'utilisateur valide le rendu sur son téléphone, puis commit** (`msg-telecommande-page.txt`)
+- [x] **Étape 6 : l'utilisateur valide le rendu sur son téléphone, puis commit** (`msg-telecommande-page.txt`)
 
 ```
 feat(telecommande): la page que tient le téléphone
@@ -1180,7 +1180,7 @@ rm msg-telecommande-page.txt
 - Modify: ce plan (cases cochées)
 
 - [ ] **Étape 1 : parcours complet sur de vrais appareils** : ordinateur + téléphone de l'utilisateur, en production après fusion ou en local sur le réseau ; noter la durée du premier réveil du relais.
-- [ ] **Étape 2 : garde** : `FiDock.verifier()` muet à 1440, 1280, 1024, 375 et 360 ; aucune erreur console ; `document.documentElement.scrollWidth === innerWidth` au téléphone.
+- [x] **Étape 2 : garde** : `FiDock.verifier()` muet à 1440, 1280, 1024, 375 et 360 ; aucune erreur console ; `document.documentElement.scrollWidth === innerWidth` au téléphone.
   Et, onglet neuf (`sessionStorage` vide) : `read_network_requests` ne montre AUCUNE connexion au relais avant l'ouverture de l'onglet Télécommande (spec § 4, § 9).
-- [ ] **Étape 3 : écrire le § 13 de la spec**, commit `docs(spec): …` (tapé par l'utilisateur, message dans un fichier).
+- [x] **Étape 3 : écrire le § 13 de la spec**, commit `docs(spec): …` (tapé par l'utilisateur, message dans un fichier).
 - [ ] **Étape 4 : PR** avec `finishing-a-development-branch` : `git push -u origin feat/partage-telecommande`, puis `gh pr create --base main --title 'feat(partage): partager la page et la tendre en télécommande' --body-file msg-pr.md` (corps terminé par la ligne « 🤖 Generated with [Claude Code](https://claude.com/claude-code) »).

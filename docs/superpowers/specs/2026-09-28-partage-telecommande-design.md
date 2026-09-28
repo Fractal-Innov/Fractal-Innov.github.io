@@ -185,3 +185,44 @@ Le protocole du Salon, inchangé côté serveur :
   bundle du Salon, qui le déclare non secret. Une salle aléatoire par
   onglet reste la vraie barrière entre deux visiteurs.
 - **Rangée du dock à 8 cibles** au téléphone : à mesurer à 360 px.
+
+## 13. Bilan (28/09/2026)
+
+### Décisions prises en boucle 🎨
+
+| Point | Choix |
+|---|---|
+| Bouton Partager | libellé + picto QR dans la rangée (bureau), ligne « Partager » dans le sommaire (téléphone) ; témoin = point vert |
+| Bandeau | QR 148 px à gauche, texte à droite ; barre d'onglets masquée quand il ne reste qu'un onglet (téléphone) |
+| Télécommande (téléphone) | rail numéroté 01 à 06 + « Pour quoi faire ? » ; phrase d'accueil gardée |
+| Ligne d'aide à 360 × 740 | laissée telle quelle : elle passe 15 px sous le pli, toutes les commandes restent visibles (fin à 689 px) |
+
+### Écart corrigé en route
+
+- **« Indisponible » jamais atteint** : le compte à rebours de 20 s était
+  relancé à chaque essai de reconnexion (1, 2, 4, 8, 10 s), toujours plus
+  rapprochés que 20 s. Il part désormais une fois par épisode et ne
+  s'annule qu'à l'inscription réussie (`telecommande-ecran.js`,
+  `connecter()`).
+
+### Mesures
+
+- Relais : réveil à froid 6,8 s, puis ~30 ms par aller-retour.
+- Garde `FiDock.verifier()` muette à 1440, 1280, 1024, 375 et 360 ;
+  bouton Partager 124 × 48 au bureau, ligne du sommaire 310 × 44 au
+  téléphone ; aucun défilement horizontal ; aucune erreur console.
+- Onglet neuf : aucune connexion au relais, même après ouverture de
+  « Cet endroit », tant que l'onglet Télécommande n'a pas été ouvert.
+- Présence : témoin éteint ~45 s après le dernier `BONJOUR` ; téléphone
+  en « L'écran s'est fermé » ~45 s après la fermeture de l'écran ;
+  rechargement de l'écran : salle gardée, pas de nouveau scan.
+- Liens invalides (`borne`, majuscules, sans salle) : « Lien incomplet »,
+  aucune connexion.
+
+### Reste à faire
+
+- Parcours complet sur de vrais appareils (ordinateur + téléphone), en
+  production après fusion.
+- Hors périmètre, relevé en passant : à 360 × 740 avec une situation
+  choisie, le bouton « Voir la page » de la démo mise en avant passe
+  8 px sous le dock.
