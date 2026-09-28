@@ -2295,13 +2295,15 @@
       </div>
 
       <!-- sommaire : les chapitres, dans l'ordre de CHAPITRES (script
-           « LE PARCOURS ») ; ⚠️ les `href` sont les id des sections. -->
+           « LE PARCOURS ») ; ⚠️ les `href` sont les id des sections, et
+           chaque libellé est le sur-titre de sa section (28/09/2026) :
+           en changer un, c'est changer les deux. -->
       <nav class="fi-dock__vue fi-dock__vue--sommaire" data-dock-vue="sommaire" hidden aria-label="Sommaire">
         <p class="fi-dock__etiquette">Sommaire</p>
         <ol class="fi-dock__chapitres">
           <li><a href="#top" data-dock-chapitre="top">Accueil</a></li>
-          <li><a href="#offre" data-dock-chapitre="offre">Trois usages</a></li>
-          <li><a href="#demos" data-dock-chapitre="demos">Ça tourne déjà</a></li>
+          <li><a href="#offre" data-dock-chapitre="offre">L'offre</a></li>
+          <li><a href="#demos" data-dock-chapitre="demos">Démos</a></li>
           <li><a href="#approche" data-dock-chapitre="approche">L'approche</a></li>
           <li><a href="#equipe" data-dock-chapitre="equipe">L'équipe</a></li>
           <li><a href="#contact" data-dock-chapitre="contact">Contact</a></li>
@@ -2579,7 +2581,7 @@
 
       <!-- ══ CE QUI TOURNE DÉJÀ ══════════════════════════════════════════ -->
       <section class="section" id="demos">
-        <p class="section-number reveal">Ce qui tourne déjà</p>
+        <p class="section-number reveal">Démos</p>
         <h2 class="reveal" data-essentiel>Ouvrez une démo, c'est plus court que de l'expliquer</h2>
         <p class="reveal">Dans le navigateur, sans installation. Ce qui fonctionne ici est
           réalisable pour votre projet.</p>
@@ -3295,8 +3297,8 @@
          Même ordre que `idsChapitres` dans le premier script. */
       var CHAPITRES = [
         { id: 'top', titre: 'Accueil' },
-        { id: 'offre', titre: 'Trois usages' },
-        { id: 'demos', titre: 'Ça tourne déjà' },
+        { id: 'offre', titre: "L'offre" },
+        { id: 'demos', titre: 'Démos' },
         { id: 'approche', titre: "L'approche" },
         { id: 'equipe', titre: "L'équipe" },
         { id: 'contact', titre: 'Contact' }

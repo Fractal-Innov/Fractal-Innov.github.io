@@ -148,11 +148,23 @@
   }
 
   /* ── Le sommaire : le chapitre en cours ──────────────────────────── */
+  /* Passe du 28/09/2026 : un rail relie les tuiles numérotées. Il est
+     rempli jusqu'au chapitre en cours (`--fi-rang` sur la liste, lu par le
+     CSS), les chapitres déjà passés portent `data-passe`. */
   function marquerChapitre(id) {
-    Array.prototype.forEach.call(dock.querySelectorAll('[data-dock-chapitre]'), function (a) {
-      if (a.getAttribute('data-dock-chapitre') === id) a.setAttribute('aria-current', 'location');
+    var liens = dock.querySelectorAll('[data-dock-chapitre]');
+    var rang = -1;
+    Array.prototype.forEach.call(liens, function (a, i) {
+      if (a.getAttribute('data-dock-chapitre') === id) { a.setAttribute('aria-current', 'location'); rang = i; }
       else a.removeAttribute('aria-current');
     });
+    Array.prototype.forEach.call(liens, function (a, i) {
+      if (rang > -1 && i < rang) a.setAttribute('data-passe', '');
+      else a.removeAttribute('data-passe');
+    });
+    var liste = dock.querySelector('.fi-dock__chapitres');
+    if (liste) liste.style.setProperty('--fi-rang', Math.max(rang, 0));
+    journal('sommaire : chapitre « ' + id + ' », rang ' + (rang + 1) + ' sur ' + liens.length + ', ' + Math.max(rang, 0) + ' passé(s)');
   }
 
   /* ── Les boutons de la rangée ────────────────────────────────────── */
