@@ -246,6 +246,28 @@ APPROCHE »)
   l'atelier.
 - [ ] **Étape 3 : garde, QA, commit** `feat(contact): …`.
 
+### Tâche 6 bis : le sommaire du dock (« Tous »)
+
+Ajoutée le 28/09/2026 à la demande de l'utilisateur : la tâche 5 ne
+touchait au sommaire que pour sa structure (un chapitre de moins).
+
+**Fichiers :** `index.html` (libellés des chapitres), `composants/dock.js`
+et `composants/composants.css` si le rendu du panneau change.
+
+- [ ] **Étape 1 : voir.** Le panneau ouvert au bureau et au mobile, mesures
+  de départ (hauteur, écart entre lignes).
+- [ ] **Étape 2 : wording.** Un libellé par chapitre, aligné sur le
+  sur-titre de sa section après la passe (ex. « Trois usages » → « L'offre »,
+  « Ça tourne déjà » → « Démos », « Partenaires » + « Le fondateur » →
+  « L'équipe »). Avant / après montré.
+- [ ] **Étape 3 : affordance.** Chaque ligne se lit comme un lien (survol,
+  focus), le chapitre courant se distingue sans le seul « vous êtes ici »,
+  et une piste à montrer : une ligne de résultat par chapitre, ou le numéro
+  d'étape.
+- [ ] **Étape 4 : composition.** Le panneau tient à l'écran à 1280×720 et
+  360×740, dock compris.
+- [ ] **Étape 5 : garde, QA, commit** `feat(dock): …`.
+
 ### Tâche 7 : clôture
 
 - [ ] Ajouter § 18 à la spec : décisions, mesures avant / après par

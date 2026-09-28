@@ -55,6 +55,7 @@
   <script defer src="/composants/composants.js"></script>
   <script defer src="/composants/dock.js"></script>
   <script defer src="/composants/demos.js"></script> <!-- les démos : une en avant, les autres en bande -->
+  <script defer src="/composants/orbite.js"></script> <!-- l'équipe : le fondateur au centre, les fils vers le réseau -->
   <script defer src="/composants/garde-ecran.js"></script> <!-- ?debug=1 : ce qui tient à l'écran, section par section -->
   <link rel="stylesheet" href="/composants/composants.css">
 
@@ -1366,30 +1367,8 @@
     body[data-situation="former"] [data-pour="former"][hidden],
     body[data-situation="garder"] [data-pour="garder"][hidden] { display: inline; }
     body[data-situation] [data-pour="aucune"] { display: none; }
-    /* Le fondateur : le repère de la situation passe en tête de liste. */
-    body[data-situation="convaincre"] .repere[data-usages~="convaincre"],
-    body[data-situation="former"] .repere[data-usages~="former"],
-    body[data-situation="garder"] .repere[data-usages~="garder"] { order: -1; }
 
     /* ── Les gestes ── */
-
-    .partenaires { position: relative; }
-    .partenaire { position: relative; z-index: 1; }
-    .constellation {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      overflow: visible; pointer-events: none; z-index: 0;
-    }
-    .constellation path {
-      fill: none; stroke: var(--accent-purple); stroke-width: 1.5; stroke-linecap: round;
-      stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
-      transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
-    }
-    .partenaires.reliee .constellation path { stroke-dashoffset: 0; opacity: 0.55; }
-    .partenaire__logo { transition: opacity 0.4s ease, box-shadow 0.4s ease; }
-    .partenaires.reliee .partenaire__logo {
-      opacity: 1;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 26px rgba(139, 92, 246, 0.5);
-    }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -1410,7 +1389,6 @@
       .contact__links a { animation: none; transition: none; }
       /* Le filet du contact reste déployé plutôt que de disparaître. */
       .contact::before { transform: translateX(-50%) scaleX(1); }
-      .constellation path { animation: none !important; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
 
@@ -2180,6 +2158,132 @@
       .section .etape::before { transition: none !important; }
       .section .etape.carte:hover .etape__tuile { transform: none; }
     }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : ÉQUIPE (28/09/2026)
+       Le fondateur au centre d'une orbite, cinq rôles autour (sans noms),
+       reliés par des fils que trace composants/orbite.js. Les fils se
+       dessinent un par un à l'arrivée (`.orbite.active`), celui d'un rôle
+       s'allume au survol (`.orbite__fil--allume`).
+
+       Placement : trois rangées ancrées aux bords de l'orbite (haut, milieu,
+       bas) plutôt qu'un cercle en pourcentages : une carte de rôle garde sa
+       place quelle que soit la hauteur de son texte. Le portrait au centre
+       exact, les cartes opaques par-dessus les fils (z 3).
+       Au mobile (et < 900 px) : une liste, portrait en tête, un rail relie
+       les tuiles comme dans l'approche ; les fils SVG sont masqués.
+       ══════════════════════════════════════════════════════════════════ */
+    .equipe { position: relative; }
+    .equipe__ancre { position: absolute; top: 0; left: 0; }
+    .equipe__grille {
+      display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      gap: var(--fi-e6); align-items: center;
+    }
+    .section .equipe__bio { margin: 0 0 var(--fi-e3); color: var(--text-muted); }
+    .equipe__bio strong { color: var(--text-main); font-weight: 600; }
+    .equipe__faits { margin: 0 0 var(--fi-e4); }
+    .equipe__citation {
+      margin: 0; padding-left: var(--fi-e3);
+      border-left: 2px solid var(--accent-purple); border-radius: 0;
+    }
+    .section .equipe__citation p {
+      margin: 0 0 var(--fi-e1); font-size: var(--fi-t1); font-weight: 500; line-height: 1.35;
+      color: var(--text-main);
+    }
+    .equipe__citation footer { font-size: var(--fi-t-1); color: var(--text-muted); }
+
+    .orbite { position: relative; height: 480px; } /* 3 rangées de cartes (jusqu'à 144 px) + 24 px d'air : tient à 1280×720 */
+    .orbite__fils {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      overflow: visible; pointer-events: none; z-index: 1;
+    }
+    .orbite__fils path {
+      fill: none; stroke: rgba(255, 255, 255, 0.16); stroke-width: 1.5; stroke-linecap: round;
+      stroke-dasharray: 1; stroke-dashoffset: 1;
+      transition: stroke-dashoffset 0.7s var(--fi-ease-sortie, ease-out) calc(0.3s + var(--i, 0) * 0.15s),
+                  stroke 0.3s ease, stroke-width 0.3s ease;
+    }
+    .orbite.active .orbite__fils path,
+    html:not(.js) .orbite__fils path { stroke-dashoffset: 0; }
+    .orbite__fils path.orbite__fil--allume { stroke: var(--accent-purple); stroke-width: 2.5; }
+
+    .orbite__centre {
+      position: absolute; left: 50%; top: 50%; z-index: 3; margin: 0;
+      width: 124px; height: 124px; transform: translate(-50%, -50%);
+      padding: 3px; border-radius: 50%; background: var(--brand-gradient);
+      box-shadow: 0 0 60px -12px rgba(139, 92, 246, 0.8);
+    }
+    .orbite__centre img {
+      display: block; width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; object-position: 50% 20%; background: var(--bg-base-2);
+    }
+
+    .orbite__roles { list-style: none; margin: 0; padding: 0; }
+    .role {
+      position: absolute; z-index: 3; width: 220px;
+      display: flex; align-items: flex-start; gap: calc(var(--fi-e1) + var(--fi-e05));
+      padding: calc(var(--fi-e1) + var(--fi-e05));
+      border-radius: 14px; border: 1px solid var(--glass-border); background: var(--bg-base-2);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    /* Les trois rangées : 1 en haut ; 2 et 5 au milieu, sur les bords ;
+       3 et 4 en bas. L'ordre du HTML reste celui de la lecture. */
+    .role:nth-child(1) { left: 50%; top: 0; transform: translateX(-50%); }
+    .role:nth-child(2) { right: 0; top: 48%; transform: translateY(-50%); }
+    .role:nth-child(3) { left: 72%; bottom: 0; transform: translateX(-50%); }
+    .role:nth-child(4) { left: 28%; bottom: 0; transform: translateX(-50%); }
+    .role:nth-child(5) { left: 0; top: 48%; transform: translateY(-50%); }
+    .role--allume { border-color: rgba(139, 92, 246, 0.6); box-shadow: 0 10px 30px -14px rgba(139, 92, 246, 0.8); }
+
+    .role__pic {
+      flex: none; display: grid; place-items: center;
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--brand-gradient); color: #fff;
+    }
+    .role__pic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .role__pic circle { fill: currentColor; }
+    .role__nom { display: block; margin-bottom: 2px; font-size: var(--fi-t-05); font-weight: 700; line-height: 1.3; color: var(--text-main); }
+    .role__texte { display: block; font-size: var(--fi-t-1); line-height: 1.4; color: var(--text-muted); }
+
+    /* Bureau bas (1280×720) : le portrait se tasse un peu. */
+    @media (min-width: 900px) and (max-height: 800px) {
+      .orbite__centre { width: 108px; height: 108px; }
+    }
+    /* Petit bureau (900 à 1100 px) : l'orbite n'a plus que ~560 px de
+       large ; c'est le portrait qui s'affine (une carte plus étroite
+       grandirait en hauteur et mordrait sur sa voisine). */
+    @media (min-width: 900px) and (max-width: 1100px) {
+      .orbite__centre { width: 96px; height: 96px; } /* après le bureau bas : il gagne à 1024×768 */
+    }
+
+    /* Mobile et tablette : la liste. */
+    @media (max-width: 899px) {
+      .equipe__grille { grid-template-columns: 1fr; gap: var(--fi-e4); }
+      .orbite { height: auto; }
+      .orbite__fils { display: none; }
+      .orbite__centre { position: static; transform: none; width: 56px; height: 56px; margin-bottom: var(--fi-e2); }
+      .orbite__roles { position: relative; display: grid; gap: var(--fi-e2); }
+      /* ⚠️ `.orbite .role:nth-child(n)` : il faut battre les rangées du
+         bureau (`.role:nth-child(1)`…), plus spécifiques qu'un `.role`. */
+      .orbite .role:nth-child(n) {
+        position: relative; left: auto; right: auto; top: auto; bottom: auto; transform: none;
+        width: auto; padding: 0 0 0 10px; border: 0; background: none; box-shadow: none;
+      }
+      /* Le rail : du portrait à la première tuile, puis de tuile en tuile
+         (tuile de 36 px décalée de 10 px : son milieu est celui du portrait). */
+      .orbite__roles::before {
+        content: ""; position: absolute; left: 27px; width: 2px;
+        top: calc(-1 * var(--fi-e2)); height: var(--fi-e2);
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .role:not(:last-child)::after {
+        content: ""; position: absolute; left: 27px; width: 2px;
+        top: 36px; height: calc(100% - 36px + var(--fi-e2));
+        background: rgba(255, 255, 255, 0.14);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .orbite__fils path { transition: none !important; stroke-dashoffset: 0; }
+    }
   </style>
 </head>
 
@@ -2242,8 +2346,7 @@
           <li><a href="#offre" data-dock-chapitre="offre">Trois usages</a></li>
           <li><a href="#demos" data-dock-chapitre="demos">Ça tourne déjà</a></li>
           <li><a href="#approche" data-dock-chapitre="approche">L'approche</a></li>
-          <li><a href="#partenaires" data-dock-chapitre="partenaires">Partenaires</a></li>
-          <li><a href="#fondateur" data-dock-chapitre="fondateur">Le fondateur</a></li>
+          <li><a href="#equipe" data-dock-chapitre="equipe">L'équipe</a></li>
           <li><a href="#contact" data-dock-chapitre="contact">Contact</a></li>
         </ol>
       </nav>
@@ -2392,7 +2495,7 @@
           <a class="hero-cta__btn hero-cta__btn--secondary" href="#contact"><span>Réserver 30 min</span></a>
         </div>
 
-        <a class="hero__identite" href="#fondateur">
+        <a class="hero__identite" href="#equipe">
           <span class="hero__avatar">
             <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
           </span>
@@ -2704,146 +2807,64 @@
         </div>
       </section>
 
-      <!-- ══ PARTENAIRES ═════════════════════════════════════════════════ -->
-      <section class="section" id="partenaires">
-        <p class="section-number reveal">Les partenaires</p>
-        <h2 class="reveal">Un réseau d'experts, du code au mobilier</h2>
-        <p class="reveal">Un interlocuteur unique côté client, et les compétences mobilisées
-          projet par projet.</p>
-
-        <div class="partenaires">
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo" aria-hidden="true">H</span>
-            <h3>Hugo Daniel</h3>
-            <p class="partenaire__role">Ingénieur logiciel</p>
-            <p class="partenaire__texte">Conçoit le socle technique commun à toutes les expériences.</p>
-            <ul class="tag-liste">
-                <li class="tag">Architecture</li>
-                <li class="tag">Développement</li>
+      <!-- ══ L'ÉQUIPE (passe graphique du 28/09/2026) ══════════════════════
+           Fusion des anciennes sections « Partenaires » et « Le fondateur » :
+           le fondateur au CENTRE d'une orbite, le réseau autour, par rôles
+           (sans noms ni logos, décision du 28/09/2026). Les fils du centre
+           vers chaque rôle sont tracés par composants/orbite.js ; sans JS et
+           au mobile, une liste lisible (portrait, rôles).
+           ⚠️ Les anciennes ancres #partenaires et #fondateur restent posées
+           ici (liens partagés, JSON-LD `founder`) : ne pas les retirer.
+           ═══════════════════════════════════════════════════════════════ -->
+      <section class="section equipe" id="equipe">
+        <span class="equipe__ancre" id="partenaires" aria-hidden="true"></span>
+        <span class="equipe__ancre" id="fondateur" aria-hidden="true"></span>
+        <div class="equipe__grille">
+          <div class="equipe__texte">
+            <p class="section-number reveal">L'équipe</p>
+            <h2 class="reveal" data-essentiel>Un seul interlocuteur, les bons experts autour</h2>
+            <p class="equipe__bio reveal">Corentin Duboc, architecte d'expériences WebXR.
+              J'accompagne les industriels (<strong>Greentech</strong>, <strong>Mobilité</strong>,
+              <strong>Énergie</strong>) de l'atelier à la livraison, et je mobilise les experts du
+              réseau projet par projet.</p>
+            <ul class="tag-liste equipe__faits reveal" aria-label="En bref">
+              <li class="tag">Consultant 3D/WebXR B2B</li>
+              <li class="tag">Catalyseur POLD</li>
+              <li class="tag">Unity · WebXR · Blender</li>
             </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo" aria-hidden="true">S</span>
-            <h3>Studio 3D</h3>
-            <p class="partenaire__role">Création graphique</p>
-            <p class="partenaire__texte">Modélise les objets, décors et produits mis en scène.</p>
-            <ul class="tag-liste">
-                <li class="tag">Modélisation</li>
-                <li class="tag">Texturage</li>
-            </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo" aria-hidden="true">M</span>
-            <h3>Fabricant de mobilier</h3>
-            <p class="partenaire__role">Événementiel</p>
-            <p class="partenaire__texte">Donne une enveloppe physique au démonstrateur : la borne interactive.</p>
-            <ul class="tag-liste">
-                <li class="tag">Kiosque</li>
-                <li class="tag">Présentoir sur mesure</li>
-            </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo partenaire__logo--sigle" aria-hidden="true">MB</span>
-            <h3>MilkyBlue Factory</h3>
-            <p class="partenaire__role">Atelier d'art</p>
-            <p class="partenaire__texte">Réalise des œuvres et documente leurs étapes de fabrication.</p>
-            <ul class="tag-liste">
-                <li class="tag">Œuvres d'art</li>
-                <li class="tag">Conservation</li>
-            </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo partenaire__logo--sigle" aria-hidden="true">POLD</span>
-            <h3>Catalyseur POLD</h3>
-            <p class="partenaire__role">Écosystème d'innovation</p>
-            <p class="partenaire__texte">L'accélérateur du territoire Paris Ouest La Défense : mise en relation avec les entreprises et les collectivités du secteur.</p>
-            <ul class="tag-liste">
-                <li class="tag">Incubation</li>
-                <li class="tag">Mise en relation</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <!-- ══ FONDATEUR ═══════════════════════════════════════════════════ -->
-      <section class="section" id="fondateur">
-        <div class="fondateur__grille">
-
-          <div class="portrait reveal">
-            <div class="portrait__cadre">
-              <img src="/media/accueil/portrait.webp"
-                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
-              <ul class="portrait__barre tag-liste" aria-label="Trois usages">
-                <li class="tag">Convaincre</li>
-                <li class="tag">Former</li>
-                <li class="tag">Conserver</li>
-              </ul>
-            </div>
+            <blockquote class="equipe__citation reveal">
+              <p>L'objectif n'est jamais la prouesse technologique, mais la clarté.</p>
+              <footer>Ma boussole : le design cognitif</footer>
+            </blockquote>
           </div>
 
-          <div>
-            <p class="section-number reveal">Le fondateur</p>
-            <h2 class="reveal">Corentin Duboc</h2>
-            <p class="fondateur__role reveal">Architecte d'expériences WebXR</p>
-            <p class="ligne-mono reveal">Consultant 3D/WebXR B2B · Freelance · Catalyseur POLD</p>
-
-            <p class="fondateur__bio reveal">J'accompagne les industriels
-              (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
-              dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
-              force de vente et réduire leurs coûts logistiques événementiels.</p>
-
-            <p class="bloc-titre reveal">Pour votre cas</p>
-            <ul class="reperes reveal">
-              <li class="repere" data-usages="convaincre">
-                <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
-                <span><strong>Convaincre</strong> : vos équipements lourds et encombrants,
-                  présentés sans le coût ni l'impact logistique du transport</span></li>
-              <li class="repere" data-usages="former">
-                <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>
-                <span><strong>Former</strong> : des parcours sur équipement qui mettent en valeur
-                  un savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)</span></li>
-              <li class="repere" data-usages="garder">
-                <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
-                <span><strong>Conserver</strong> : processus de fabrication, savoir-faire, geste
-                  d'une artiste, rejouables étape par étape (Mathilde Thiennot)</span></li>
+          <div class="orbite reveal" data-composant="orbite">
+            <figure class="orbite__centre">
+              <img src="/media/accueil/portrait.webp"
+                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280" loading="lazy" decoding="async">
+            </figure>
+            <ul class="orbite__roles" aria-label="Le réseau, par rôle">
+            <li class="role" data-role="ecosysteme">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Écosystème d'innovation</strong><span class="role__texte">Mobilise tout un réseau selon vos besoins, pour les projets les plus complexes.</span></span>
+            </li>
+            <li class="role" data-role="logiciel">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Ingénierie logicielle</strong><span class="role__texte">Le socle technique commun à toutes les expériences.</span></span>
+            </li>
+            <li class="role" data-role="studio-3d">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Studio 3D</strong><span class="role__texte">Modélise les environnements les plus riches en décors et objets.</span></span>
+            </li>
+            <li class="role" data-role="atelier-art">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Atelier d'art</strong><span class="role__texte">Produit les œuvres dont chaque étape de fabrication est documentée.</span></span>
+            </li>
+            <li class="role" data-role="mobilier">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Fabricant de mobilier</strong><span class="role__texte">La borne physique qui accueille l'expérience sur le stand.</span></span>
+            </li>
             </ul>
-
-            <p class="bloc-titre reveal">Compétences</p>
-            <ul class="tag-liste reveal" aria-label="Compétences">
-              <li class="tag">Unity</li>
-              <li class="tag">WebXR</li>
-              <li class="tag">AR/VR</li>
-              <li class="tag">Blender</li>
-              <li class="tag">Procreate</li>
-            </ul>
-
-            <div class="carte boussole reveal">
-              <p class="boussole__titre">Ma boussole</p>
-              <p class="boussole__sous-titre">Le design cognitif</p>
-              <ul>
-                <li>L'objectif n'est jamais la prouesse technologique, mais la clarté</li>
-                <li>Réduire la charge mentale, maximiser l'engagement par l'action</li>
-              </ul>
-            </div>
           </div>
         </div>
       </section>
@@ -3131,11 +3152,12 @@
          Le calcul est replanifié en `requestAnimationFrame` : le défilement
          peut émettre des dizaines d'événements par seconde, le navigateur ne
          repeint que soixante fois. */
-      /* Les SEPT chapitres du parcours (le hero et le contact en plus des
+      /* Les SIX chapitres du parcours, sept avant la fusion de l'équipe du
+         28/09/2026 (le hero et le contact en plus des
          liens de la nav). ⚠️ Même liste, même ordre que CHAPITRES dans le
          script « LE PARCOURS » : ce sont aussi les `navItemId` que la
          télécommande enverra. */
-      var idsChapitres = ['top', 'offre', 'demos', 'approche', 'partenaires', 'fondateur', 'contact'];
+      var idsChapitres = ['top', 'offre', 'demos', 'approche', 'equipe', 'contact'];
       var rafNav = 0;
       var dernierActif = null;
 
@@ -3319,8 +3341,7 @@
         { id: 'offre', titre: 'Trois usages' },
         { id: 'demos', titre: 'Ça tourne déjà' },
         { id: 'approche', titre: "L'approche" },
-        { id: 'partenaires', titre: 'Partenaires' },
-        { id: 'fondateur', titre: 'Le fondateur' },
+        { id: 'equipe', titre: "L'équipe" },
         { id: 'contact', titre: 'Contact' }
       ];
       var IDS = CHAPITRES.map(function (c) { return c.id; });
@@ -3533,47 +3554,9 @@
       /* ── LES GESTES ────────────────────────────────────────────────────
          Un geste par chapitre, qui se joue et ne se subit pas : aucun ne
          fait défiler la page. Le fondateur, l'offre, les démos et le
-         contact sont « joués » par la situation (CSS) ; reste la constellation
-         (l'approche n'a plus de geste propre depuis la frise du 28/09/2026). */
-
-      /* Les partenaires : au survol ou au toucher, les monogrammes se
-         relient en constellation. Le tracé est recalculé à chaque fois, sur
-         la position réelle des logos : la grille change de colonnes avec la
-         largeur. ⚠️ Au toucher, `pointerleave` arrive dès que le doigt se
-         lève : on n'éteint alors qu'en quittant le chapitre. */
-      var grillePart = document.querySelector('#partenaires .partenaires');
-      if (grillePart) {
-        var ciel = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        ciel.setAttribute('class', 'constellation');
-        ciel.setAttribute('aria-hidden', 'true');
-        grillePart.appendChild(ciel);
-        var constellationVue = false;
-        var relier = function () {
-          var base = grillePart.getBoundingClientRect();
-          var d = Array.prototype.map.call(grillePart.querySelectorAll('.partenaire__logo'), function (logo, i) {
-            var r = logo.getBoundingClientRect();
-            return (i ? 'L' : 'M') + Math.round(r.left - base.left + r.width / 2) + ' ' + Math.round(r.top - base.top + r.height / 2);
-          }).join(' ');
-          ciel.setAttribute('viewBox', '0 0 ' + Math.round(base.width) + ' ' + Math.round(base.height));
-          ciel.innerHTML = '<path pathLength="1" d="' + d + '"></path>';
-        };
-        var allumerCiel = function () {
-          if (grillePart.classList.contains('reliee')) return;
-          relier();
-          ciel.getBoundingClientRect(); /* force le premier rendu : sans lui, pas de tracé animé */
-          grillePart.classList.add('reliee');
-          journal('partenaires : constellation reliée');
-          if (!constellationVue) {
-            constellationVue = true;
-            emettre('fi:geste', { chapitre: 'partenaires', geste: 'constellation', etape: 1 });
-          }
-        };
-        var eteindreCiel = function () { grillePart.classList.remove('reliee'); };
-        grillePart.addEventListener('pointerenter', allumerCiel);
-        grillePart.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') eteindreCiel(); });
-        document.addEventListener('fi:chapitre', function (e) { if (e.detail.id !== 'partenaires') eteindreCiel(); });
-        window.addEventListener('resize', function () { if (grillePart.classList.contains('reliee')) relier(); });
-      }
+         contact sont « joués » par la situation (CSS). Depuis la passe du
+         28/09/2026, l'approche n'a plus de geste propre (frise) et l'orbite
+         de l'équipe vit dans composants/orbite.js. */
 
       /* ── LE DOCK ───────────────────────────────────────────────────────
          Le dock vit dans composants/dock.js depuis le 28/09/2026. Ce script
