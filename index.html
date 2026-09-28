@@ -2442,7 +2442,37 @@
           <li><a href="#equipe" data-dock-chapitre="equipe">L'équipe</a></li>
           <li><a href="#contact" data-dock-chapitre="contact">Contact</a></li>
         </ol>
+        <button class="fi-dock__partager-ligne" type="button" data-dock-partager aria-expanded="false" aria-controls="dockBandeau">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM18 18h3v3h-3z"/></svg>Partager cette page
+        </button>
       </nav>
+
+      <!-- partage : rempli par composants/partage.js (lien, QR, onglets). -->
+      <section class="fi-dock__vue fi-dock__vue--partage" data-dock-vue="partage" hidden
+               role="dialog" aria-labelledby="dockPartageTitre">
+        <button class="fi-dock__fermer" type="button" data-dock-fermer aria-label="Fermer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+        <p class="fi-dock__titre" id="dockPartageTitre">Partager cette page</p>
+        <div class="fi-partage__modes" role="tablist" aria-label="Quoi partager">
+          <button type="button" role="tab" id="partageOngletEndroit" aria-selected="true" aria-controls="partageCorps" data-partage-mode="endroit">Cet endroit</button>
+          <button type="button" role="tab" id="partageOngletTele" aria-selected="false" aria-controls="partageCorps" tabindex="-1" data-partage-mode="telecommande" hidden>Télécommande</button>
+        </div>
+        <div class="fi-partage__corps" id="partageCorps" role="tabpanel">
+          <div class="fi-partage__qr" data-partage-qr role="img" aria-label="QR code du lien affiché" hidden></div>
+          <div class="fi-partage__texte">
+            <p class="fi-partage__ou"><span class="fi-partage__point" aria-hidden="true"></span><span data-partage-ou>Le haut de la page</span></p>
+            <p class="fi-partage__consigne" data-partage-consigne></p>
+            <code class="fi-partage__lien" data-partage-lien></code>
+            <div class="fi-partage__actions">
+              <button class="fi-partage__btn" type="button" data-partage-copier>Copier le lien</button>
+              <button class="fi-partage__btn fi-partage__btn--plein" type="button" data-partage-envoyer hidden>Envoyer</button>
+            </div>
+            <p class="fi-partage__etat" data-partage-etat></p>
+          </div>
+        </div>
+        <span class="sr-only" aria-live="polite" data-partage-annonce></span>
+      </section>
     </div>
 
     <nav class="fi-dock__rangee" aria-label="Navigation">
@@ -2477,6 +2507,15 @@
           <path class="fi-bascule-son__coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
         </svg>
         <span data-bascule-libelle>Son doux</span>
+      </button>
+      <!-- Partager : le bandeau « partage » (cet endroit, la télécommande),
+           spec partage-telecommande § 5. Au téléphone, il passe dans le
+           sommaire (la rangée est pleine à 360 px, choix A du 28/09/2026). -->
+      <button class="fi-dock__btn fi-dock__partager" type="button" data-dock-partager
+              aria-expanded="false" aria-controls="dockBandeau" title="Partager cette page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM18 18h3v3h-3z"/></svg>
+        <span class="fi-dock__libelle">Partager</span>
+        <span class="fi-dock__temoin" aria-hidden="true"></span>
       </button>
       <!-- Réserver : descend au contact, comme le bouton du hero (pas de
            `data-rdv` : ce n'est pas encore la demande de rendez-vous). -->
