@@ -1,0 +1,512 @@
+/* ══════════════════════════════════════════════════════════════════════
+   LES COMPOSANTS (composants/composants.css)
+   spec : docs/superpowers/specs/2026-09-27-galerie-affordance-son-design.md § 5, § 7
+   galerie vivante : /galerie/
+
+   ⚠️ Ce fichier ne lit QUE ses jetons --fi-*. Chacun retombe sur la charte
+   Fractal Innov (valeur de repli), et une page hôte peut les redéfinir
+   pour une autre charte sans toucher aux règles.
+   ⚠️ Chargé AVANT la feuille de la page : à spécificité égale, la page
+   gagne. Les règles qui doivent tenir face à une classe de page sont donc
+   écrites à deux classes (.fi-pilier .fi-pilier__icone).
+   ══════════════════════════════════════════════════════════════════════ */
+:root {
+  --fi-fx-court: 180ms;
+  --fi-fx-long: 700ms;
+  --fi-ease-morph: var(--ease-morph, cubic-bezier(0.34, 1.2, 0.64, 1));
+  --fi-ease-sortie: cubic-bezier(0.22, 1, 0.36, 1);
+  --fi-texte: var(--text-main, #f0f0f0);
+  --fi-texte-doux: var(--text-muted, rgba(240, 240, 240, 0.55));
+  --fi-accent: var(--accent-blue, #6ea8ff);
+  --fi-fond: var(--glass-bg, rgba(255, 255, 255, 0.03));
+  --fi-fond-survol: var(--glass-bg-hover, rgba(255, 255, 255, 0.06));
+  --fi-fond-plein: var(--bg-base-2, #0f1220);
+  --fi-bordure: var(--glass-border-highlight, rgba(255, 255, 255, 0.2));
+  --fi-degrade: var(--brand-gradient, linear-gradient(100deg, #6ea8ff 0%, #8b5cf6 52%, #f472b6 100%));
+  --fi-eclat: var(--accent-pink, #f472b6);
+  --fi-eclat-2: var(--accent-blue, #6ea8ff);
+
+  /* ── TYPOGRAPHIE : échelle 1,25 (tierce majeure), base 17 px ──────────
+     Un palier = le précédent × 1,25. Nommer le modèle rend la page
+     reproductible : un texte prend un palier, jamais une taille au jugé.
+     Le demi-pas (× √1,25 ≈ 1,118) sert au texte de carte, plus discret
+     que le courant sans tomber au rang d'étiquette. */
+  --fi-t-1: 0.85rem;     /* 13,6 px : étiquette, note, tag (plancher de lecture) */
+  --fi-t-05: 0.95rem;    /* 15,2 px : demi-pas, texte de carte et secondaire */
+  --fi-t0: 1.0625rem;    /* 17 px : texte courant, lisible sans zoom sur téléphone */
+  --fi-t1: 1.328rem;     /* 21,25 px : titre de carte (h3), sous-titre */
+  --fi-t2: 1.66rem;      /* 26,6 px : gros chiffre, h2 à 360 px */
+  --fi-t3: 2.075rem;     /* 33,2 px : h2 sur bureau, titre du contact sur mobile */
+  --fi-t4: 2.594rem;     /* 41,5 px : titre du contact sur bureau, h1 à 375 px */
+  --fi-t5: 3.242rem;     /* 51,9 px : h1 d'une mise en page en deux colonnes */
+  --fi-t65: 4.528rem;   /* 72,4 px : demi-pas au-dessus de t6, plafond du h1 d'affiche */
+  --fi-interligne: 1.45;       /* texte : 1,45 garde ~8 px d'air entre deux lignes de 17 px */
+  --fi-interligne-titre: 1.1;  /* h1 / h2 : les grandes tailles portent leur propre air */
+  --fi-interligne-h3: 1.2;     /* h3 : à 21 px, 1,1 collerait les deux lignes d'un titre de carte */
+
+  /* ── ESPACEMENT : grille de 8 px, groupée ─────────────────────────────
+     Serré DANS un groupe (8 / 16), moyen entre blocs (24 / 32), large
+     ENTRE groupes (48 / 64 / 96). L'œil lit la proximité avant le
+     contenu : deux éléments proches vont ensemble. */
+  --fi-e05: 0.25rem;  /* 4 px : demi-cran, titre et sous-titre collés */
+  --fi-e1: 0.5rem;    /* 8 px : dans un groupe serré (tags, piliers empilés) */
+  --fi-e2: 1rem;      /* 16 px : dans un groupe (titre › intro, paragraphes) */
+  --fi-e3: 1.5rem;    /* 24 px : entre blocs d'une carte, gouttière mobile */
+  --fi-e4: 2rem;      /* 32 px : padding de carte sur bureau, entre cartes */
+  --fi-e6: 3rem;      /* 48 px : entre groupes (en-tête de section › contenu) */
+  --fi-e8: 4rem;      /* 64 px : entre groupes de cartes, section sur mobile */
+  --fi-e12: 6rem;     /* 96 px : section sur bureau */
+  /* Section : 64 px à 375 px, 96 px dès 1024 px, linéaire entre les deux
+     (pente 32 / 649 = 4,93vw, ordonnée 64 − 18,5 = 45,5 px = 2,84rem). */
+  --fi-section: clamp(var(--fi-e8), 2.84rem + 4.93vw, var(--fi-e12));
+
+  /* ── CIBLE TACTILE ────────────────────────────────────────────────────
+     44 px : la recommandation Apple (HIG) et WCAG 2.5.5 (AAA). Un lien
+     dans une phrase en est exempté (WCAG 2.5.8), pas un lien isolé. */
+  --fi-cible: 44px;
+}
+
+/* ── PILIER (d'après .hero-pillar de la landing STAND) ──────────────────
+   Une carte cliquable : icône, texte, flèche qui glisse au survol. La
+   flèche dit « ça mène quelque part » ; sur écran tactile (pas de
+   survol), elle reste visible à demi. */
+.fi-pilier {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 0.7rem;
+  min-height: var(--fi-cible, 44px);
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--fi-bordure);
+  background: var(--fi-fond);
+  color: var(--fi-texte);
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--fi-fx-court) ease, border-color var(--fi-fx-court) ease,
+              transform var(--fi-fx-court) var(--fi-ease-morph);
+}
+.fi-pilier .fi-pilier__icone {
+  width: 22px; height: 22px; flex-shrink: 0;
+  color: var(--fi-accent);
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+/* Rond de sélection (option) : le signe universel de « un seul parmi
+   plusieurs ». Vide au repos, pointé au survol / focus, plein une fois
+   choisi (aria-current ou aria-pressed). Il se place avant l'icône ; le
+   pilier passe alors à quatre colonnes (rond, icône, texte, flèche). */
+.fi-pilier:has(> .fi-pilier__rond) { grid-template-columns: auto auto minmax(0, 1fr) auto; }
+.fi-pilier .fi-pilier__rond {
+  position: relative;
+  width: 18px; height: 18px; /* 18 px : lisible à côté d'une icône de 22 px sans lui voler la place */
+  border-radius: 50%;
+  border: 2px solid var(--fi-texte-doux);
+  transition: border-color var(--fi-fx-court) ease;
+}
+.fi-pilier .fi-pilier__rond::after {
+  content: ""; position: absolute; inset: 3px;
+  border-radius: 50%;
+  background: var(--fi-accent);
+  transform: scale(0);
+  transition: transform var(--fi-fx-court) var(--fi-ease-morph);
+}
+.fi-pilier:hover .fi-pilier__rond,
+.fi-pilier:focus-visible .fi-pilier__rond { border-color: var(--fi-accent); }
+.fi-pilier:hover .fi-pilier__rond::after,
+.fi-pilier:focus-visible .fi-pilier__rond::after { transform: scale(0.5); } /* pointé : « celui-ci ? » */
+.fi-pilier[aria-current="true"] .fi-pilier__rond,
+.fi-pilier[aria-pressed="true"] .fi-pilier__rond { border-color: var(--fi-accent); }
+.fi-pilier[aria-current="true"] .fi-pilier__rond::after,
+.fi-pilier[aria-pressed="true"] .fi-pilier__rond::after { transform: scale(1); } /* plein : « celui-ci » */
+.fi-pilier__texte { line-height: 1.3; font-size: var(--fi-t-05, 0.95rem); color: var(--fi-texte-doux); }
+.fi-pilier__texte strong { display: block; color: var(--fi-texte); font-weight: 600; font-size: var(--fi-t0, 1rem); }
+.fi-pilier .fi-pilier__fleche {
+  width: 18px; height: 18px;
+  fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  color: var(--fi-texte-doux);
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity var(--fi-fx-court) ease, transform 300ms var(--fi-ease-sortie);
+}
+.fi-pilier:hover,
+.fi-pilier:focus-visible { background: var(--fi-fond-survol); border-color: var(--fi-accent); transform: translateY(-2px); }
+.fi-pilier:hover .fi-pilier__fleche,
+.fi-pilier:focus-visible .fi-pilier__fleche { opacity: 1; transform: none; }
+.fi-pilier:active { transform: scale(0.98); }
+@media (hover: none) { .fi-pilier .fi-pilier__fleche { opacity: 0.6; transform: none; } }
+/* Choisi : bordure au dégradé de la marque (pressé pour un bouton,
+   courant pour un lien). */
+.fi-pilier[aria-pressed="true"],
+.fi-pilier[aria-current="true"] {
+  border-color: transparent;
+  background: linear-gradient(var(--fi-fond-plein), var(--fi-fond-plein)) padding-box,
+              var(--fi-degrade) border-box;
+}
+
+/* ── CHOIX : une rangée de piliers de même largeur (règle 9) ──────────── */
+.fi-choix {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 0.6rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+.fi-choix > li { display: flex; }
+.fi-choix > li > .fi-pilier { flex: 1; }
+
+/* ── BOUTON SON ─────────────────────────────────────────────────────────
+   Icône ET libellé (règle 6) : les ondes selon le niveau, la croix
+   quand il est muet. `hidden` tant que le JS ne l'a pas activé. */
+.fi-bascule-son {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: var(--fi-cible, 44px); padding: 0 0.9rem;
+  border-radius: 999px; border: 1px solid var(--fi-bordure);
+  background: var(--fi-fond); color: var(--fi-texte);
+  font: inherit; font-size: var(--fi-t-05, 0.9rem); font-weight: 600; white-space: nowrap; cursor: pointer;
+}
+.fi-bascule-son[hidden] { display: none; }
+.fi-bascule-son:hover { background: var(--fi-fond-survol); }
+.fi-bascule-son .fi-bascule-son__icone {
+  width: 20px; height: 20px; overflow: visible;
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+/* Trois niveaux (fi-v3), lus dans data-niveau : deux ondes pour « plein »,
+   la petite seule pour « doux », la croix pour « muet ». Le pictogramme
+   dit le volume sans lire le libellé. */
+.fi-bascule-son:not([data-niveau="muet"]) .fi-bascule-son__icone { color: var(--fi-accent); }
+.fi-bascule-son:not([data-niveau="muet"]) .fi-bascule-son__coupe,
+.fi-bascule-son[data-niveau="muet"] .fi-bascule-son__ondes,
+.fi-bascule-son[data-niveau="doux"] .fi-bascule-son__onde2 { display: none; }
+.fi-bascule-son__ondes { transform-origin: 30% 50%; }
+.fi-son--joue .fi-bascule-son__ondes { animation: fiOndes 900ms var(--fi-ease-sortie); }
+@keyframes fiOndes {
+  0% { opacity: 0; transform: scale(0.6); }
+  40% { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* ── ÉCLAT : une onde iridescente qui part du clic ──────────────────────
+   La boîte est posée dans <body>, aux coordonnées de la page (elle défile
+   avec l'élément, sans être rognée par son `overflow`). Un seul anneau
+   fin, aux couleurs de la charte en dégradé conique, grandit et s'éteint ;
+   son diamètre (--fi-onde) suit la taille de l'élément. */
+.fi-eclat { position: absolute; width: 0; height: 0; pointer-events: none; z-index: 95; }
+.fi-eclat > span {
+  position: absolute;
+  left: calc(var(--fi-onde, 120px) / -2); top: calc(var(--fi-onde, 120px) / -2);
+  width: var(--fi-onde, 120px); height: var(--fi-onde, 120px); border-radius: 50%;
+  background: conic-gradient(from 0deg, var(--fi-eclat), var(--fi-eclat-2), #a78bfa, #67e8f9, var(--fi-eclat));
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px), transparent);
+          mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px), transparent);
+  opacity: 0.85;
+  transform: scale(0.08) rotate(0deg);
+  animation: fiOnde 650ms var(--fi-ease-sortie) forwards;
+}
+@keyframes fiOnde {
+  to { transform: scale(1) rotate(90deg); opacity: 0; }
+}
+
+/* ── GROUPE : une étiquette au-dessus d'une grille de cartes ────────────
+   D'après .tour__group-label de la landing STAND : petite capitale
+   espacée, icône à gauche, filet qui file jusqu'au bord. Le filet dit
+   « ce qui suit va ensemble » sans encadrer. */
+.fi-groupe__etiquette {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0;
+  font-size: var(--fi-t-1, 0.85rem); font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; /* plancher de lecture : 0,7 rem (11 px) passait sous les 12 px */
+  /* Une ligne, toujours : une étiquette sur deux lignes décalerait les
+     cartes de son groupe par rapport à celles du voisin. Le filet cède. */
+  white-space: nowrap;
+  color: var(--fi-texte-doux);
+  transition: color var(--fi-fx-court) ease;
+}
+.fi-groupe__etiquette .pic { width: 16px; height: 16px; color: var(--fi-accent); flex-shrink: 0; }
+.fi-groupe__etiquette::after {
+  content: ""; flex: 1; height: 1px; min-width: 0;
+  background: linear-gradient(90deg, var(--fi-bordure), transparent);
+}
+
+/* ── STORY : des pastilles qui font défiler des panneaux ────────────────
+   La pastille active porte une jauge qui se remplit en --fi-story-duree ;
+   sa fin fait avancer (composants.js). Les panneaux s'empilent dans la
+   même case de grille : la scène garde la hauteur du plus grand, rien ne
+   saute sous le doigt quand le panneau change. */
+.fi-story__pastilles { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem; }
+.fi-story__pastilles[hidden] { display: none; }
+.fi-pastille {
+  position: relative; overflow: hidden;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: var(--fi-cible, 44px); padding: 0 1.1rem;
+  border-radius: 999px; border: 1px solid var(--fi-bordure);
+  background: var(--fi-fond); color: var(--fi-texte-doux);
+  font: inherit; font-weight: 600; font-size: var(--fi-t-05, 0.95rem); cursor: pointer;
+  transition: background var(--fi-fx-court) ease, color var(--fi-fx-court) ease;
+}
+.fi-pastille:hover { background: var(--fi-fond-survol); color: var(--fi-texte); }
+.fi-pastille[aria-selected="true"] {
+  color: var(--fi-texte); border-color: transparent;
+  background: linear-gradient(var(--fi-fond-plein), var(--fi-fond-plein)) padding-box,
+              var(--fi-degrade) border-box;
+}
+.fi-pastille__jauge {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--fi-degrade);
+  transform: scaleX(0); transform-origin: left center;
+  pointer-events: none;
+}
+[data-story-etat="joue"] .fi-pastille[aria-selected="true"] .fi-pastille__jauge,
+[data-story-etat="pause"] .fi-pastille[aria-selected="true"] .fi-pastille__jauge {
+  animation: fiJauge var(--fi-story-duree, 5000ms) linear forwards;
+}
+[data-story-etat="pause"] .fi-pastille[aria-selected="true"] .fi-pastille__jauge { animation-play-state: paused; }
+@keyframes fiJauge { to { transform: scaleX(1); } }
+[data-story-actif] [data-story-scene] { display: grid; grid-template-columns: minmax(0, 1fr); }
+[data-story-actif] [data-story-scene] > [data-story-panneau] { grid-area: 1 / 1; }
+[data-story-actif] [data-story-panneau][inert] { visibility: hidden; }
+.fi-story--entree { animation: fiStoryEntree 450ms var(--fi-ease-sortie); }
+@keyframes fiStoryEntree { from { opacity: 0; transform: translateY(10px); } }
+
+/* ── REFLET : une bande de lumière traverse l'élément, une fois ────────
+   Un <span> posé dans l'hôte, qui porte son propre `overflow: hidden` et
+   hérite du rayon : l'hôte n'a pas à changer son débordement. */
+.fi-reflet {
+  position: absolute; inset: 0; z-index: 2;
+  border-radius: inherit; overflow: hidden; pointer-events: none;
+}
+.fi-reflet::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -60%; width: 45%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.16) 50%, transparent);
+  transform: skewX(-12deg);
+  animation: fiReflet 900ms ease-out forwards;
+}
+@keyframes fiReflet { to { left: 120%; } }
+
+/* ── MOUVEMENT RÉDUIT ───────────────────────────────────────────────────
+   Préférence du système, ou démonstration forcée par la galerie
+   (.fi-sobre sur un ancêtre). États finaux, aucun mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  .fi-eclat, .fi-reflet { display: none; }
+  .fi-story--entree { animation: none; }
+  .fi-pilier, .fi-pilier .fi-pilier__fleche, .fi-pilier .fi-pilier__rond, .fi-pilier .fi-pilier__rond::after { transition: none; }
+  .fi-pilier:hover, .fi-pilier:focus-visible, .fi-pilier:active { transform: none; }
+  .fi-son--joue .fi-bascule-son__ondes { animation: none; }
+}
+.fi-sobre .fi-eclat, .fi-sobre .fi-reflet { display: none; }
+.fi-sobre .fi-story--entree { animation: none; }
+.fi-sobre .fi-pilier, .fi-sobre .fi-pilier .fi-pilier__fleche, .fi-sobre .fi-pilier .fi-pilier__rond, .fi-sobre .fi-pilier .fi-pilier__rond::after { transition: none; }
+.fi-sobre .fi-pilier:hover, .fi-sobre .fi-pilier:focus-visible, .fi-sobre .fi-pilier:active { transform: none; }
+.fi-sobre .fi-son--joue .fi-bascule-son__ondes { animation: none; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   LE DOCK (composants/dock.js, 28/09/2026)
+   Une surface de verre en bas de l'écran : la rangée, et au-dessus un
+   bandeau à trois visages, lus dans `data-etat`. Plus l'interaction
+   demandée est forte, plus le bandeau appelle :
+     question   réponse REQUISE : contour au dégradé, halo, ronds qui pulsent
+     situation  lecture, une suite PROPOSÉE : contour bleu, un seul bouton plein
+     sommaire   navigation LIBRE : verre neutre, une liste
+   ══════════════════════════════════════════════════════════════════════ */
+.fi-dock {
+  position: fixed; z-index: 90;
+  left: 0; right: 0; margin-inline: auto;
+  bottom: calc(var(--fi-e2) + env(safe-area-inset-bottom)); /* 16 px du bord : le pouce l'atteint sans toucher la barre système */
+  width: fit-content; /* la surface ÉPOUSE la rangée, comme la borne */
+  max-width: calc(100% - 2 * var(--fi-e2)); /* 16 px de gouttière de chaque côté : jamais collé au bord */
+  display: flex; flex-direction: column;
+  border-radius: 20px; /* 12 px des boutons + 8 px de padding : les rayons restent concentriques */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* le contour discret du verre (--glass-border) */
+  background: rgba(10, 11, 20, 0.72); /* verre sombre : lisible sur la vidéo comme sur une section claire */
+  backdrop-filter: blur(20px) saturate(165%);
+  -webkit-backdrop-filter: blur(20px) saturate(165%);
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+  color: var(--fi-texte);
+  transition: border-color var(--fi-fx-court) ease;
+}
+.fi-dock[hidden] { display: none; }
+
+/* ── La rangée ───────────────────────────────────────────────────── */
+.fi-dock__rangee {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--fi-e05); /* 4 px entre deux boutons : groupés sans se toucher */
+  padding: var(--fi-e1); /* 8 px : 48 + 16 = 64 px de haut, la hauteur d'un dock de bureau */
+}
+.fi-dock__btn,
+.fi-dock .fi-bascule-son {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--fi-e1);
+  flex-shrink: 0;
+  min-width: 48px; height: 48px; /* 48 px au bureau, 44 au téléphone (plus bas) : la cible de la borne */
+  padding: 0;
+  border: 0; border-radius: 12px;
+  background: none; color: var(--fi-texte-doux);
+  font: inherit; font-size: var(--fi-t-05); font-weight: 600;
+  text-decoration: none; cursor: pointer;
+  transition: background-color var(--fi-fx-court) ease, color var(--fi-fx-court) ease;
+}
+.fi-dock__btn:hover,
+.fi-dock .fi-bascule-son:hover { background: color-mix(in oklab, var(--fi-accent) 10%, transparent); color: var(--fi-accent); }
+.fi-dock__btn:focus-visible,
+.fi-dock .fi-bascule-son:focus-visible { outline: 2px solid var(--fi-accent); outline-offset: 2px; }
+.fi-dock__btn[aria-pressed="true"],
+.fi-dock__btn[aria-expanded="true"] { background: color-mix(in oklab, var(--fi-accent) 20%, transparent); color: var(--fi-accent); }
+.fi-dock__btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Le glyphe Fi : une image servie en MASQUE, peinte par background-color.
+   Il garde ainsi la taille des pictos (20 px) et reste blanc, la marque ne
+   prend pas la couleur d'état des autres boutons. */
+.fi-dock__marque {
+  display: block; width: 20px; height: 20px; background-color: #fff;
+  -webkit-mask: url("/media/marque/fi-glyphe.png") center / contain no-repeat;
+  mask: url("/media/marque/fi-glyphe.png") center / contain no-repeat;
+}
+@media (forced-colors: active) { .fi-dock__marque { background-color: ButtonText; } }
+.fi-dock .fi-bascule-son { padding: 0 var(--fi-e1); } /* le libellé du niveau respire, 8 px */
+.fi-dock__rdv { padding: 0 var(--fi-e2); color: var(--fi-texte); } /* 16 px : le seul bouton à libellé, il se lit comme une action */
+.fi-dock__sep { width: 1px; height: 32px; margin: 0 var(--fi-e05); background: rgba(255, 255, 255, 0.08); flex-shrink: 0; } /* 32 px : les deux tiers d'un bouton, il sépare sans barrer */
+.fi-dock__croix { display: none; }
+.fi-dock [aria-expanded="true"] .fi-dock__grille { display: none; }
+.fi-dock [aria-expanded="true"] .fi-dock__croix { display: block; }
+
+@media (max-width: 767px) {
+  /* 7 cibles de 44 + 3 séparateurs + padding = 335 px : tient en 375 − 32. */
+  .fi-dock__rangee { gap: 0; padding: var(--fi-e05) 6px; } /* 6 px : le complément exact pour tenir à 360 px */
+  .fi-dock__btn,
+  .fi-dock .fi-bascule-son { min-width: 44px; width: 44px; height: 44px; padding: 0; }
+  .fi-dock__sep { margin: 0 2px; }
+  /* Libellés visibles au bureau, lus par le lecteur d'écran au téléphone. */
+  .fi-dock__libelle,
+  .fi-dock .fi-bascule-son [data-bascule-libelle] {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+}
+
+/* ── Le bandeau : commun ─────────────────────────────────────────── */
+.fi-dock__bandeau {
+  width: 0; min-width: 100%; /* la borne : il prend la largeur de la rangée sans l'élargir */
+  max-height: min(70dvh, 40rem); overflow-y: auto; /* jamais plus haut que l'écran : il défile en lui-même */
+}
+.fi-dock[data-etat="replie"] .fi-dock__bandeau { display: none; }
+.fi-dock__vue { position: relative; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.fi-dock__vue[hidden] { display: none; }
+
+/* ── question : une réponse est requise ──────────────────────────── */
+.fi-dock[data-etat="question"] { border-color: transparent; }
+.fi-dock[data-etat="question"]::before {
+  /* Le contour au dégradé de la charte, 1 px, par masque : le verre reste
+     transparent au centre. */
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: var(--fi-degrade);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.fi-dock[data-etat="question"] {
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 36px -8px color-mix(in oklab, var(--fi-accent) 45%, transparent);
+  animation: fiDockHalo 2400ms var(--fi-ease-sortie) 400ms both; /* respire UNE fois, puis reste fixe (décision du 28/09/2026) */
+}
+.fi-dock[data-etat="question"] .fi-dock__bandeau { width: min(62rem, calc(100vw - 2 * var(--fi-e2))); } /* 992 px : trois choix côte à côte, chacun sa phrase sur UNE ligne (~200 px de texte) */
+.fi-dock[data-etat="question"] .fi-dock__vue--question { animation: fiDockPose 320ms var(--fi-ease-sortie) 300ms both; } /* se pose après le hero */
+/* Le panneau du hero, déplacé ici : le verre, c'est le dock. */
+.fi-dock .situations {
+  width: auto; margin: 0;
+  padding: var(--fi-e3) var(--fi-e3) var(--fi-e2); /* 24 px autour, 16 sous « ou juste regarder » */
+  border: 0; border-radius: 0; background: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.fi-dock .situations__question {
+  margin: 0; width: 100%;
+  font-size: var(--fi-t1); line-height: var(--fi-interligne-h3); font-weight: 700; /* t1 : la question se lit comme un titre qui attend */
+  text-align: center; color: var(--fi-texte);
+}
+.fi-dock .situations__question:focus { outline: none; } /* focus posé par script pour le prochain Tab, pas pour le regard */
+@media (max-width: 767px) {
+  .fi-dock .situations { padding: var(--fi-e2); align-items: stretch; }
+  .fi-dock .situations__question { text-align: left; } /* au téléphone, la question s'aligne sur les réponses empilées */
+}
+/* Les choix : chacun sa phrase sur UNE ligne (retour du 28/09/2026).
+   Trois colonnes seulement dès 1024 px ; en dessous, la phrase ne tient
+   pas dans un tiers de largeur : empilés (l'auto-fit donnait aussi 2 + 1
+   vers 700 px, un choix orphelin). */
+.fi-dock .situations__liste.fi-choix { width: 100%; grid-template-columns: minmax(0, 1fr); }
+.fi-dock .fi-pilier { column-gap: var(--fi-e1); padding-inline: 12px; } /* 8 px entre rond, icône et texte, 12 au bord : la phrase gagne 18 px */
+@media (min-width: 1024px) {
+  .fi-dock .situations__liste.fi-choix { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fi-dock .fi-pilier__texte { white-space: nowrap; }
+}
+/* Les ronds vides pulsent une fois, en cascade : « c'est ici qu'on répond ». */
+.fi-dock[data-etat="question"] .fi-pilier:not([aria-current="true"]) .fi-pilier__rond {
+  animation: fiRondAppel 900ms var(--fi-ease-sortie) both;
+  animation-delay: calc(900ms + var(--fi-rang, 0) * 150ms); /* après la pose du bandeau, 150 ms d'un rond à l'autre */
+}
+.fi-dock .situations li:nth-child(2) { --fi-rang: 1; }
+.fi-dock .situations li:nth-child(3) { --fi-rang: 2; }
+
+/* ── situation : lecture, une suite proposée ─────────────────────── */
+.fi-dock[data-etat="situation"] { border-color: color-mix(in oklab, var(--fi-accent) 55%, transparent); }
+.fi-dock__vue--situation {
+  display: flex; flex-direction: column; gap: var(--fi-e1);
+  padding: var(--fi-e2) var(--fi-e2) var(--fi-e2); /* 16 px : le bandeau garde la largeur de la rangée, il serre */
+  animation: fiDockFondu var(--fi-fx-court) ease both;
+}
+.fi-dock__vue--situation[hidden] { display: none; }
+.fi-dock__titre {
+  display: flex; align-items: center; gap: var(--fi-e1);
+  margin: 0; padding-right: 44px; /* la croix occupe le coin */
+  font-size: var(--fi-t0); font-weight: 700; color: var(--fi-texte);
+}
+.fi-dock__titre .pic { width: 20px; height: 20px; color: var(--fi-accent); }
+.fi-dock__texte { margin: 0; font-size: var(--fi-t-05); line-height: var(--fi-interligne); color: var(--fi-texte-doux); }
+.fi-dock__preuve { margin: 0; font-size: var(--fi-t-1); color: var(--fi-texte-doux); }
+.fi-dock__preuve a { color: var(--fi-accent); }
+.fi-dock__suite { align-self: flex-start; margin-top: var(--fi-e05); }
+.fi-dock__fermer {
+  position: absolute; top: var(--fi-e05); right: var(--fi-e05);
+  display: inline-grid; place-items: center; width: 44px; height: 44px;
+  border: 0; border-radius: 12px; background: none; color: var(--fi-texte-doux); cursor: pointer;
+}
+.fi-dock__fermer:hover { color: var(--fi-texte); background: var(--fi-fond-survol); }
+.fi-dock__fermer svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+@media (max-width: 767px) { .fi-dock__suite { align-self: stretch; } } /* au pouce : toute la largeur */
+
+/* ── sommaire : navigation libre ─────────────────────────────────── */
+.fi-dock[data-etat="sommaire"] .fi-dock__bandeau { width: max-content; } /* son contenu décide, comme la borne */
+.fi-dock__vue--sommaire { padding: var(--fi-e2) var(--fi-e1) var(--fi-e1); animation: fiDockDeplie var(--fi-fx-court) ease-out both; }
+.fi-dock__etiquette {
+  margin: 0 0 var(--fi-e05); padding: 0 var(--fi-e1);
+  font-size: var(--fi-t-1); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fi-texte-doux);
+}
+.fi-dock__chapitres { list-style: none; margin: 0; padding: 0; }
+.fi-dock__chapitres a {
+  display: flex; align-items: center; gap: var(--fi-e1);
+  min-height: 44px; padding: 0 var(--fi-e1); border-radius: 10px;
+  color: var(--fi-texte); text-decoration: none; font-size: var(--fi-t-05);
+}
+.fi-dock__chapitres a::before { /* le rond : vide, plein pour le chapitre en cours */
+  content: ""; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  border: 1.5px solid var(--fi-texte-doux);
+}
+.fi-dock__chapitres a:hover { background: var(--fi-fond-survol); }
+.fi-dock__chapitres a[aria-current] { color: var(--fi-accent); font-weight: 700; }
+.fi-dock__chapitres a[aria-current]::before { background: var(--fi-accent); border-color: var(--fi-accent); }
+.fi-dock__chapitres a[aria-current]::after { content: "vous êtes ici"; margin-left: auto; padding-left: var(--fi-e2); font-size: var(--fi-t-1); font-weight: 400; color: var(--fi-texte-doux); }
+
+/* ── Le verrou de la question ─────────────────────────────────────── */
+html.fi-verrou { overflow: hidden; }
+html.fi-verrou .page-rest,
+html.fi-verrou .footer { opacity: 0.35; transition: opacity 400ms ease; } /* la suite est là, en attente : visible, pas atteignable */
+
+@keyframes fiDockPose { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes fiDockFondu { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fiDockDeplie { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fiDockHalo {
+  0% { box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 0 0 color-mix(in oklab, var(--fi-accent) 0%, transparent); }
+  45% { box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 56px 4px color-mix(in oklab, var(--fi-accent) 60%, transparent); }
+  100% { box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 36px -8px color-mix(in oklab, var(--fi-accent) 45%, transparent); }
+}
+@keyframes fiRondAppel {
+  0%, 100% { transform: none; box-shadow: 0 0 0 0 transparent; }
+  40% { transform: scale(1.3); box-shadow: 0 0 0 6px color-mix(in oklab, var(--fi-accent) 35%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fi-dock, .fi-dock__vue, .fi-dock .fi-pilier__rond { animation: none !important; }
+  html.fi-verrou .page-rest, html.fi-verrou .footer { transition: none; }
+}
+.fi-sobre .fi-dock, .fi-sobre .fi-dock__vue, .fi-sobre .fi-dock .fi-pilier__rond { animation: none !important; }

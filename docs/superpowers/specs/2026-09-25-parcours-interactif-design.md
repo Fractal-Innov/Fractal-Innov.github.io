@@ -3,6 +3,10 @@
 - **Date** : 25/09/2026
 - **Statut** : à relire par Corentin, puis plan (`superpowers:writing-plans`)
 - **Sous-projet** : 1 sur 4 (parcours, puis son, puis télécommande, puis SEO/GEO)
+- **Ordre des sections** : remplacé le 27/09/2026 par
+  `2026-09-27-galerie-affordance-son-design.md` § 3 bis (réponse, preuve,
+  méthode, confiance) ; les tableaux ci-dessous gardent l'ancien ordre. Le
+  « Réserver 30 min » du hero y descend au contact au lieu d'ouvrir l'agenda.
 - **Page** : `index.html` de `Fractal-Innov.github.io` (branche de la PR #1, pas encore fusionnée)
 - **Fiche de vente qui fait foi** : `VENTE.md` à la racine du dépôt, créée avec cette spec
 

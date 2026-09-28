@@ -1,0 +1,647 @@
+# Galerie de composants, passe d'affordance et intonations sonores : design
+
+- **Date** : 27/09/2026
+- **Sous-projet** : 2 sur 4 du parcours (le son), élargi à la passe
+  d'affordance de l'accueil et à une galerie de composants réutilisable
+- **Précédent** : `2026-09-25-parcours-interactif-design.md` (le contrat
+  d'événements `fi:*`, le dock, la mesure Umami)
+- **Statut** : validé en conversation, à relire avant le plan
+
+## 1. L'intention
+
+Ce que Corentin a demandé :
+
+- chaque section de l'accueil dit en une seconde ce qu'on peut y faire
+  (affordance), en reprenant les structures de la landing STAND ;
+- ces structures, adaptées et complétées, forment une **galerie
+  réutilisable** comme template pour les sites et expériences à venir ;
+- des **effets visuels un peu juicy** répondent aux gestes ;
+- un **son discret** accompagne le parcours, par un système d'intonations.
+
+La réussite : un visiteur comprend où cliquer sans lire, chaque geste
+reçoit une réponse franche et courte, le son (s'il l'allume) lui fait
+entendre qu'il avance, et un futur site copie un dossier pour avoir tout
+cela.
+
+## 2. Les décisions
+
+| Sujet | Décision | Écartée |
+|---|---|---|
+| Source des structures | la landing du dépôt `stand` (323 Ko : `tour`, `wiring`, `timeline`, `hero-pillar`, `friction-card`, `kit-card`, `share`…) | la page `/stand/` de fi.fr, générée par le socle, pauvre en structures |
+| Lieu de la galerie | dossier `composants/` partagé + page `/galerie/` | le socle Needle5 (couple la passe à la chaîne Needle), la Forge (trop lourd), l'accueil seul (pas de réutilisation) |
+| Architecture | **A** : fichiers servis tels quels, chargés par l'accueil ET la galerie | B : recopie dans `index.html` (deux copies divergent) ; C : injection par script (réintroduit une compilation) |
+| Découpage | section par section, une PR chacune, finie | par couche (rien de fini avant la fin) |
+| Niveau des effets | marqué mais ponctuel, rien en boucle, CSS + JS léger, aucune librairie | discret ; spectaculaire (canvas, WebGL, poids, mobile) |
+| Activation du son | **doux par défaut** depuis le 27/09/2026 (d'abord coupé), trois niveaux fort / doux / silence comme fi-v3, bouton dans le hero et le dock, choix mémorisé (`fi:son-niveau`) | invite au premier geste ; allumé par défaut |
+| Source du son | synthèse Web Audio, 0 Ko de fichiers | échantillons ; hybride |
+| Intention mélodique | **le degré suit le chapitre, le timbre suit la situation** | l'un des deux seulement |
+| Démos | cartes **groupées par usage**, toutes visibles | onglets (masquent 4 démos sur 5, contredit « rien n'est masqué ») |
+| QR | oui : « Emporter cette page » dans le contact | |
+| Départ | le hero et le choix de situation | |
+
+## 3. L'architecture
+
+```
+composants/
+  composants.css      jetons des effets + un bloc commenté par composant
+  composants.js       un comportement par composant, activé par data-composant
+  son.js              le moteur d'intonations : écoute les fi:*, ignore les composants
+  vendor/qrcode.min.js  qrcode-generator 1.4.4 (MIT), chargé à la demande
+galerie/
+  index.html          chaque composant vivant, son markup, ses réglages (noindex)
+```
+
+- Servis tels quels, sans compilation, comme tout le dépôt.
+- `index.html` garde sa mise en page et charge les trois fichiers
+  (`composants.css` dans le `<head>`, les deux scripts en `defer`).
+- **Réutilisation** : un futur site copie `composants/`, définit ses jetons
+  `--fi-*` s'il veut une autre charte, et pose les attributs `data-*`.
+
+### Le contrat, étendu sans rien casser
+
+Rien de ce que la spec du parcours a posé ne change (`fi:chapitre`,
+`fi:situation`, `fi:geste`, `fi:aller`, `body[data-chapitre]`,
+`body[data-situation]`, `?situation=`).
+
+| Événement | Émis par | Écouté par | Nouveau |
+|---|---|---|---|
+| `fi:chapitre {id, rang, total}` | le parcours | son, mesure, dock | non |
+| `fi:situation {id, origine}` | le parcours | son, mesure, composants | non |
+| `fi:geste {chapitre, geste, etape?}` | parcours **et composants** | son, mesure | émis aussi par les composants |
+| `fi:son {actif}` | `son.js` | mesure, bouton son | **oui** |
+
+- **Un composant émet `fi:geste` seulement s'il porte `data-geste="nom"`.**
+  Le chapitre est l'`id` de la `section` qui le contient. Sans l'attribut,
+  il joue son effet visuel et se tait : c'est ce qui évite un double son
+  quand le parcours émet déjà (le choix de situation émet `fi:situation`).
+- **Le son n'écoute que des `fi:*`.** Il ne connaît aucun composant, aucun
+  sélecteur. Un composant nouveau sonne donc sans toucher au moteur.
+- **La réservation devient un geste** : le parcours émet
+  `fi:geste {chapitre: <id de la section du bouton>, geste: 'rdv'}` au clic
+  sur `[data-rdv]`, pour que le son la résolve. ⚠️ La mesure automatique
+  des gestes **ignore `rdv`**, déjà compté par `rdv-demande` : sans cette
+  exclusion, la conversion serait comptée deux fois sous deux noms.
+- **Le rang du chapitre se lit aussi sur `<body data-chapitre-rang>`**,
+  écrit avec `data-chapitre` : `son.js` se charge après le premier
+  `fi:chapitre` (arrivée par `/#demos`) et doit connaître le degré courant.
+
+## 3 bis. L'ordre des sections (décidé le 27/09/2026)
+
+Le fondateur était au milieu : entre le choix de situation et la réponse à
+ce choix, sans qu'aucune interaction n'y mène. Nouvel ordre, du type
+réponse, preuve, méthode, confiance :
+
+| Rang | Chapitre (`id`) | Titre du dock | Pourquoi là |
+|---|---|---|---|
+| 1 | `top` | Accueil | la question |
+| 2 | `offre` | Trois usages | la réponse au choix : la carte allumée |
+| 3 | `demos` | Ça tourne déjà | la preuve, juste après la promesse |
+| 4 | `approche` | L'approche | comment on travaille, une fois convaincu |
+| 5 | `partenaires` | Partenaires | qui renforce l'équipe |
+| 6 | `fondateur` | Le fondateur | celui qu'on aura en face pendant les 30 min |
+| 7 | `contact` | Contact | la réservation |
+
+- **Les CTA du hero mènent à la section suivante, `#offre`** : les trois
+  piliers de situation et « Juste regarder ».
+- **« Réserver 30 min » du hero reste dans le site** : il descend au
+  contact (`#contact`), dont le bouton ouvre l'agenda. Il perd son
+  `data-rdv` : ce clic n'est pas encore la demande, et le compter
+  doublerait `rdv-demande` avec celui du contact. Les autres « Réserver
+  30 min » (approche, offre, contact) ouvrent toujours l'agenda.
+- **Ce qui mène au fondateur** : le lien de la nav, le dock, et le bloc
+  d'identité du hero (portrait + nom), qui devient un lien vers
+  `#fondateur`.
+- Les liens de la nav suivent le même ordre. La spec du parcours
+  (`2026-09-25`) garde l'historique ; celle-ci fait foi pour l'ordre.
+
+## 3 ter. Décisions de la séance du 27/09/2026 (après la tâche 2)
+
+Prises en co-conception, sur croquis et prototype jouable.
+
+### La fenêtre (piste A : modale qui grandit du bouton)
+
+Un seul composant `fenetre`, réutilisé par la plupart des CTA : la page
+s'assombrit, la fenêtre grandit depuis le bouton cliqué, Échap / fond /
+« Fermer » la referment et le focus revient au bouton. Sur téléphone, plein
+écran. Mouvement réduit : fondu seul. Sans JavaScript, chaque CTA garde son
+lien.
+
+| Variante | Ouverte par | Contenu |
+|---|---|---|
+| `agenda` | les « Réserver 30 min » de l'approche, de l'offre, du contact | l'agenda Google en iframe (adresse longue `calendar.google.com/calendar/appointments/schedules/…`, le lien court refuse l'iframe), chargée au premier clic seulement ; « Ouvrir dans un onglet » en secours, mis en avant après 8 s sans chargement |
+| `demo` | les « Ouvrir la démo » (Rayon X, Midipile, À fleur d'écorce, le village) | la démo en iframe à gauche, ses détails à droite (repris de la carte, rien de nouveau) ; sur téléphone, les détails dans un tiroir ; « Ouvrir en plein écran » en garde-fou (AR, caméra) |
+| `carte` | « Carte de visite » du contact | une carte maison : portrait, nom, rôle, e-mail, QR vers la carte Blinq (Blinq refuse l'iframe : `X-Frame-Options: DENY`), bouton « Ajouter à mes contacts » (`.vcf`) |
+
+- **STAND** n'a pas de scène de démo : son lien ouvre `/stand/` comme une
+  page normale, dans le même onglet.
+- Le « Réserver 30 min » du hero descend toujours au contact (§ 3 bis).
+
+### L'offre : un usage à la fois (piste A : sélecteur en pastilles)
+
+Remplace « rien n'est masqué » pour les trois cartes de l'offre (les démos,
+elles, restent toutes visibles, groupées par usage).
+
+- Trois pastilles (icône + libellé) au-dessus d'une seule carte ; la carte
+  change en fondu.
+- **Effet story** : chaque pastille se remplit en **5 s**, puis la suivante,
+  **en boucle**. La story **démarre quand l'offre entre à l'écran** et se
+  met en pause quand elle en sort, au survol et au focus clavier.
+- **Situation choisie dans la page** (hero, dock, `?situation=`) : l'offre
+  s'ouvre sur sa pastille, **figée**, sans minuteur.
+- **Clic sur une pastille** : la story se fige sur elle ; le choix reste
+  **local à la section** (la situation de la page ne change pas).
+- **Son** : une note douce à chaque changement de pastille, seulement tant
+  que la section est visible (et que le son est allumé).
+- Mouvement réduit : pas de minuteur, première pastille (ou celle de la
+  situation). Sans JavaScript : les trois cartes l'une sous l'autre.
+
+### Le CTA son (piste B : une invitation dans le hero)
+
+Le dock est caché sur le hero : sans autre bouton, le son ne pouvait pas
+s'allumer avant le premier geste, alors que l'accord de la situation joue
+justement là.
+
+- Une invitation « Visite sonore » juste sous le choix de situation : le
+  même composant `bascule-son`, avec ses propres libellés (attributs
+  `data-libelle-coupe` / `data-libelle-allume`).
+- Ensuite, le dock prend le relais ; les deux boutons restent d'accord
+  (ils écoutent `fi:son`).
+
+## 4. La correspondance sections / structures
+
+Une structure STAND par section, deux au plus, choisie par ce qui coince.
+Dans l'ordre de la page (§ 3 bis) ; la colonne # garde le numéro de PR.
+
+| PR | Section | Structure reprise | Adaptation | Effet | Son |
+|---|---|---|---|---|---|
+| 1 | Hero (`#top`) | `hero-pillar` | les 3 boutons de situation deviennent des piliers (icône, texte, flèche qui glisse au survol) ; le clic choisit, joue l'éclat, puis descend à `#offre` | `eclat` au choix ; `reflet` sur la carte de la situation à l'arrivée dans l'offre | accord de la situation (§ 6) |
+| 4 | Offre | `friction-card`, tons `section--defi` / `section--gains` | chaque carte lue douleur (ton chaud) › pivot › gain (vert) ; les trois restent ouvertes | `reflet` sur la carte de la situation quand elle s'allume (posé dès la PR 1) | geste `allume` (ornement par défaut) |
+| 5 | Démos | `tour__group-label` | cartes groupées sous des étiquettes d'usage, toutes visibles ; le groupe de la situation passe en tête visuellement (ordre CSS, pas DOM) | cascade d'entrée par groupe | note du chapitre |
+| 3 | Approche | `timeline` + `step-gain` | les 3 étapes sur une frise dont le fil se remplit ; un gain nommé par étape, en vert, **paraphrasé du texte existant** ; le bouton `#etapeSuivante` pilote la frise | fil qui se remplit, marqueur qui s'allume | `etape` : arpège montant |
+| 6 | Partenaires | `wiring__cable` | la ligne de constellation devient le composant `fil` : une impulsion la parcourt au survol | impulsion le long du câble | `relie` : tintement |
+| 2 | Fondateur | `kit-card` | les 3 repères deviennent des cartes à étiquette ; celui de la situation d'abord (déjà le cas) | le repère choisi se pose en « tampon », les autres en cascade | note du chapitre |
+| 7 | Contact | `share` | bouton « Emporter cette page » : QR du lien de relance réglé (`?situation=…`), lien copiable | le QR se déplie depuis le bouton | `ouvre` ; `rdv` : accord résolu |
+| · | Dock | aucune | bouton son à trois niveaux, doux par défaut, libellé, dans le dock et la pastille mobile | ondes à l'activation | accord de confirmation |
+
+**Les groupes des démos** (d'après les `data-usages` en place) :
+
+| Groupe | Démos |
+|---|---|
+| Convaincre un acheteur | STAND, Midipile |
+| Former un nouvel arrivant | Rayon X |
+| Garder un savoir-faire | À fleur d'écorce |
+| Le site lui-même *(libellé à valider)* | Le village (aucun usage) |
+
+**Laissés de côté**
+
+- **FAQ en accordéon** : la bonne structure pour les objections, mais leurs
+  réponses sont « à compléter » dans `VENTE.md`. Elle viendra avec elles.
+- **Tableau comparatif à coches** : ajouterait du contenu que l'offre ne
+  dit pas.
+- **Visuel collé + pager** : doublon avec les groupes de démos.
+- **Onglets `tour`** : écartés pour les démos (voir § 2) ; le composant
+  entre quand même dans la galerie s'il sert un futur site, pas dans cette
+  passe.
+
+## 5. Les composants de la galerie
+
+Chacun : un bloc CSS commenté, un comportement JS s'il en faut, une entrée
+dans la galerie. Noms en français, préfixe de classe du composant.
+
+| Composant | Déclencheur | Ce qu'il fait | Origine |
+|---|---|---|---|
+| `pilier` | CSS | carte cliquable icône + texte + flèche, état `aria-pressed="true"` | `hero-pillar` |
+| `choix` | `data-composant="choix"` | groupe de piliers exclusif : un seul pressé, flèches clavier | nouveau |
+| `carte-etiquette` | CSS | carte avec icône et étiquette | `kit-card` |
+| `frise` | `data-composant="frise"`, étapes `[data-etape]` | fil rempli jusqu'à l'étape courante (`--frise-avance`), marqueurs | `timeline` |
+| `pivot` | CSS | douleur › pivot › gain, avec icône ET libellé à chaque ton | `friction-card` + tons |
+| `groupe` | CSS | étiquette de groupe au-dessus d'une grille de cartes | `tour__group-label` |
+| `fil` | `data-composant="fil"`, `data-fil-de`, `data-fil-vers` | tracé SVG entre deux éléments, recalculé au redimensionnement, impulsion sur demande | `wiring__cable` |
+| `partage` | `data-composant="partage"` | bouton, panneau, QR paresseux, lien copiable | `share` |
+| `eclat` | `data-eclat` ou `FiComposants.eclat(el)` | 8 particules en CSS, créées puis retirées (≈ 500 ms) | nouveau |
+| `reflet` | `data-reflet` ou `FiComposants.reflet(el)` | un reflet traverse l'élément une fois | nouveau |
+| `bascule-son` | `data-composant="bascule-son"` | bouton `data-niveau` (plein / doux / muet), libellé « Son fort » / « Son doux » / « Silence », deux ondes / une onde / croix | nouveau |
+
+- `window.FiComposants` expose `eclat(el)`, `reflet(el)` et `activer(racine)`
+  (active les `data-composant` d'un fragment ajouté après coup).
+- Tout composant sans JS reste lisible et utilisable : un pilier est un
+  `<button>` ou un lien, une frise est une liste ordonnée, un groupe est un
+  titre suivi de cartes. Le bouton son et le bouton de partage portent
+  `hidden` et le JS le retire.
+
+## 6. Le moteur d'intonations (`son.js`)
+
+> ⚠️ **Remplacé le 27/09/2026 après écoute** : trop présent (une note par
+> section) et trop simple (un bip aigu). Le moteur reprend désormais la
+> grammaire de la voix du village (`Needle5/.../voixDuVillage.ts`,
+> `Needle5/socle/son/synthese.ts`) : silence au défilement, un symbole
+> seulement quand un CTA est actionné, sol grave à 196 Hz, salle (réverbe
+> générée et écho), passe-bas qui se referme, symboles de deux notes au
+> moins dont le sens compte, règle de la queue, doublure réservée à la
+> réservation. L'en-tête de `composants/son.js` fait foi ; la suite de
+> cette section décrit la première version.
+
+### La gamme et les timbres
+
+- **Pentatonique majeure en do** : aucune combinaison ne sonne faux.
+- **Degré par chapitre** (rang 1 à 7) :
+
+| Rang | Chapitre | Note | Hz |
+|---|---|---|---|
+| 1 | Accueil | do4 | 261,63 |
+| 2 | Trois usages | ré4 | 293,66 |
+| 3 | Ça tourne déjà | mi4 | 329,63 |
+| 4 | L'approche | sol4 | 392,00 |
+| 5 | Partenaires | la4 | 440,00 |
+| 6 | Le fondateur | do5 | 523,25 |
+| 7 | Contact | ré5 | 587,33 |
+
+- **Timbre par situation** :
+
+| Situation | Oscillateur | Enveloppe | Intention |
+|---|---|---|---|
+| aucune | sinus | attaque 15 ms, déclin 600 ms | neutre |
+| convaincre | triangle | attaque 8 ms, déclin 450 ms | brillant, affirmé |
+| former | sinus + sa quinte (−12 dB) | attaque 15 ms, déclin 700 ms | clair |
+| garder | triangle + passe-bas 1 200 Hz | attaque 40 ms, déclin 900 ms | chaud, boisé |
+
+### Ce qui joue
+
+| Déclencheur | Ce qu'on entend |
+|---|---|
+| `fi:chapitre` | la note du rang, **une fois par changement réel** (pas de rejeu si l'on oscille au bord d'une section : 400 ms minimum entre deux notes de chapitre) |
+| `fi:situation` (id ≠ aucune) | l'accord de do (do-mi-sol) arpégé, dans le nouveau timbre |
+| `fi:geste` `choix` | la note du chapitre puis sa quinte dans la gamme |
+| `fi:geste` `etape` | la note de l'étape : do, mi, sol pour 1, 2, 3 |
+| `fi:geste` `relie` | la5, très court |
+| `fi:geste` `ouvre` | deux notes montantes (sol4, do5) |
+| `fi:geste` `rdv` | accord résolu do-mi-sol-do5, arpégé à 60 ms |
+| `fi:geste` autre | la note du chapitre courant, une octave plus haut, courte |
+| `fi:son {actif: true}` | accord de confirmation (do-sol) |
+
+### La discrétion
+
+- Volume maître bas (gain 0,12), jamais réglé par la page hôte.
+- 4 voix au plus en même temps (l'accord de la réservation en compte 4) ;
+  un déclenchement au plus toutes les 80 ms (les notes d'un même arpège
+  ne comptent pas).
+- Aucune note n'est lancée quand l'onglet est caché. Le moteur se suspend
+  **1,5 s après** le passage en arrière-plan, et reprend au retour :
+  « Réserver 30 min » ouvre l'agenda dans un nouvel onglet, et une
+  suspension immédiate couperait l'accord de la réservation.
+- Le son est **indépendant du mouvement réduit** : il n'est piloté que par
+  son bouton.
+
+### L'activation
+
+- Le moteur audio (`AudioContext`) n'est créé **qu'au clic sur le bouton
+  son** : c'est la règle des navigateurs, et la page ne paie rien tant que
+  le son est coupé.
+- Le choix est retenu (`localStorage['fi:son'] = '1'`). À la visite
+  suivante, le bouton s'affiche allumé ; le moteur se crée au premier
+  `pointerdown` ou `keydown` dans la page.
+- Toute lecture ou écriture de `localStorage` et toute création audio est
+  sous `try/catch` : sans stockage ou sans Web Audio, le bouton reste
+  visible et le son muet, sans erreur console.
+- API : `window.FiSon = { actif(), basculer(), jouer(rang, timbre) }`
+  (`jouer` sert la galerie).
+
+### Le journal
+
+Chaque note s'écrit dans le journal existant (`?debug=1`) : note, timbre,
+déclencheur. Même interrupteur `fi:debug` que le parcours.
+
+## 7. Les effets
+
+- **Jetons** en tête de `composants.css`, avec valeurs de repli :
+  `--fi-fx-court: 180ms`, `--fi-fx-long: 700ms`, `--fi-ease-morph`
+  (repli `cubic-bezier(0.34, 1.2, 0.64, 1)`), `--fi-eclat` (couleur
+  d'accent de la charte).
+- **Un mouvement par intention** : aucun élément ne cumule deux effets
+  déclenchés par le même geste.
+- Chaque effet se déclenche par une classe posée puis retirée par le JS
+  (rejouable) ; les particules sont créées à la volée et supprimées.
+- **Rien en boucle.**
+- **Mouvement réduit** : `eclat`, `reflet`, impulsion du `fil`, ondes du
+  bouton son ne jouent pas ; frise, piliers, cartes affichent directement
+  leur état final.
+
+## 8. La galerie (`/galerie/`)
+
+- `<meta name="robots" content="noindex">`, absente de `sitemap.xml`.
+- Charge `composants/` exactement comme l'accueil.
+- Pour chaque composant : la démo vivante ; le markup, avec un bouton
+  « Copier » ; les `data-*` lus ; les événements émis ; un interrupteur
+  « mouvement réduit » qui force l'état final.
+- **Le clavier sonore** : 7 degrés × 4 timbres, pour écouter toute la gamme.
+- Un journal visible des `fi:*` reçus, pour voir le contrat vivre.
+- Elle grossit avec chaque PR : une section livrée ajoute ses composants.
+
+## 9. La mesure
+
+| Événement Umami | Quand | Données |
+|---|---|---|
+| `son-active` | `fi:son {actif: true}` | `situation` |
+| `son-coupe` | `fi:son {actif: false}` | `situation` |
+| `partage-ouvert` | ouverture du panneau QR | `situation` |
+
+- La mesure écoute `fi:son` et `fi:geste {geste: 'ouvre'}`, comme le reste :
+  aucun composant n'appelle Umami.
+- `geste` ignore `rdv` (voir § 3).
+
+## 10. Les contraintes
+
+- **Poids** : `index.html` et les fichiers `composants/` chargés au
+  démarrage restent sous **500 Ko** au total. Le QR (20 Ko) n'est chargé
+  qu'à l'ouverture du panneau et ne compte pas.
+- **Sans JavaScript** : tout le contenu est lisible, les démos groupées
+  visibles, les boutons son et partage absents.
+- **Accessibilité** : règle 6 de Needle5 (la couleur ne porte jamais seule
+  l'information : icône + libellé), règle 7 (les contrôles fixes vivent
+  dans la bande de 1 100 px), règle 9 (une pile de boutons partage une
+  largeur égale) ; focus visible, `aria-pressed` sur les bascules.
+- **Mobile** : aucun défilement horizontal à 375 px.
+- **Wording** : aucun tiret cadratin visible, pas de point final dans les
+  titres, aucun prix, aucun contenu nouveau sur l'offre ; un gain nommé
+  paraphrase le texte existant.
+- **Code** : CSS dans `composants.css` par blocs commentés, sans réécrire
+  les règles de l'accueil ; vérifier la spécificité (`.dock button` bat une
+  classe seule) ; commentaires pédagogiques et logs de debug gardés.
+
+## 11. La livraison
+
+Une PR par étape, chacune vérifiée et finie (découpage du 27/09/2026) :
+
+1. **Ordre + socle + hero** : le nouvel ordre des sections (§ 3 bis),
+   `composants/` (CSS, JS, `son.js`), le bouton son du dock et
+   l'invitation « Visite sonore » du hero (§ 3 ter), la galerie avec
+   `pilier`, `choix`, `eclat`, `reflet`, `bascule-son` et le clavier
+   sonore ; la passe sur le hero ; `fi:son` et sa mesure ; `rdv` émis en
+   geste et exclu de `geste`.
+1 bis. **La fenêtre** (§ 3 ter) : `fenetre` et ses variantes `agenda`,
+   `demo`, `carte` ; le QR arrive ici (carte de visite).
+1 ter. **L'offre en story** (§ 3 ter) : le sélecteur en pastilles.
+2. **Fondateur** : `carte-etiquette`.
+3. **Approche** : `frise`.
+4. **Offre** : `pivot` (dans la carte du sélecteur livré en 1 ter).
+5. **Démos** : `groupe`.
+6. **Partenaires** : `fil` (remplace le tracé de constellation actuel).
+7. **Contact** : `partage` + QR.
+
+## 12. Critères d'acceptation
+
+1. Son coupé par défaut ; un clic sur le bouton son joue l'accord de
+   confirmation ; recharger la page garde le bouton allumé, et le premier
+   clic dans la page réveille le son.
+2. Défiler de l'accueil au contact fait entendre do, ré, mi, sol, la, do,
+   ré, une note par chapitre, sans doublon en oscillant au bord.
+3. Choisir « Garder » change le timbre de toutes les notes suivantes.
+4. Cliquer « Réserver 30 min » joue l'accord résolu ; Umami reçoit
+   `rdv-demande` une fois et **aucun** `geste` `rdv`.
+5. Sans Web Audio ou sans `localStorage` : aucune erreur console.
+6. Mouvement réduit émulé : aucun éclat, reflet, impulsion ni onde ; états
+   finaux visibles.
+7. Sans JavaScript : contenu complet, boutons son et partage absents.
+8. 375 × 812 : débordement horizontal 0 ; bouton son atteignable dans la
+   pastille.
+9. La galerie montre chaque composant livré, vivant, avec son markup
+   copiable ; elle porte `noindex`.
+10. Poids au démarrage sous 500 Ko (valeur relevée dans la PR).
+11. Le journal (`?debug=1`) montre chaque note avec son déclencheur.
+12. Les sections se suivent dans l'ordre du § 3 bis, dans la page, la nav
+    et le dock (« 2 / 7 · Trois usages » juste après le hero).
+13. Un clic sur un pilier du hero ou sur « Juste regarder » descend à
+    `#offre` ; le focus clavier y arrive aussi. Sans JavaScript, le lien
+    mène au même endroit.
+14. L'accord de la réservation s'entend en entier même si l'agenda s'ouvre
+    dans un nouvel onglet.
+
+## 13. Hors périmètre
+
+- La télécommande (sous-projet 3) : elle émettra `fi:aller`, et le composant
+  `fil` lui servira ; rien de plus ici.
+- La passe SEO/GEO (sous-projet 4), dont la meta description.
+- La FAQ des objections, en attente des réponses dans `VENTE.md`.
+- Des échantillons audio : la synthèse suffit tant qu'elle convainc.
+- L'extraction de `composants/` vers le socle Needle5 : à envisager quand
+  un deuxième site l'utilisera.
+
+## 14. La passe typographique et le relevé transverse (27/09/2026)
+
+Passe transversale, avant les PR par section du § 11 : celles-ci partiront
+de ces jetons au lieu d'inventer leurs tailles.
+
+### Le modèle (validé en questions fermées)
+
+| Sujet | Décision | Jetons (`composants/composants.css`) |
+|---|---|---|
+| Échelle | 1,25 (tierce majeure), base 17 px ; un demi-pas (× √1,25) pour le texte de carte | `--fi-t-1` 13,6 · `--fi-t-05` 15,2 · `--fi-t0` 17 · `--fi-t1` 21,25 · `--fi-t2` 26,6 · `--fi-t3` 33,2 · `--fi-t4` 41,5 · `--fi-t65` 72,4 px |
+| Interlignage | 1,45 texte, 1,1 h1 / h2, **1,2 h3** (à 21 px, 1,1 collait les deux lignes d'un titre de carte) | `--fi-interligne`, `--fi-interligne-titre`, `--fi-interligne-h3` |
+| Espacement | grille de 8 px groupée : 8 / 16 dans un groupe, 24 / 32 entre blocs, 48 / 64 / 96 entre groupes | `--fi-e05` à `--fi-e12`, `--fi-section` (64 › 96 px) |
+| Titre mobile | h2 sur 3 lignes au plus dès 360 px | `clamp(t2, …, t3)` |
+| Cible tactile | 44 px pour un lien ou un bouton isolé ; un lien dans une phrase est exempté (WCAG 2.5.8) | `--fi-cible` |
+
+**Écart assumé** : le chapeau du hero plafonne à t1 (21,25 px) et non à t2
+(26,6 px) comme la question l'annonçait. À 27 px, le chapeau de trois
+lignes concurrençait le titre. À rediscuter sur le rendu.
+
+**Garde à dents** : en `?debug=1`, le journal signale tout défilement
+horizontal et, au doigt, toute cible isolée sous 44 px (éprouvée : une cible
+cassée à 20 px est bien signalée).
+
+**Cause racine trouvée en passant** : `.section p` (0,1,1) battait toute
+classe seule posée sur un paragraphe. Les étiquettes en capitales, les
+numéros d'étape et les textes de carte s'affichaient tous à 16,8 px, quelle
+que soit leur taille écrite. La surcharge écrit donc `.section .x` (0,2,0).
+
+### Le relevé, section par section
+
+Ce qui existe et qu'un futur site récupère : le visuel qui porte la
+section, sa structure, son intonation (d'après `composants/son.js`), et
+les jetons qu'elle consomme.
+
+| Section | Visuel | Structure | Intonation | Jetons |
+|---|---|---|---|---|
+| Hero (`#top`) | halos haut et bas, pastille à point, accent en dégradé | titre d'affiche, chapeau, `choix` de piliers, lien « Juste regarder », `bascule-son` | pilier : `situation` (monte vers le degré de la situation) ; son allumé : deux gongs | t65 › t4, t1 › t0, t-05, t-1 ; e3, cible |
+| Offre | média 16:9, jauge de pastille | `story` à pastilles › une carte eyebrow / h3 / texte / preuve / actions | pastille cliquée : `etape` (acquit, deux notes serrées) ; minuteur : silence | t2 › t1 (h3), t0, t-05, t-1 ; e6, e3 |
+| Démos | média 16:9, étiquette de groupe à icône et filet | `groupe` › cartes h3 / sous-titre / accroche / points / action | « Ouvrir » : `ouvre` (deux notes qui montent dans la salle) | t1, t-05, t-1 ; e8 entre groupes, e2, e3 |
+| Approche | carte allumée, gros numéro, tags | trois cartes d'étape, bouton « Étape suivante » + CTA | `etape` (acquit) ; « Réserver » : `rdv` | t2 (numéro), t1, t-05, t-1 ; e6, e4 |
+| Partenaires | monogrammes et sigles, constellation SVG | cartes logo / h3 / rôle / texte / tags | `constellation` : **aucun symbole** | t1, t-05, t-1 ; e3 |
+| Fondateur | portrait en arche dégradée, barre de tags, repères à icône | grille portrait + texte, repères, boussole | **aucun geste** | t1, t0, t-05, t-1 ; e6, e4, e3 |
+| Contact | anneau du portrait, aurore | qui / titre / chapeau / CTA primaire / note / liens pilules | « Réserver » : `rdv` (résolution, doublure à l'octave) | t4 › t3, t0, t-05, t-1 ; e4, e2, cible |
+
+### À récupérer lors des passes suivantes
+
+- **Partenaires** : la constellation émet `constellation`, que le moteur
+  ne connaît pas. Le § 4 prévoyait `relie` (tintement) : c'est à trancher
+  avec la PR du `fil`.
+- **Fondateur** : aucun geste, donc aucun son. La PR `carte-etiquette`
+  pourra en porter un (le repère de la situation qui se pose).
+- **Logos des partenaires** (33,6 et 18,4 px) : ce sont des visuels, pas
+  du texte. Ils sont laissés hors échelle.
+- **Hors de cette passe** : le bandeau (règle « une seule rangée »,
+  rupture mesurée sur les libellés ; marque à 36 px et burger à 42 px de
+  haut) et le dock (largeurs réglées sur ses libellés). Ils seront à
+  passer sur l'échelle avec leur propre garde.
+- **Pastille du dock sur mobile** : elle recouvre le bas du texte pendant
+  la lecture. Comportement antérieur, à regarder avec la télécommande
+  (sous-projet 3).
+
+## 15. La passe du hero (27/09/2026)
+
+But : le hero sert à UNE chose, faire le premier choix, et le faire lire
+comme un choix. Le fond vidéo montre que les expériences sont en 3D et
+vivantes ; le contenu reste centré, sans image.
+
+> ⚠️ **Reprise après retour d'usage (même jour).** Une première version
+> montrait un visuel qui suivait le pilier survolé (bureau) et une vignette
+> dans chaque pilier (mobile), en deux colonnes. Retirée : trop chargée,
+> et elle détournait le hero de son rôle (le choix). Elle reste lisible
+> dans l'historique git (commit `feat(hero): montrer l'offre…`).
+
+| Sujet | Décision | Écartée |
+|---|---|---|
+| Mise en page | **centrée**, aucune image dans le hero | deux colonnes avec visuel ; vignettes dans les piliers |
+| Lire « c'est un choix » | **un panneau de verre** (la question et ses réponses ensemble) ; chaque pilier porte un **rond de sélection** (vide › pointé au survol › plein une fois choisi, via `aria-current`) et garde son icône d'usage ; la flèche part (elle disait « aller plus bas », pas « choisir ») | radios sans panneau ; quiz numéroté ; rond seul ; tout garder |
+| Sortie du panneau | « ou juste regarder », avec sa flèche (texte retouché : « ou » ajouté) | |
+| Gardé de la première version | verbe du chapeau allumé avec son pilier ; « Réserver 30 min » en secondaire ; « Visite sonore » près de la pastille ; bord bleu des piliers | |
+| Fond | **vidéo en boucle**, voile sombre plus dense au centre, halos atténués | image fixe |
+| Mouvement (WCAG 2.2.2) | **bouton pause** en bas à droite (44 px) ; pause automatique hors écran, reprise au retour sauf si le visiteur l'a arrêtée | une seule lecture ; pause au survol du choix |
+| Mobile | **poster seul sous 768 px**, et partout en mouvement réduit ou économie de données | vidéo partout ; rien |
+| En attendant la vidéo | **emplacement câblé, halos seuls** : `data-hero-video="aucune"`, aucune requête | boucle provisoire commitée |
+
+### Le contrat de la vidéo
+
+- Encoder avec `Needle5/scripts/encoder-video.sh <source> --preset hero
+  --sortie <base>.mp4` : sortent `<base>.mp4`, `<base>.webm` (servi en
+  premier) et `<base>.webp` (le poster).
+- Déposer les trois fichiers (par exemple dans `media/accueil/hero/`), puis
+  écrire `<base>` dans `data-hero-video` du `<video class="hero__video">`.
+- Essayer une boucle sans toucher au fichier : `?debug=1&video=<base>`.
+- Si la dernière source échoue, le hero revient seul à son état sans vidéo
+  (halos pleins, pas de voile) ; le journal le dit.
+
+### Le brief de la boucle (à produire)
+
+- **Contenu** : un montage des trois usages, dans l'ordre des piliers :
+  STAND (convaincre), Rayon X (former), À fleur d'écorce (garder). Trois
+  plans lents, caméra qui glisse ou tourne, aucune coupe brutale.
+- **Durée** : 12 à 15 s, la dernière image raccorde avec la première.
+- **Sans texte ni interface incrustés** : l'essai avec une boucle promo a
+  montré qu'un titre dans la vidéo se bat avec le h1.
+- **Tons sombres de préférence** : le voile est réglé pour tenir sur une
+  scène blanche (le pire cas), mais une vidéo sombre garde plus de 3D
+  visible.
+- **Poids** : le préréglage `hero` (720p, ≤ 1,2 Mb/s) donne environ 1,5 à
+  2 Mo pour 15 s. L'essai : 59 s, 3,1 Mo.
+
+### Mesures
+
+- 1440 × 900 : bas des piliers à 715 px, panneau de 768 px.
+- 375 × 812 : bas des piliers à 771 px (le rembourrage du haut et l'écart
+  du panneau réduits sous 768 px) ; poster seul, zéro requête vidéo.
+- Vidéo d'essai : WebM retenu, pause, pause hors écran et reprise vérifiées ;
+  débordement horizontal 0 partout.
+
+## 16. Son à trois niveaux, et passe hero gelée (27-28/09/2026)
+
+- **Trois niveaux, comme fi-v3.** Fort (gain 0,85), doux (0,3, le volume
+  historique du moteur) et silence. Doux par défaut : le moteur naît au
+  premier clic ou à la première touche, rien ne joue avant. Chaque clic du
+  bouton passe au suivant (fort, doux, silence) et fait entendre les deux
+  gongs pour un niveau audible. `fi:son` porte `{actif, niveau}` ;
+  migration de l'ancienne clé : « 0 » (coupé) devient silence.
+- **Passe hero gelée.** Le dock de salon_demo_app va remplacer l'en-tête
+  (brainstorming en cours) : la mise en page du dernier retour (son sous
+  le titre, chapeau en deux lignes, panneau sans bordure, signature
+  pastille + fondateur, Réserver en ghost) est mise de côté et sera
+  reprise dans le design du dock.
+
+## 17. Le dock remplace l'en-tête (28/09/2026)
+
+Décisions validées en brainstorming (design en chat, sans spec séparée à
+la demande de l'utilisateur) :
+
+- **Patron** : le dock de salon_demo_app (`Dock.tsx`). Une surface en bas,
+  une rangée `[Départ] | [Convaincre] [Former] [Garder] | [Son] [Réserver] | [Tous]`
+  (7 cibles de 44 px au téléphone, 48 au bureau), un bandeau au-dessus.
+  L'en-tête (pilule + burger) et l'ancien fil ‹ 1/7 › disparaissent ; le
+  chapitre en cours vit dans le sommaire. Le logo attend en haut à gauche
+  (`.logo-coin`, traitement à définir).
+- **Quatre états** (`data-etat`, `composants/dock.js`) : `question`,
+  `situation`, `sommaire`, `replie`. Un seul bandeau à la fois.
+- **La question débloque la suite** (option 1) : la suite reste dans la
+  page, atténuée et `inert`, défilement bloqué, jusqu'à la réponse ou
+  « ou juste regarder ». Pas de croix, Échap ne la ferme pas. Seul un
+  visiteur neuf arrivé en haut la voit (`fi:dock-repondu`, ancre,
+  `?situation=` ou page déjà défilée : arrivée repliée). Bandeau ouvert
+  aussi au téléphone, accepté.
+- **Un seul balisage** : le panneau `.situations` du hero est DÉPLACÉ dans
+  le bandeau par le script ; sans JavaScript il reste dans le hero, en liens.
+  Le verrou n'est posé qu'après le déplacement réussi.
+- **Apparence selon l'interaction demandée** : question = contour au
+  dégradé de la charte, halo qui respire une fois, ronds qui pulsent en
+  cascade ; situation = contour bleu, contenu tiré de `#usage-<id>` (aucun
+  texte nouveau), un seul bouton plein « Voir la suite » ; sommaire = verre
+  neutre, liste, « vous êtes ici ».
+- **Contrats** : `fi:situation` inchangé ; nouvel `fi:dock {etat, avant}`
+  (la mesure compte `guide-ouvert` à la première ouverture du sommaire) ;
+  le sommaire et « Départ » passent par `fi:aller`.
+- **Garde** (`?debug=1`, `FiDock.verifier()`) : question sans verrou
+  complet, verrou qui traîne, dock hors écran, cible sous 44 px. Chaque
+  règle vérifiée en la cassant exprès le 28/09/2026.
+- **Retour du 28/09/2026, première boucle** :
+  - doublons retirés du hero : le bouton son (il est dans la rangée) et
+    « Réserver 30 min » (masqué sous `.js`, gardé pour qui n'a pas de dock) ;
+  - les piliers disent leur phrase sur UNE ligne : « Convaincre un
+    acheteur », « Former un nouvel arrivant », « Conserver un savoir-faire »
+    (« Garder » devient « Conserver » dans le pilier et le bouton du dock ;
+    l'id technique reste `garder`). Trois colonnes dès 1024 px, bandeau de
+    la question à 62 rem ; empilés en dessous ;
+  - le hero se centre dans l'espace LIBRE au-dessus du dock
+    (`--fi-dock-total`, mesuré par dock.js) : rien ne passe sous la
+    question. Écran ≤ 860 px de haut : rythme resserré à 16 px. Téléphone
+    < 760 px de haut : titre en t3 et signature masquée le temps de la
+    question. Mesuré de 360 × 740 à 1440 × 900 : de 16 à 193 px d'air
+    entre le hero et le dock, aucun débordement.
+- **Retour du 28/09/2026, deuxième boucle** :
+  - « Conserver » partout où « Garder » s'affichait (carte d'offre, groupe
+    de démos, onglet du récit, tag et mot en gras de l'approche, « Parlons
+    du savoir-faire à conserver ») ; id technique `garder` inchangé ;
+  - chapeau en deux phrases, une par ligne (`.hero__lead-ligne`, 48 rem) :
+    deux lignes au bureau ; au téléphone la 2e se replie, la coupure reste ;
+  - rôle du fondateur : « Architecte d'expériences WebXR » (hero et section
+    Fondateur) ; le `jobTitle` des données structurées garde « et 3D temps
+    réel », à trancher.
+- **Logo en coin (28/09/2026)** : fixe en haut à gauche (z 80, sous le
+  dock), derrière lui une brume du verre du dock (flou 20 px + saturation
+  165 %) au bord fondu. Révisé le même jour : **aucune teinte**, flou +
+  saturation seuls, fondu **rectangulaire** (deux dégradés linéaires
+  croisés, `mask-composite: intersect`) au lieu de l'ovale radial.
+  Troisième boucle : la brume **part du coin haut gauche de l'écran**
+  (elle remonte de la marge du logo, `--logo-marge`), couvre tout le logo
+  et ne se fond qu'à droite (32 px) et en bas (24 px), coin bas droit
+  arrondi à 32 px. `scroll-padding-top`
+  à 76 px pour qu'une ancre ne pose pas son titre sous le logo (vérifié sur
+  les six sections au téléphone). Voile plein si `prefers-reduced-transparency`.
+- **Bug du 28/09/2026** : un visiteur ayant déjà répondu gardait le panneau
+  dans le hero (« ancienne apparence »). dock.js déplace désormais TOUJOURS
+  le panneau dans le bandeau, puis décide s'il pose la question.
+- **Passe de designer (28/09/2026) : un seul axe de lecture**. Le hero
+  centré flottait seul au-dessus d'une page alignée à gauche : l'œil
+  changeait d'axe en quittant le hero. Le hero s'aligne sur l'axe des
+  sections (même bord gauche que les h2, 1100 px, 3 rem ; 1,5 rem au
+  téléphone), titre sur deux lignes dès 768 px, onglets de l'offre à
+  gauche, introductions de section à 38 rem (environ 65 signes). Restent
+  centrés, par choix : la question du dock (élément flottant, centré sur
+  l'écran) et la section Contact (conclusion, un seul geste). Vérifié de
+  360 × 740 à 1440 × 900 : même bord gauche hero et sections, de 27 à
+  97 px d'air au-dessus de la question, aucun débordement.
+- **Logo : retour en arrière (28/09/2026)**. Toute brume fixe, même sans
+  teinte, masquait la page en passant dessus. Le logo reste donc DANS le
+  hero (position absolue en haut à gauche, part au défilement) et la marque
+  continue dans le dock : le glyphe Fi, blanc, remplace le picto « Départ »
+  (même taille, 20 px, même rôle : retour au début, libellé « Fractal
+  Innov, retour au début »). Glyphe servi en masque
+  (`media/marque/fi-glyphe.png`, 128 px), peint par `background-color`.
+  Plus rien de fixe en haut : `scroll-padding-top` revient à 24 px.
