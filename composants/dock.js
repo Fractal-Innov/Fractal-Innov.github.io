@@ -34,6 +34,8 @@
    Écoute : fi:situation {id, origine}, fi:chapitre {id}
    Émet   : fi:dock {etat, avant}, fi:aller {chapitre} (contrat existant)
    Journal: « ?debug=1 » (clé fi:debug), préfixe [dock].
+   Recette: « ?question=1 » repose la question à chaque chargement (efface
+            fi:dock-repondu, remonte en haut) : pour la QA, sans vider le stockage.
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -263,11 +265,22 @@
     journal('⚠️ panneau .situations introuvable : pas de question, page libre');
   }
 
+  /* Recette : ?question=1 force la question, comme pour un visiteur neuf.
+     On oublie la réponse notée et on remonte en haut (le navigateur restaure
+     sinon le défilement au rechargement, ce qui replierait le dock). */
+  var force = new URLSearchParams(location.search).get('question') === '1';
+  if (force && panneau) {
+    try { localStorage.removeItem(CLE_REPONDU); } catch (e) {}
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+    journal('?question=1 : réponse oubliée, question reposée (recette)');
+  }
+
   var repondu = false;
   try { repondu = localStorage.getItem(CLE_REPONDU) === '1'; } catch (e) {}
-  var ancre = location.hash && location.hash !== '#top';
-  var viaSituation = document.body.hasAttribute('data-situation');
-  var descendu = window.scrollY > 40;
+  var ancre = !force && location.hash && location.hash !== '#top';
+  var viaSituation = !force && document.body.hasAttribute('data-situation');
+  var descendu = !force && window.scrollY > 40;
   if (!panneau || repondu || ancre || viaSituation || descendu) {
     if (panneau) journal('pas de question :', repondu ? 'déjà répondu' : ancre ? 'arrivée sur ' + location.hash : viaSituation ? 'situation venue de l\'URL' : 'page déjà défilée');
     verifier();
