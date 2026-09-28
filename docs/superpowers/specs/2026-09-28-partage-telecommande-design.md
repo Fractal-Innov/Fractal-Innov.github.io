@@ -221,8 +221,9 @@ Le protocole du Salon, inchangé côté serveur :
 
 ### Reste à faire
 
-- Parcours complet sur de vrais appareils (ordinateur + téléphone), en
-  production après fusion.
+- ~~Parcours complet sur de vrais appareils~~ : fait en production le
+  28/09/2026 après la fusion (PR #5), ordinateur + téléphone ; premier
+  réveil du relais ~7 s, conforme à la mesure du § 3.
 - Hors périmètre, relevé en passant : à 360 × 740 avec une situation
   choisie, le bouton « Voir la page » de la démo mise en avant passe
   8 px sous le dock.
