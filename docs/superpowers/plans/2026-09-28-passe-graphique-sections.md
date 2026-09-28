@@ -270,9 +270,9 @@ et `composants/composants.css` si le rendu du panneau change.
 
 ### Tâche 7 : clôture
 
-- [ ] Ajouter § 18 à la spec : décisions, mesures avant / après par
+- [x] Ajouter § 18 à la spec : décisions, mesures avant / après par
   section.
-- [ ] Ajouter en commentaire `data-essentiel` sur chaque section traitée.
+- [x] Ajouter en commentaire `data-essentiel` sur chaque section traitée.
 - [ ] Faire la PR `feat/passe-graphique` avec
   `finishing-a-development-branch`.
 

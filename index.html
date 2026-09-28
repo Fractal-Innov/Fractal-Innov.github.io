@@ -2241,6 +2241,140 @@
     @media (prefers-reduced-motion: reduce) {
       .orbite__fils path { transition: none !important; stroke-dashoffset: 0; }
     }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : TRANSITIONS (28/09/2026)
+       Les passages d'une section à l'autre, au vocabulaire de /stand/
+       (validé comme qualitatif) : AUCUN filet entre les sections sombres,
+       un dégradé continu ; une seule rupture de fond, la bande claire ; le
+       seul filet de la page reste celui qui accueille le contact.
+
+         - Logo : sur l'axe du titre et des sections, 32 px / 24 px.
+         - Hero › offre : le long fondu du bas du hero (celui de /stand/),
+           puis, au choix d'une situation, un halo teinté par l'usage qui
+           s'allume au-dessus de l'offre et déborde sur la couture.
+         - Surtitres numérotés comme le rail du dock (02 à 05).
+         - Démos › approche › équipe : la bande claire.
+         - Cascade d'en-tête : surtitre, titre, intro, puis le contenu.
+         - Moins de vide : ~120 px entre deux sections au bureau (174).
+       ══════════════════════════════════════════════════════════════════ */
+
+    /* ── Le logo, sur l'axe ─────────────────────────────────────────────
+       Même bord gauche que le titre du hero et les h2 : la boîte de
+       .section (1100 px centrés) plus sa marge intérieure (48 px au
+       bureau, 24 px au téléphone). En 1440, il passe de 24 à ~218 px. */
+    .logo-coin { left: calc(max(0px, (100% - 1100px) / 2) + 3rem); }
+    .logo-coin img { height: 32px; }
+    @media (max-width: 767px) {
+      .logo-coin { left: 1.5rem; }
+      .logo-coin img { height: 24px; }
+    }
+
+    /* ── Hero › offre : le fondu de /stand/ ─────────────────────────────
+       Le bas du hero se dissout dans le fond de la page sur un tiers
+       d'écran (ou presque la moitié) : plus de halo coupé net. Au-dessus
+       du fond et des halos, SOUS le contenu (z 1). Pendant la question, la
+       suite attend sous ce voile, à 35 % (composants.css). */
+    .hero::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; z-index: 0;
+      height: max(33vh, clamp(280px, 46vh, 680px));
+      pointer-events: none;
+      background: linear-gradient(to bottom,
+        transparent 0%, transparent 6%,
+        rgba(9, 11, 19, 0.08) 22%, rgba(9, 11, 19, 0.28) 46%,
+        rgba(9, 11, 19, 0.58) 70%, rgba(9, 11, 19, 0.9) 92%,
+        var(--bg-base) 100%);
+    }
+
+    /* Le halo de l'offre : il s'allume au choix d'une situation, teinté
+       par l'usage (les trois arrêts du dégradé de la charte, dans l'ordre
+       des usages). Il déborde vers le haut sur la couture avec le hero :
+       c'est lui qui marque l'entrée dans la suite. z -1 : sous le contenu
+       de la section (qui fait sa propre pile, `.page-rest > *`). */
+    #offre { --halo-offre: 110 168 255; }
+    body[data-situation="former"] #offre { --halo-offre: 139 92 246; }
+    body[data-situation="garder"] #offre { --halo-offre: 244 114 182; }
+    #offre::after {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      left: 30%; top: 0;
+      width: min(110vw, 1000px); aspect-ratio: 1;
+      transform: translate(-50%, -38%);
+      border-radius: 50%;
+      background: radial-gradient(circle closest-side, rgb(var(--halo-offre) / 0.16), transparent);
+      opacity: 0;
+      transition: opacity 0.9s var(--fi-ease-sortie, ease-out) 0.2s;
+    }
+    body[data-situation] #offre::after { opacity: 1; }
+    @media (max-width: 767px) { #offre::after { left: 50%; } }
+
+    /* ── Surtitres numérotés : le rang du rail du dock ────────────────── */
+    .section-number__rang { font-variant-numeric: tabular-nums; opacity: 0.7; }
+
+    /* ── Cascade d'en-tête ─────────────────────────────────────────────
+       Surtitre › titre › intro › contenu : le regard suit l'ordre de
+       lecture. ⚠️ Les cartes de l'offre et des démos n'ont PAS de retard :
+       le reveal porte aussi leur transition de survol, qui traînerait. */
+    .js .section-number.reveal + h2.reveal { transition-delay: 70ms; }
+    .js .section-number.reveal + h2.reveal + .reveal:not(.carte) { transition-delay: 140ms; }
+    .js .etapes.reveal,
+    .js .orbite.reveal,
+    .js .equipe__bio.reveal,
+    .js .equipe__faits.reveal,
+    .js .equipe__citation.reveal { transition-delay: 210ms; }
+
+    /* ── Moins de vide entre les sections ───────────────────────────────
+       48 px › 60 px de chaque côté (au lieu de 64 › 96) : ~120 px entre
+       deux sections au bureau. Le bureau bas et le téléphone court gardent
+       leurs réglages, plus serrés. */
+    .section { padding-block: clamp(3rem, 2.2rem + 2.5vw, 3.75rem); }
+    @media (min-width: 900px) and (max-height: 800px) { .section { padding-block: 3rem; } }
+    @media (max-width: 767px) and (max-height: 760px) { .section { padding-top: 2.5rem; } }
+
+    /* ── La bande claire : l'approche ──────────────────────────────────
+       Reprise telle quelle de /stand/ (.band--light) : fond #f4f5fa, bords
+       nets, 2 à 4 rem de marge, cartes blanches à ombre douce. Les tuiles
+       au dégradé et le fil gardent leurs couleurs ; seuls les fonds, les
+       textes et la piste du fil passent au clair. */
+    .band--light {
+      --lt-bg: #f4f5fa;
+      --lt-text: #12162a;
+      --lt-muted: #4b5168;
+      --lt-card: #ffffff;
+      --lt-line: rgba(18, 22, 42, 0.09);
+      --lt-accent: var(--accent-blue-deep);
+      position: relative;
+      margin: clamp(2rem, 5vw, 4rem) 0;
+      background: var(--lt-bg);
+      color: var(--lt-text);
+    }
+    .band--light .section-number { color: var(--lt-accent); }
+    .band--light .section h2,
+    .band--light .section h3 { color: var(--lt-text); }
+    .band--light .section p { color: var(--lt-muted); }
+    .band--light .section .etape.carte,
+    .band--light .section .etape.carte:hover {
+      border: 1px solid var(--lt-line);
+      background:
+        linear-gradient(90deg, transparent 4%, rgba(244, 114, 182, 0.55), rgba(139, 92, 246, 0.55), transparent 96%) top / 100% 1px no-repeat,
+        var(--lt-card);
+      box-shadow: 0 14px 34px -22px rgba(18, 22, 42, 0.35);
+    }
+    .band--light .section .etape__gain { color: var(--lt-text); }
+    .band--light .etape__gain-intro { color: var(--lt-muted); }
+    .band--light .section .etape__num { color: rgba(18, 22, 42, 0.06); }
+    .band--light .etape__badge { background: rgba(40, 89, 255, 0.08); color: var(--lt-accent); }
+    .band--light .etape__tuile { box-shadow: 0 10px 24px -14px rgba(139, 92, 246, 0.6); }
+    .band--light .etapes.active .etape__tuile,
+    html:not(.js) .band--light .etapes .etape__tuile { box-shadow: 0 12px 28px -10px rgba(139, 92, 246, 0.7); }
+    .band--light .section .etape:not(:last-child)::before { background-color: rgba(18, 22, 42, 0.1); }
+    @media (hover: hover) {
+      .band--light .section .etape.carte:hover { border-color: rgba(18, 22, 42, 0.16); }
+      .band--light .section .etape.carte:hover .etape__num { color: rgba(18, 22, 42, 0.14); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #offre::after { transition: none; }
+      .js .reveal { transition-delay: 0s !important; }
+    }
   </style>
 </head>
 
@@ -2475,7 +2609,7 @@
            sans JavaScript. La situation choisie n'en masque aucune, elle
            allume la sienne (`body[data-situation]` + `data-usages`). -->
       <section class="section" id="offre">
-        <p class="section-number reveal">L'offre</p>
+        <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">02 · </span>L'offre</p>
         <h2 class="reveal" data-essentiel>Un savoir, trois usages</h2>
         <p class="reveal">Un même socle, déjà en ligne dans cinq démos. En 30 min
           d'atelier, on choisit par où commencer.</p>
@@ -2581,7 +2715,7 @@
 
       <!-- ══ CE QUI TOURNE DÉJÀ ══════════════════════════════════════════ -->
       <section class="section" id="demos">
-        <p class="section-number reveal">Démos</p>
+        <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">03 · </span>Démos</p>
         <h2 class="reveal" data-essentiel>Ouvrez une démo, c'est plus court que de l'expliquer</h2>
         <p class="reveal">Dans le navigateur, sans installation. Ce qui fonctionne ici est
           réalisable pour votre projet.</p>
@@ -2724,8 +2858,12 @@
       </section>
 
       <!-- ══ APPROCHE ════════════════════════════════════════════════════ -->
+      <!-- La bande claire de /stand/ (« ce qui est livré ») : la seule
+           rupture de fond de la suite, elle marque l'entrée ET la sortie
+           de l'approche (passe des transitions, 28/09/2026). -->
+      <div class="band band--light">
       <section class="section" id="approche">
-        <p class="section-number reveal">L'approche</p>
+        <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">04 · </span>L'approche</p>
         <h2 class="reveal" data-essentiel>Trois étapes, de l'idée à l'outil que vous gardez</h2>
         <p class="reveal">À chaque étape, vous savez ce que vous recevez.</p>
 
@@ -2765,6 +2903,7 @@
           <a class="hero-cta__btn hero-cta__btn--primary" href="#contact" data-essentiel><span>Réserver 30 min</span></a>
         </div>
       </section>
+      </div>
 
       <!-- ══ L'ÉQUIPE (passe graphique du 28/09/2026) ══════════════════════
            Fusion des anciennes sections « Partenaires » et « Le fondateur » :
@@ -2780,7 +2919,7 @@
         <span class="equipe__ancre" id="fondateur" aria-hidden="true"></span>
         <div class="equipe__grille">
           <div class="equipe__texte">
-            <p class="section-number reveal">L'équipe</p>
+            <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">05 · </span>L'équipe</p>
             <h2 class="reveal" data-essentiel>Un seul interlocuteur, les bons experts autour</h2>
             <!-- La signature : le nom et le rôle, et la photo au mobile
                  seulement (au bureau, le portrait est au centre de l'orbite ;

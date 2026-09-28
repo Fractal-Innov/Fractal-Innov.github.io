@@ -645,3 +645,92 @@ la demande de l'utilisateur) :
   Innov, retour au début »). Glyphe servi en masque
   (`media/marque/fi-glyphe.png`, 128 px), peint par `background-color`.
   Plus rien de fixe en haut : `scroll-padding-top` revient à 24 px.
+
+## 18. La passe graphique section par section (28/09/2026)
+
+Plan : `docs/superpowers/plans/2026-09-28-passe-graphique-sections.md`.
+Axes : wording compact, le visuel montre le résultat, épure moderne,
+composition qui tient à l'écran (bureau entier en 1440 × 900 et
+1280 × 720 ; au téléphone, titre, résultat et geste dans le premier écran).
+Mesures prises avec `FiGarde.mesurer()` (`?debug=1`) : hauteur de la
+section en écrans, et essentiels hors du premier écran.
+
+- **Outil** : `FiGarde.mesurer()` rend `ecrans` et `essentielsHors` par
+  section ; `data-essentiel` marque ce qui doit se voir sans défiler.
+  Couverture vérifiée à la clôture : titre et chapeau du hero, titre, résultats
+  et boutons de l'offre, titre et boutons de démo, titre, gains et CTA de
+  l'approche, titre de l'équipe, titre et bouton du contact.
+- **Offre** : chaque usage dit son résultat (ligne cochée) et mène à sa
+  démo. Après : 0,88 écran en 1440, 0,96 en 1280, mobile dans l'écran.
+- **Démos** : une démo mise en avant, les autres en défilement. Au
+  téléphone, points de scène masqués, média en 2/1 (5/2 si l'écran fait
+  moins de 760 px de haut), sous-titre sur une ligne. Après : 0,99 en 1440,
+  0,97 en 1280, 0,90 en 1024 ; le bouton de la démo en avant reste
+  au-dessus du dock (736/742 en 375 × 812, 665/670 en 360 × 740).
+- **Approche** : trois cartes (atelier, création, livraison) reliées par un
+  fil qui se remplit, une tuile au dégradé avec un picto (Lucide), le numéro
+  en filigrane dans le coin, badge « Gratuit » sur l'atelier. Le gain de
+  chaque étape passe devant, avec « Vous repartez avec » en petite
+  étiquette au-dessus. Le bouton « Étape suivante » est retiré ; le CTA
+  « Réserver 30 min » mène à `#contact`. Survol : la tuile monte de 3 px et
+  s'éclaire. Au téléphone, fil vertical, textes masqués, gains seuls.
+  Avant : 0,97 écran en 1440, 2,05 en 375, 145 mots. Après : 0,87 en 1440,
+  0,93 en 1280, 0,90 en 1024, 0,91 en 375, 0,92 en 360 ; 93 mots.
+- **Équipe** (rupture : remplace `#partenaires` et `#fondateur`, gardés en
+  ancres) : le fondateur au centre d'une orbite de cinq rôles, sans noms ni
+  logos, par ordre d'importance : ingénierie logicielle, studio 3D,
+  écosystème d'innovation, fabricant de mobilier, atelier d'art.
+  `composants/orbite.js` trace un fil du portrait vers chaque rôle (depuis
+  le rendu réel, ResizeObserver) et l'allume au survol ; premier survol :
+  `fi:geste {chapitre: 'equipe', geste: 'relier'}`. Compétences en une
+  ligne de pastilles, la boussole en citation. Au téléphone, la photo
+  rejoint la signature, l'orbite devient une liste (deux colonnes de 600 à
+  899 px). Avant : 3,65 écrans en 879 px de large (deux sections), 5,0 en
+  375, 242 mots. Après : 0,74 en 1440, 0,91 en 1280, 0,94 en 1024, 0,92 en
+  705, 1,44 en 375 (titre dans le premier écran).
+- **Contact** : portrait et anneau retirés, un seul geste. Chapeau « Votre
+  produit, votre public : on regarde ensemble ce que l'expérience doit faire
+  comprendre. », bouton « Réserver 30 min, gratuit », et ce qu'on en retire
+  (« Vous repartez avec l'usage par lequel commencer. »). Avant : 0,99 en
+  1440, 1,14 en 375, 61 mots. Après : 0,69 en 1440, 0,89 en 1280, 0,85 en
+  375, 0,95 en 360 ; 43 mots.
+- **Sommaire du dock** : six chapitres (Accueil, L'offre, Démos,
+  L'approche, L'équipe, Contact ; « Démos » aussi comme surtitre de la
+  section). Numéros 01 à 06 en tuiles sur un rail qui se remplit jusqu'au
+  chapitre en cours (`--fi-rang`, `data-passe`), chapitre en cours en gras
+  sur fond, tuile au dégradé. « Vous êtes ici » retiré, lignes pleine
+  largeur. Panneau de 315 px de haut, tient en 360 × 740.
+- **Transitions et logo** (retour du 28/09/2026, avant la PR), au
+  vocabulaire de /stand/ jugé qualitatif : aucun filet entre sections
+  sombres, un dégradé continu, une seule rupture de fond.
+  - Logo sur l'axe du titre et des sections (218 px en 1440, 138 en
+    1280, 48 en 1024, 24 au téléphone), 32 px de haut au bureau, 24 au
+    téléphone.
+  - Hero › offre : le long fondu du bas du hero de /stand/ (33 à 46 vh).
+    Pendant la question, la suite attend sous ce voile à 35 % ; à la
+    réponse, elle se révèle en 600 ms (la transition vivait sur l'état
+    verrouillé seulement : la suite sautait à 100 %). Puis un halo
+    s'allume au-dessus de l'offre, teinté par l'usage (Convaincre bleu,
+    Former violet, Conserver rose : les trois arrêts du dégradé de la
+    charte) et débordant sur la couture.
+  - Surtitres numérotés comme le rail du dock : 02 à 05 (numéro en
+    `aria-hidden`). Contact garde sa composition (et son filet, seul de
+    la page).
+  - Démos › approche › équipe : l'approche passe dans la bande claire de
+    /stand/ (`.band--light`, fond #f4f5fa, cartes blanches), au bureau
+    comme au téléphone ; tuiles et fil gardent le dégradé.
+  - Cascade d'en-tête : surtitre 0, titre 70, intro 140, frise / orbite /
+    textes de l'équipe 210 ms. Pas de retard sur les cartes (le reveal
+    porte leur survol).
+  - Moins de vide : 48 à 60 px de chaque côté (au lieu de 64 à 96).
+  - Mesures (écrans) : 1280 × 720 offre 0,93, démos 1,02 (situation
+    choisie), approche 0,91, équipe 0,88, contact 0,97 ; 1024 : 0,95,
+    0,94, 0,87, 0,91, 0,90 ; 375 : approche 0,89, contact 0,90 ; 360 :
+    approche 0,92, contact 1,00.
+  - Relevé, antérieur à cette passe : situation choisie, à 360 × 740, le
+    bouton de la démo en avant passe 8 px sous le dock (l'étiquette « Ça
+    tourne déjà » ajoute 39 px). Sans situation, il tient.
+- **Laissé de côté** : filtre des démos (quand un usage atteint 3 démos ou
+  la liste 8), nouvelles vignettes (webp 1200 × 675, moins de 120 Ko),
+  chiffres de l'annexe du plan (à fournir, rien d'inventé), nettoyage du CSS
+  mort (`.partenaire*`, `.portrait*`, `.boussole*`, `.repere*`).
