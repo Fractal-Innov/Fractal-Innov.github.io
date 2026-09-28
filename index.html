@@ -54,6 +54,7 @@
   <script defer src="/composants/son.js"></script>
   <script defer src="/composants/composants.js"></script>
   <script defer src="/composants/dock.js"></script>
+  <script defer src="/composants/partage.js"></script> <!-- le bandeau « Partager » : cet endroit, la télécommande -->
   <script defer src="/composants/demos.js"></script> <!-- les démos : une en avant, les autres en bande -->
   <script defer src="/composants/orbite.js"></script> <!-- l'équipe : le fondateur au centre, les fils vers le réseau -->
   <script defer src="/composants/garde-ecran.js"></script> <!-- ?debug=1 : ce qui tient à l'écran, section par section -->
@@ -2375,6 +2376,19 @@
       #offre::after { transition: none; }
       .js .reveal { transition-delay: 0s !important; }
     }
+    /* ── « Emporter cette page » (contact) : un lien discret, il ouvre le
+       bandeau « Partager » du dock (spec partage-telecommande § 4, choix A). ── */
+    .contact__emporter {
+      display: inline-flex; align-items: center; gap: var(--fi-e1);
+      min-height: 44px; margin-top: var(--fi-e1); padding: 0 var(--fi-e1);
+      border: 0; background: none; color: var(--text-muted);
+      font: inherit; font-size: var(--fi-t-05);
+      text-decoration: underline; text-underline-offset: 4px; cursor: pointer;
+    }
+    .contact__emporter[hidden] { display: none; }
+    .contact__emporter:hover { color: var(--text-main); }
+    .contact__emporter:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; border-radius: 6px; }
+    .contact__emporter svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   </style>
 </head>
 
@@ -3053,6 +3067,12 @@
           </a>
 
           <p class="contact__atelier">Vous repartez avec l'usage par lequel commencer.</p>
+          <!-- Ouvre le bandeau « Partager » du dock (partage.js le montre ;
+               sans JS il n'aurait rien à ouvrir, il reste masqué). -->
+          <button class="contact__emporter" type="button" data-partager-endroit hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM18 18h3v3h-3z"/></svg>
+            Emporter cette page
+          </button>
 
           <p class="contact__or">ou, si vous préférez</p>
 
@@ -3515,7 +3535,9 @@
         demoOuverte: 'demo-ouverte',
         contactDirect: 'contact-direct',
         sonActive: 'son-active',
-        sonCoupe: 'son-coupe'
+        sonCoupe: 'son-coupe',
+        partageOuvert: 'partage-ouvert',
+        telecommandeConnectee: 'telecommande-connectee'
       };
       var fileMesures = [];
       function envoyer(nom, donnees) {
@@ -3703,6 +3725,14 @@
          ne fait que COMPTER : la première ouverture du sommaire. */
       document.addEventListener('fi:dock', function (e) {
         if (e.detail.etat === 'sommaire') mesurerUneFois('guide', MESURES.guideOuvert);
+      });
+      /* Le partage (spec partage-telecommande § 9) : chaque ouverture et
+         changement d'onglet ; la télécommande, une fois par visite. */
+      document.addEventListener('fi:partager', function (e) {
+        mesurer(MESURES.partageOuvert, { mode: (e.detail && e.detail.mode) || 'endroit', situation: situationActuelle() });
+      });
+      document.addEventListener('fi:telecommande', function (e) {
+        if (e.detail && e.detail.etat === 'connectee') mesurerUneFois('telecommande', MESURES.telecommandeConnectee);
       });
 
       /* ── AU DÉMARRAGE ──────────────────────────────────────────────────
