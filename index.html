@@ -54,6 +54,7 @@
   <script defer src="/composants/son.js"></script>
   <script defer src="/composants/composants.js"></script>
   <script defer src="/composants/dock.js"></script>
+  <script defer src="/composants/garde-ecran.js"></script> <!-- ?debug=1 : ce qui tient à l'écran, section par section -->
   <link rel="stylesheet" href="/composants/composants.css">
 
   <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
@@ -1938,7 +1939,7 @@
 
   <main id="contenu">
     <!-- ══ HERO ════════════════════════════════════════════════════════ -->
-    <section class="hero" id="top">
+    <section class="hero" id="top" data-garde="plein-ecran">
       <!-- Le fond vidéo : montrer que les expériences sont en 3D et vivantes,
            sans rien dire. Contrat, pour quand la boucle sera produite
            (préréglage `hero` de Needle5/scripts/encoder-video.sh) :
@@ -1974,7 +1975,7 @@
           </span>
         </div>
 
-        <h1 class="hero__titre">Transmettre les savoirs
+        <h1 class="hero__titre" data-essentiel>Transmettre les savoirs
           <span class="hero__accent">par l'expérience</span>
         </h1>
 
@@ -1982,7 +1983,7 @@
              pilier (ou l'avoir choisi) l'allume ici. Le texte ne change pas. -->
         <!-- Deux lignes, deux temps (retour du 28/09/2026) : ce que le savoir
              devient, puis ce qu'il fait. -->
-        <p class="hero__lead">
+        <p class="hero__lead" data-essentiel>
           <span class="hero__lead-ligne">Votre savoir est mis en 3D une fois.</span>
           <span class="hero__lead-ligne">Ensuite,
           <span class="hero__verbe" data-verbe="convaincre">il vend</span>,
