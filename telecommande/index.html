@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#090b13">
+  <title>Télécommande | Fractal Innov</title>
+  <!-- La télécommande de l'accueil (spec partage-telecommande § 7) : le
+       téléphone d'une personne qui DÉCOUVRE le site pilote l'écran de la
+       présentation, par le relais du Salon. Autonome : aucun script du
+       site, aucun cookie. Journal : ?debug=1 (clé fi:debug), [telephone]. -->
+  <style>
+    @font-face { font-family: "Outfit"; src: url("/media/polices/outfit-latin-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "Outfit"; src: url("/media/polices/outfit-latin-700.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+    :root {
+      --fond: #090b13; --fond-2: #0f1220; --texte: #f0f0f0; --doux: rgba(240, 240, 240, 0.6);
+      --ligne: rgba(255, 255, 255, 0.1); --accent: #6ea8ff; --ok: #34d399;
+      --degrade: linear-gradient(100deg, #6ea8ff 0%, #8b5cf6 52%, #f472b6 100%);
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100dvh; background: var(--fond); color: var(--texte);
+      font: 400 17px/1.5 "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+      padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); -webkit-tap-highlight-color: transparent; }
+    main { max-width: 440px; margin: 0 auto; }
+    .etat { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px; font-size: 14px; color: var(--doux); }
+    .etat::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--doux); }
+    .etat[data-etat="connecte"]::before { background: var(--ok); box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.2); }
+    h1 { margin: 0 0 24px; font-size: 24px; line-height: 1.25; font-weight: 700; }
+    .etiquette { margin: 0 0 8px; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .chapitres { list-style: none; margin: 0 0 32px; padding: 0; counter-reset: ch; }
+    .chapitres button, .situations button {
+      display: flex; align-items: center; gap: 16px; width: 100%; min-height: 56px; padding: 0 16px;
+      border: 1px solid var(--ligne); border-radius: 14px; background: var(--fond-2); color: var(--texte);
+      font: inherit; font-weight: 600; text-align: left; cursor: pointer;
+    }
+    .chapitres li + li { margin-top: 8px; }
+    .chapitres button::before {
+      counter-increment: ch; content: counter(ch, decimal-leading-zero);
+      display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.06); font-size: 13px; font-variant-numeric: tabular-nums;
+    }
+    .chapitres button[aria-current="true"] { border-color: transparent; background: linear-gradient(var(--fond-2), var(--fond-2)) padding-box, var(--degrade) border-box; }
+    .chapitres button[aria-current="true"]::before { background: var(--degrade); color: #fff; }
+    .situations { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .situations button { flex-direction: column; justify-content: center; gap: 6px; min-height: 76px; padding: 8px; text-align: center; font-size: 15px; }
+    .situations svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .situations button[aria-pressed="true"] { border-color: transparent; background: linear-gradient(var(--fond-2), var(--fond-2)) padding-box, var(--degrade) border-box; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    button:active { transform: scale(0.98); }
+    main[data-inactif] .commandes { opacity: 0.4; pointer-events: none; }
+    .aide { margin: 24px 0 0; font-size: 14px; color: var(--doux); }
+    @media (prefers-reduced-motion: reduce) { button:active { transform: none; } }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<symbol id="pic-convaincre" viewBox="0 0 24 24"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="m3 7 9 5 9-5M12 12v10"/></symbol>
+<symbol id="pic-former" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/></symbol>
+<symbol id="pic-garder" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
+  </svg>
+  <main data-inactif>
+    <p class="etat" data-etat="connexion" aria-live="polite">Connexion à l'écran…</p>
+    <h1>Vous avez la main : touchez un chapitre, l'écran vous suit</h1>
+    <div class="commandes">
+      <p class="etiquette">Chapitres</p>
+      <ol class="chapitres">
+        <li><button type="button" data-chapitre="top">Accueil</button></li>
+        <li><button type="button" data-chapitre="offre">L'offre</button></li>
+        <li><button type="button" data-chapitre="demos">Démos</button></li>
+        <li><button type="button" data-chapitre="approche">L'approche</button></li>
+        <li><button type="button" data-chapitre="equipe">L'équipe</button></li>
+        <li><button type="button" data-chapitre="contact">Contact</button></li>
+      </ol>
+      <p class="etiquette">Pour quoi faire ?</p>
+      <ul class="situations">
+        <li><button type="button" data-situation="convaincre" aria-pressed="false"><svg aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre</button></li>
+        <li><button type="button" data-situation="former" aria-pressed="false"><svg aria-hidden="true"><use href="#pic-former"></use></svg>Former</button></li>
+        <li><button type="button" data-situation="garder" aria-pressed="false"><svg aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver</button></li>
+      </ul>
+    </div>
+    <p class="aide">Rien à installer. Fermez simplement cette page quand vous avez fini.</p>
+  </main>
+  <script>
+  (function () {
+    'use strict';
+    var DEBUG = false;
+    try { DEBUG = localStorage.getItem('fi:debug') === '1' || /[?&]debug=1/.test(location.search); } catch (e) {}
+    function journal() { if (!DEBUG) return; var a = [].slice.call(arguments); a.unshift('%c[telephone]', 'color:#34d399'); console.log.apply(console, a); }
+
+    var RELAIS = 'wss://stand-demonstrateur.osc-fr1.scalingo.io/ws-remote';
+    var PIN = '123456'; /* non secret : le relais du Salon le publie déjà dans son bundle */
+    var params = new URLSearchParams(location.search);
+    if (DEBUG && params.get('relais')) RELAIS = params.get('relais');
+    var salle = params.get('salle') || '';
+    var main = document.querySelector('main');
+    var zoneEtat = document.querySelector('.etat');
+    var TEXTES = {
+      connexion: "Connexion à l'écran…",
+      connecte: 'Connecté',
+      ferme: "L'écran s'est fermé : scannez à nouveau le QR",
+      incomplet: "Lien incomplet : scannez le QR affiché sur l'écran",
+      indisponible: 'Télécommande indisponible pour le moment'
+    };
+    function montrer(e) {
+      zoneEtat.setAttribute('data-etat', e);
+      zoneEtat.textContent = TEXTES[e];
+      if (e === 'connecte') main.removeAttribute('data-inactif'); else main.setAttribute('data-inactif', '');
+      journal('état : ' + e);
+    }
+
+    /* Jamais de repli sur la salle « borne » du relais : ce serait piloter
+       la borne physique du salon. */
+    if (!/^[a-z0-9]{8}$/.test(salle)) { montrer('incomplet'); journal('salle absente ou invalide :', salle); return; }
+
+    var ws = null, attente = 1000, bonjour = 0, dernierEtat = 0;
+    function envoyer(m) { if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(m)); }
+    function commande(navItemId) {
+      envoyer({ type: 'REMOTE_CMD', cmd: { type: 'OPEN_MODAL', navItemId: navItemId } });
+      if (navigator.vibrate) navigator.vibrate(10);
+      journal('commande : ' + navItemId);
+    }
+    function allumer(state) {
+      [].forEach.call(document.querySelectorAll('[data-chapitre]'), function (b) {
+        if (b.getAttribute('data-chapitre') === state.activeModalId) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current');
+      });
+      [].forEach.call(document.querySelectorAll('[data-situation]'), function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-situation') === state.situation ? 'true' : 'false');
+      });
+    }
+    function connecter() {
+      montrer('connexion');
+      ws = new WebSocket(RELAIS);
+      ws.onopen = function () { envoyer({ type: 'REGISTER', role: 'remote', salle: salle }); };
+      ws.onmessage = function (e) {
+        var m; try { m = JSON.parse(e.data); } catch (x) { return; }
+        if (m.type === 'REGISTER_OK') envoyer({ type: 'AUTH', pin: PIN });
+        else if (m.type === 'AUTH_FAIL') { montrer('indisponible'); ws.close(); }
+        else if (m.type === 'AUTH_OK') {
+          attente = 1000;
+          envoyer({ type: 'REMOTE_CMD', cmd: { type: 'BONJOUR' } });
+          clearInterval(bonjour);
+          bonjour = setInterval(function () { envoyer({ type: 'REMOTE_CMD', cmd: { type: 'BONJOUR' } }); }, 20000);
+        } else if (m.type === 'DISPLAY_STATE') {
+          dernierEtat = Date.now();
+          if (zoneEtat.getAttribute('data-etat') !== 'connecte') montrer('connecte');
+          allumer(m.state || {});
+        }
+      };
+      ws.onclose = function () {
+        clearInterval(bonjour);
+        journal('coupure : nouvel essai dans ' + attente / 1000 + ' s');
+        setTimeout(connecter, attente);
+        attente = Math.min(attente * 2, 10000);
+      };
+    }
+    /* L'écran répond à chaque BONJOUR (20 s) : 45 s sans état, il est parti. */
+    setInterval(function () {
+      if (zoneEtat.getAttribute('data-etat') === 'connecte' && Date.now() - dernierEtat > 45000) montrer('ferme');
+    }, 5000);
+    document.addEventListener('click', function (e) {
+      var c = e.target.closest('[data-chapitre]');
+      if (c) { commande(c.getAttribute('data-chapitre')); return; }
+      var s = e.target.closest('[data-situation]');
+      if (s) commande('situation:' + s.getAttribute('data-situation'));
+    });
+    journal('salle ' + salle + ', relais ' + RELAIS);
+    connecter();
+  })();
+  </script>
+</body>
+</html>

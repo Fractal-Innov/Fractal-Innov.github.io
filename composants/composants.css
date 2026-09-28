@@ -529,6 +529,62 @@
 }
 @media (prefers-reduced-motion: reduce) { .fi-dock__chapitres::after { transition: none; } }
 
+/* ── partage : Cet endroit / Télécommande (spec partage-telecommande § 5) ── */
+.fi-dock__partager { position: relative; padding: 0 var(--fi-e2); } /* 16 px, comme Réserver : un bouton à libellé respire */
+/* Le témoin : un téléphone pilote la page (telecommande-ecran.js pose
+   data-telecommande sur le dock). Point vert fixe, choix du 28/09/2026 :
+   lisible d'un coup d'œil pendant la présentation. */
+.fi-dock__temoin {
+  position: absolute; top: 9px; right: 9px; width: 8px; height: 8px; border-radius: 50%;
+  background: #34d399; box-shadow: 0 0 0 2px var(--fi-fond-plein); display: none;
+}
+.fi-dock[data-telecommande="connectee"] .fi-dock__temoin { display: block; }
+.fi-dock__partager-ligne { display: none; }
+@media (max-width: 767px) {
+  .fi-dock__rangee [data-dock-partager] { display: none; } /* la rangée est pleine à 360 px : il passe dans le sommaire (choix A) */
+  .fi-dock__partager-ligne {
+    display: flex; align-items: center; gap: var(--fi-e1); width: 100%; min-height: 44px;
+    margin-top: var(--fi-e2); padding: 0 var(--fi-e2);
+    border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 12px; background: none;
+    color: var(--fi-texte); font: inherit; font-weight: 600; cursor: pointer;
+  }
+  .fi-dock__partager-ligne:focus-visible { outline: 2px solid var(--fi-accent); outline-offset: 2px; }
+  .fi-dock__partager-ligne svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+}
+.fi-dock__vue--partage { padding: var(--fi-e3); }
+.fi-partage__modes { display: inline-flex; gap: 4px; padding: 4px; margin: var(--fi-e2) 0; border-radius: 999px; background: rgba(255, 255, 255, 0.05); }
+.fi-partage__modes [role="tab"] {
+  min-height: 36px; padding: 0 var(--fi-e2); border: 0; border-radius: 999px; background: none;
+  color: var(--fi-texte-doux); font: inherit; font-size: var(--fi-t-05); font-weight: 600; cursor: pointer;
+}
+.fi-partage__modes [role="tab"][aria-selected="true"] { background: var(--fi-fond-survol); color: var(--fi-texte); }
+.fi-partage__modes [role="tab"]:focus-visible { outline: 2px solid var(--fi-accent); outline-offset: 2px; }
+.fi-partage__modes[hidden],
+.fi-partage__modes [hidden] { display: none; }
+.fi-partage__corps { display: flex; gap: var(--fi-e3); align-items: center; }
+.fi-partage__texte { min-width: 0; flex: 1; }
+.fi-partage__qr { flex-shrink: 0; width: 148px; height: 148px; padding: 10px; border-radius: 12px; background: #fff; transform-origin: bottom center; }
+.fi-partage__qr[hidden] { display: none; }
+.fi-partage__qr svg { display: block; width: 100%; height: 100%; }
+.fi-partage__qr--pli { animation: fiQrPli 250ms var(--fi-ease-sortie) both; } /* le QR se déplie, comme /stand/ */
+@keyframes fiQrPli { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: none; } }
+.fi-partage__ou { display: flex; align-items: center; gap: var(--fi-e1); margin: 0; font-weight: 600; color: var(--fi-texte); }
+.fi-partage__point { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--fi-accent); box-shadow: 0 0 0 4px color-mix(in oklab, var(--fi-accent) 25%, transparent); }
+.fi-partage__consigne { margin: var(--fi-e1) 0 0; font-size: var(--fi-t-05); color: var(--fi-texte-doux); }
+.fi-partage__consigne:empty { display: none; }
+.fi-partage__lien { display: block; margin-top: var(--fi-e1); font-size: var(--fi-t-1); color: var(--fi-texte-doux); overflow-wrap: anywhere; user-select: all; }
+.fi-partage__actions { display: flex; flex-wrap: wrap; gap: var(--fi-e1); margin-top: var(--fi-e2); }
+.fi-partage__btn {
+  min-height: 44px; padding: 0 var(--fi-e2); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 12px;
+  background: none; color: var(--fi-texte); font: inherit; font-weight: 600; cursor: pointer;
+}
+.fi-partage__btn--plein { border-color: transparent; background: var(--fi-degrade); color: #fff; }
+.fi-partage__btn:focus-visible { outline: 2px solid var(--fi-accent); outline-offset: 2px; }
+.fi-partage__btn[hidden] { display: none; }
+.fi-partage__etat { margin: var(--fi-e2) 0 0; font-size: var(--fi-t-05); color: #34d399; }
+.fi-partage__etat:empty { display: none; }
+@media (prefers-reduced-motion: reduce) { .fi-partage__qr--pli { animation: none; } }
+
 /* ── Le verrou de la question ─────────────────────────────────────── */
 html.fi-verrou { overflow: hidden; }
 html.fi-verrou .page-rest,

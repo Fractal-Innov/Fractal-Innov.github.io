@@ -4,13 +4,15 @@
    décidé le 28/09/2026 (spec 2026-09-27-galerie-affordance-son-design.md § 17)
 
    Ce qu'il fait : UNE surface en bas de l'écran. La rangée de boutons en
-   bas, et au-dessus un bandeau qui prend l'un de trois visages :
+   bas, et au-dessus un bandeau qui prend l'un de quatre visages :
 
      état        bandeau                         page
      ─────────   ─────────────────────────────   ─────────────────────────
      question    la première question (requise)  verrouillée, atténuée
      situation   la situation cliquée            libre
      sommaire    « Tous » : les chapitres        libre
+     partage     « Partager » : lien, QR,        libre
+                 télécommande (partage.js)
      replie      aucun                           libre
 
    L'état vit à UN seul endroit, `data-etat` sur le dock ; le CSS en tire
@@ -31,7 +33,8 @@
         script « LE PARCOURS » (délégation sur [data-situation-choix]) ; le
         dock écoute fi:situation, comme le son et la mesure.
 
-   Écoute : fi:situation {id, origine}, fi:chapitre {id}
+   Écoute : fi:situation {id, origine}, fi:chapitre {id},
+            fi:partager {mode} (spec 2026-09-28-partage-telecommande-design.md § 4)
    Émet   : fi:dock {etat, avant}, fi:aller {chapitre} (contrat existant)
    Journal: « ?debug=1 » (clé fi:debug), préfixe [dock].
    Recette: « ?question=1 » repose la question à chaque chargement (efface
@@ -63,6 +66,12 @@
   });
   var boutonTous = dock.querySelector('[data-dock-tous]');
   var boutonsSituation = dock.querySelectorAll('[data-dock-situation]');
+  /* « Partager » : le bouton de la rangée (bureau) et la ligne du sommaire
+     (téléphone), un seul état ouvert pour les deux. */
+  var boutonsPartager = dock.querySelectorAll('[data-dock-partager]');
+  function marquerPartager(ouvert) {
+    Array.prototype.forEach.call(boutonsPartager, function (b) { b.setAttribute('aria-expanded', ouvert ? 'true' : 'false'); });
+  }
   /* Ce que le verrou rend inerte : tout ce qui suit le hero. */
   var suite = document.querySelectorAll('.page-rest, .footer');
   var CLE_REPONDU = 'fi:dock-repondu';
@@ -91,6 +100,7 @@
     Object.keys(vues).forEach(function (k) { vues[k].hidden = k !== nouvel; });
     dock.setAttribute('data-etat', nouvel);
     boutonTous.setAttribute('aria-expanded', nouvel === 'sommaire' ? 'true' : 'false');
+    marquerPartager(nouvel === 'partage');
     verrouiller(nouvel === 'question');
     journal(avant, '›', nouvel + (detail ? ' (' + detail + ')' : ''), nouvel === 'question' ? '· page verrouillée' : '');
     emettre('fi:dock', { etat: nouvel, avant: avant });
@@ -104,6 +114,7 @@
     Object.keys(vues).forEach(function (k) { vues[k].hidden = true; });
     dock.setAttribute('data-etat', 'replie');
     boutonTous.setAttribute('aria-expanded', 'false');
+    marquerPartager(false);
     if (avant === 'question') { verrouiller(false); noterReponse(); }
     journal(avant, '› replie (' + raison + ')', avant === 'question' ? '· verrou retiré' : '');
     emettre('fi:dock', { etat: 'replie', avant: avant });
@@ -182,7 +193,23 @@
     else ouvrir('sommaire');
   });
   dock.querySelector('[data-dock-rdv]').addEventListener('click', function () { if (etat !== 'question') replier('réserver'); });
-  dock.querySelector('[data-dock-fermer]').addEventListener('click', function () { replier('croix'); });
+  /* Une croix par vue qui en a une (situation, partage). */
+  Array.prototype.forEach.call(dock.querySelectorAll('[data-dock-fermer]'), function (b) {
+    b.addEventListener('click', function () { replier('croix'); });
+  });
+  /* Partager : le bouton de la rangée, la ligne du sommaire et
+     « Emporter cette page » du contact passent tous par fi:partager, la
+     porte du bandeau « partage » (spec partage-telecommande § 4). */
+  Array.prototype.forEach.call(boutonsPartager, function (b) {
+    b.addEventListener('click', function () {
+      if (etat === 'partage') { replier('re-clic sur Partager'); return; }
+      emettre('fi:partager', { mode: 'endroit' });
+    });
+  });
+  document.addEventListener('fi:partager', function (e) {
+    if (etat === 'question') { journal('fi:partager ignoré : la question attend sa réponse'); return; }
+    ouvrir('partage', (e.detail && e.detail.mode) || 'endroit');
+  });
   /* Un chapitre du sommaire passe par fi:aller, la porte que prendra
      aussi la télécommande. */
   vues.sommaire.addEventListener('click', function (e) {
@@ -206,10 +233,10 @@
      ⚠️ `pointerdown` en capture, comme la borne : un `click` ne vient pas
      toujours (un défilement tactile n'en produit pas). */
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && (etat === 'situation' || etat === 'sommaire')) { replier('Échap'); rangee.querySelector('button').focus(); }
+    if (e.key === 'Escape' && (etat === 'situation' || etat === 'sommaire' || etat === 'partage')) { replier('Échap'); rangee.querySelector('button').focus(); }
   });
   document.addEventListener('pointerdown', function (e) {
-    if ((etat === 'situation' || etat === 'sommaire') && !e.composedPath().includes(dock)) replier('clic dehors');
+    if ((etat === 'situation' || etat === 'sommaire' || etat === 'partage') && !e.composedPath().includes(dock)) replier('clic dehors');
   }, true);
 
   /* ── Ce que le reste de la page annonce ─────────────────────────── */
@@ -256,6 +283,9 @@
       var br = b.getBoundingClientRect();
       if (br.width && (br.width < 44 || br.height < 44)) fautes.push('cible de ' + Math.round(br.width) + '×' + Math.round(br.height) + ' px : ' + (b.getAttribute('aria-label') || b.textContent.trim()));
     });
+    /* 8 cibles au bureau depuis « Partager » : la rangée ne doit jamais
+       déborder (au téléphone, Partager passe dans le sommaire). */
+    if (rangee.scrollWidth > rangee.clientWidth + 1) fautes.push('rangée qui déborde (' + rangee.scrollWidth + ' px pour ' + rangee.clientWidth + ')');
     if (fautes.length) journal('⚠️ garde du dock :', fautes);
     else journal('garde du dock : ok (' + etat + ', ' + window.innerWidth + ' px)');
   }
