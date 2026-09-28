@@ -1292,6 +1292,9 @@
       color: #fff; background: var(--brand-gradient);
     }
     .badge-cas[hidden] { display: none; }
+    /* Le badge est en inline-flex : sans « pre », l'espace de « Pour »
+       tomberait et l'on lirait « POURVOTRE CAS ». */
+    .badge-cas__pour { white-space: pre; }
 
     /* L'approche et le contact. */
     .etapes__geste { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
@@ -1903,6 +1906,32 @@
       .demos:not([data-js]) .demo:target .demo__actions,
       .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__actions { margin-top: var(--fi-e2); }
       .demos .demo__actions .hero-cta__btn { width: auto; }
+    }
+    /* Téléphone : la démo en avant s'arrêtait pile au bord du dock
+       (bouton « Voir la page » à 0 px à 360×740, fragile au moindre
+       agrandissement du texte, 33 px dessous pour Convaincre et Conserver).
+       Les trois respirations internes passent de 16 à 8 px, et le badge
+       se raccourcit : 24 px d'air au-dessus du dock, sans toucher au
+       reste de la page. */
+    @media (max-width: 899px) {
+      .demos__scene .demo .demo__usage,
+      .demos__scene .demo .demo__sous-titre,
+      .demos__scene .demo .demo__accroche,
+      .demos:not([data-js]) .demo:target .demo__usage,
+      .demos:not([data-js]) .demo:target .demo__sous-titre,
+      .demos:not([data-js]) .demo:target .demo__accroche,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__usage,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__sous-titre,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__accroche { margin-bottom: var(--fi-e1); }
+      /* « CONVAINCRE » ou « CONSERVER » + « POUR VOTRE CAS » demandent
+         297 px pour 262 à 360 px : le badge passait à la ligne (+32 px).
+         « Votre cas » tient sur la même ligne, le bureau garde la phrase. */
+      .demos .demo__usage .badge-cas__pour { display: none; }
+      /* « CONVAINCRE » + « VOTRE CAS » : 265 px pour 262, d'où un peu
+         d'espacement en moins (≈ 10 px de marge pour les polices des
+         vrais téléphones). */
+      .demos .demo__usage { letter-spacing: 0.08em; }
+      .demos .demo__usage .badge-cas { padding-inline: var(--fi-e1); }
     }
     /* Bureau bas (1280×720) : les trois points se taisent (la démo les
        montre elle-même), le sous-titre d'une vignette tient sur une ligne. */
@@ -2808,7 +2837,7 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
-              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre<span class="badge-cas" hidden><span class="badge-cas__pour">Pour </span>votre cas</span></p>
               <h3><a class="demo__lien" href="#demo-stand">STAND</a></h3>
               <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
               <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
@@ -2829,7 +2858,7 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
-              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre<span class="badge-cas" hidden><span class="badge-cas__pour">Pour </span>votre cas</span></p>
               <h3><a class="demo__lien" href="#demo-midipile">Midipile</a></h3>
               <p class="demo__sous-titre">le démonstrateur produit</p>
               <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
@@ -2850,7 +2879,7 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
-              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former<span class="badge-cas" hidden><span class="badge-cas__pour">Pour </span>votre cas</span></p>
               <h3><a class="demo__lien" href="#demo-rayon-x">Rayon X</a></h3>
               <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
               <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
@@ -2873,7 +2902,7 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
-              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former<span class="badge-cas" hidden><span class="badge-cas__pour">Pour </span>votre cas</span></p>
               <h3><a class="demo__lien" href="#demo-agorapod">AgoraPod</a></h3>
               <p class="demo__sous-titre">un véhicule à comprendre, pour l'ICAM</p>
               <p class="demo__accroche">Le châssis et l'habitacle d'un véhicule, à parcourir sous tous les angles.</p>
@@ -2894,7 +2923,7 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="demo__corps">
-              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver<span class="badge-cas" hidden><span class="badge-cas__pour">Pour </span>votre cas</span></p>
               <h3><a class="demo__lien" href="#demo-moulage">À fleur d'écorce</a></h3>
               <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
               <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
