@@ -53,6 +53,7 @@
        composants.js, qui lit window.FiSon pour le bouton son. -->
   <script defer src="/composants/son.js"></script>
   <script defer src="/composants/composants.js"></script>
+  <script defer src="/composants/dock.js"></script>
   <link rel="stylesheet" href="/composants/composants.css">
 
   <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
@@ -164,7 +165,9 @@
       --glass-border: rgba(255, 255, 255, 0.08);
       --glass-border-highlight: rgba(255, 255, 255, 0.2);
 
-      --masthead-row-overlap: clamp(4.5rem, 11vw, 6rem);
+      /* Plus d'en-tête au-dessus du hero depuis le dock (28/09/2026) : le
+         hero part du haut de la page, sans chevauchement. */
+      --masthead-row-overlap: 0px;
 
       /* ── Les trois seuls ajouts propres à cette page ────────────────────
          Elles n'existent pas dans /stand/ parce que celle-ci n'en a pas
@@ -186,18 +189,12 @@
 
     *, *::before, *::after { box-sizing: border-box; }
 
-    /* ⚠️ `scroll-padding-top` est ce qui empêche un titre de section d'arriver
-       SOUS la pilule de navigation quand on clique une ancre. Sans lui, le
-       visiteur atterrit sur un titre à moitié caché et croit avoir raté le
-       lien. Les quatre paliers sont ceux de /stand/, mesurés sur la hauteur
-       réelle du bandeau à chaque largeur. */
+/* Plus de pilule de navigation en haut (le dock est en bas) : une ancre
+       n'a qu'à laisser respirer son titre, 24 px (grille de 8). */
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: 7.75rem;
+      scroll-padding-top: 1.5rem;
     }
-    @media (max-width: 640px) { html { scroll-padding-top: 6.75rem; } }
-    @media (min-width: 641px) and (max-width: 1060px) { html { scroll-padding-top: 9rem; } }
-    @media (min-width: 1061px) { html { scroll-padding-top: 8.25rem; } }
 
     body {
       margin: 0;
@@ -372,355 +369,8 @@
     }
     .js .reveal.active { opacity: 1; transform: translateY(0); }
 
-    /* ══════════════════════════════════════════════════════════════════════
-       NAVIGATION — l'état FINAL de .masthead dans /stand/
-
-       ⚠️ La feuille de /stand/ surcharge ses propres règles plus bas : il faut
-       lire la DERNIÈRE version, pas la première. Deux pièges relevés le
-       25/09/2026, tous deux corrigés ici :
-         · le CTA n'est pas un bouton fantôme bleu mais un bouton PLEIN en
-           dégradé profond, qui révèle un second dégradé plus clair au survol ;
-         · le menu mobile n'est pas un panneau déroulant sous la pilule, c'est
-           un PLEIN ÉCRAN qui glisse depuis la droite, et le CTA Contact entre
-           dedans. C'est la même balise `nav` dans les deux cas : en grand
-           écran elle passe en `display: contents` et ses enfants se posent
-           directement dans la grille de la pilule.
-
-       Les dimensions vivent sur `.masthead-inner`, en variables, comme chez
-       /stand/ : le rayon de la pilule DÉCOULE de celui du burger.
-       ══════════════════════════════════════════════════════════════════════ */
-    .masthead {
-      position: sticky;
-      top: 0;
-      z-index: 102;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem 1rem 0.65rem;
-      background: transparent;
-      border: none;
-    }
-
-    .masthead-inner {
-      --masthead-burger-size: 42px;
-      --masthead-text-size: 0.95rem;
-      --masthead-pad-trb: 0.5rem;
-      /* La courbe gauche de la pilule mange de l'espace : un léger surplus
-         rend l'écart visuellement égal sur les quatre côtés. */
-      --masthead-pad-x-start: calc(var(--masthead-pad-trb) + 0.15rem);
-      --masthead-icon-squircle: 0.35;
-      --masthead-burger-radius: calc(var(--masthead-burger-size) * var(--masthead-icon-squircle));
-      --masthead-shell-radius: calc(var(--masthead-burger-radius) + var(--masthead-pad-trb));
-      position: relative;
-      z-index: 1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: clamp(0.75rem, 2vw, 1.75rem);
-      width: 100%;
-      max-width: min(1100px, calc(100vw - 2rem));
-      padding: var(--masthead-pad-trb) var(--masthead-pad-trb) var(--masthead-pad-trb) var(--masthead-pad-x-start);
-      border-radius: var(--masthead-shell-radius);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      /* Pas d'`overflow: hidden` : il rognerait le menu en `position: fixed`. */
-      isolation: isolate;
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    }
-
-    /* Le fond est un calque séparé : `backdrop-filter` posé sur le conteneur
-       lui-même créerait un contexte d'empilement qui piégerait le menu. */
-    .masthead-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      border-radius: inherit;
-      background: rgba(10, 11, 20, 0.58);
-      backdrop-filter: blur(14px) saturate(150%);
-      -webkit-backdrop-filter: blur(14px) saturate(150%);
-    }
-
-    .masthead-brand {
-      display: flex;
-      align-items: center;
-      position: relative;
-      z-index: 2;
-      text-decoration: none;
-      transition: opacity 0.2s ease;
-    }
-    .masthead-brand:hover { opacity: 0.92; }
-    .masthead-brand:focus-visible {
-      outline: 2px solid var(--accent-blue-light);
-      outline-offset: 4px;
-      border-radius: 8px;
-    }
-    .masthead-logo-img {
-      display: block;
-      width: auto;
-      height: auto;
-      max-height: min(var(--masthead-burger-size), calc(var(--masthead-text-size) * 2.65));
-      max-width: min(280px, 52vw);
-      object-fit: contain;
-      object-position: left center;
-      flex-shrink: 0;
-    }
-
-    .main-nav {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: clamp(1rem, 2vw, 1.75rem);
-    }
-    .main-nav .nav-link {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: var(--masthead-text-size);
-      font-weight: 500;
-      line-height: 1.2;
-      transition: color 0.3s ease;
-    }
-    /* Une largeur animée, pas un `transform` : le trait reste net à chaque
-       étape de la transition. */
-    .main-nav .nav-link::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      border-radius: 2px;
-      background: var(--accent-blue);
-      transition: width 0.3s ease;
-    }
-    .main-nav .nav-link:hover,
-    .main-nav .nav-link.active-link { color: var(--text-main); }
-    .main-nav .nav-link:hover::after,
-    .main-nav .nav-link.active-link::after { width: 100%; }
-
-    /* Le CTA de la pilule : bouton PLEIN, dégradé profond, avec un second
-       dégradé plus clair qui monte en opacité au survol (le `::before`). */
-    .masthead-cta {
-      position: relative;
-      z-index: 2;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      box-sizing: border-box;
-      min-height: var(--masthead-burger-size);
-      height: var(--masthead-burger-size);
-      padding: 0 clamp(0.65rem, 1.15vw, 0.95rem);
-      font-size: var(--masthead-text-size);
-      font-weight: 700;
-      line-height: 1.2;
-      letter-spacing: 0.03em;
-      color: #fff;
-      text-decoration: none;
-      white-space: nowrap;
-      border-radius: var(--masthead-burger-radius);
-      border: 1px solid transparent;
-      background: linear-gradient(135deg, var(--accent-blue-deep) 0%, var(--accent-purple-deep) 100%);
-      box-shadow: 0 10px 26px -10px rgba(40, 89, 255, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-      overflow: hidden;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .masthead-cta::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 55%, var(--accent-pink) 100%);
-      opacity: 0;
-      transition: opacity 0.35s ease;
-    }
-    .masthead-cta:hover {
-      color: #fff;
-      border-color: transparent;
-      transform: translateY(-2px);
-      box-shadow: 0 16px 36px -12px rgba(110, 168, 255, 0.75);
-    }
-    .masthead-cta:hover::before { opacity: 1; }
-    .masthead-cta:focus-visible {
-      outline: 2px solid var(--accent-blue-light);
-      outline-offset: 3px;
-    }
-
-    .burger {
-      display: none;
-      position: relative;
-      width: var(--masthead-burger-size);
-      height: var(--masthead-burger-size);
-      aspect-ratio: 1;
-      padding: 0;
-      flex-shrink: 0;
-      box-sizing: border-box;
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      border-radius: var(--masthead-burger-radius);
-      cursor: pointer;
-      /* ⚠️ Au-dessus du menu plein écran (z-index 150) : c'est ce qui permet
-         de refermer avec le même bouton qu'on a ouvert. */
-      z-index: 200;
-      box-shadow: none;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-    }
-    .burger:hover {
-      border-color: rgba(255, 255, 255, 0.6);
-      background: rgba(255, 255, 255, 0.06);
-      transform: translateY(-1px);
-    }
-    .burger span {
-      position: absolute;
-      left: 10px;
-      width: 22px;
-      height: 2px;
-      background-color: #fff;
-      border-radius: 2px;
-      transform-origin: center;
-      transition: transform 0.3s ease, opacity 0.3s ease, top 0.3s ease;
-    }
-    .burger span:nth-child(1) { top: 12px; }
-    .burger span:nth-child(2) { top: 20px; }
-    .burger span:nth-child(3) { top: 28px; }
-    /* Les deux barres extrêmes rejoignent la médiane puis pivotent : la croix
-       se forme sans changer le nombre d'éléments. */
-    .burger.active span:nth-child(1) { top: 20px; transform: rotate(45deg); }
-    .burger.active span:nth-child(2) { opacity: 0; }
-    .burger.active span:nth-child(3) { top: 20px; transform: rotate(-45deg); }
-
-    /* ── Téléphone, tablette, petit portable : le menu devient un plein écran ──
-       ⚠️ Règle du 25/09/2026 : les liens de la navbar ne passent JAMAIS sur
-       deux lignes. Le point de rupture n'est donc pas celui de /stand/
-       (950 px) : c'est la largeur à partir de laquelle NOS libellés tiennent
-       sur une rangée, mesurée à 1030 px, plus 30 px de marge pour une barre
-       de défilement classique (17 px sous Windows, que la media query compte
-       et que la mise en page ne reçoit pas).
-       À remesurer à chaque changement de libellé (version EN comprise) : le
-       journal de debug (`?debug=1`) signale une nav sur deux rangées. */
-    @media (max-width: 1060px) {
-      .burger { display: flex; }
-
-      .main-nav {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 100%;
-        height: 100vh;
-        height: 100dvh;
-        margin: 0;
-        padding: 2rem 1.5rem;
-        box-sizing: border-box;
-        background: transparent;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 2.5rem;
-        z-index: 150;
-        isolation: isolate;
-        /* `visibility` en `step-end` : le panneau reste atteignable au clavier
-           pendant qu'il glisse, et disparaît d'un coup une fois sorti. */
-        visibility: hidden;
-        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0.4s step-end;
-      }
-      .main-nav::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        background: rgba(10, 11, 20, 0.88);
-        backdrop-filter: blur(22px) saturate(150%);
-        -webkit-backdrop-filter: blur(22px) saturate(150%);
-        transform: translateZ(0);
-      }
-      .main-nav.menu-open {
-        right: 0;
-        visibility: visible;
-        transition: right 0.4s cubic-bezier(0.77, 0, 0.175, 1), visibility 0s;
-      }
-      .main-nav-links {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 2.5rem;
-        position: relative;
-        z-index: 1;
-      }
-      .main-nav .nav-link,
-      .main-nav .masthead-cta { font-size: 1.05rem; line-height: 1.25; }
-      .main-nav .nav-link { position: relative; z-index: 1; font-weight: 600; }
-      .main-nav .masthead-cta {
-        position: relative;
-        z-index: 1;
-        height: auto;
-        min-height: 44px;
-        letter-spacing: 0.06em;
-        padding: 0.9rem 1.75rem;
-        margin-top: 0.25rem;
-        border-radius: 12px;
-      }
-      .main-nav .nav-link::after,
-      .main-nav .masthead-cta::after { display: none; }
-    }
-
-    /* ── Grand écran : la nav s'efface, ses enfants entrent dans la grille ── */
-    @media (min-width: 1061px) {
-      .masthead { padding: 1.1rem 1.25rem 0.75rem; }
-      .masthead-inner {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: clamp(0.75rem, 2vw, 1.75rem);
-        max-width: min(1120px, calc(85vw - 2rem));
-        --masthead-burger-size: 46px;
-        --masthead-text-size: 0.98rem;
-        --masthead-pad-trb: 0.72rem;
-        --masthead-pad-x-start: calc(var(--masthead-pad-trb) + 0.2rem);
-      }
-      .masthead-brand { grid-column: 1; }
-      /* `display: contents` fait disparaître la nav de la mise en page sans
-         la retirer du DOM : ses deux enfants deviennent directement les
-         colonnes 2 et 3 de la pilule. */
-      .main-nav { display: contents; }
-      .main-nav-links {
-        grid-column: 2;
-        display: flex;
-        /* `nowrap` et non `wrap` comme sur /stand/ : une seconde rangée est
-           interdite. Si les libellés ne tiennent plus, c'est le point de
-           rupture ci-dessus qu'il faut remonter, pas la pilule qu'on laisse
-           grandir. */
-        flex-wrap: nowrap;
-        white-space: nowrap;
-        justify-content: center;
-        align-items: center;
-        gap: clamp(1rem, 2vw, 1.75rem);
-        min-width: 0;
-        position: relative;
-        z-index: 2;
-      }
-      .main-nav .masthead-cta { grid-column: 3; }
-    }
-
-    /* ── Tablette : le flou coûte cher, on l'allège puis on le retire ────── */
-    @media (min-width: 768px) and (max-width: 1024px) {
-      .masthead { padding-top: calc(1rem + 1px); }
-      .masthead-bg {
-        backdrop-filter: blur(8px) saturate(130%);
-        -webkit-backdrop-filter: blur(8px) saturate(130%);
-      }
-    }
-    @media (max-width: 767px) {
-      .masthead { padding: 1rem 1rem 0.5rem; }
-      .masthead-inner { --masthead-text-size: 0.9rem; }
-      .masthead-bg {
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        background: rgba(10, 11, 20, 0.96);
-      }
-    }
+    /* L'en-tête (pilule + burger) a été remplacé par le dock le 28/09/2026 :
+       voir composants/dock.js et le bloc « LE DOCK » de composants.css. */
 
     /* ══════════════════════════════════════════════════════════════════════
        BOUTONS — la famille .hero-cta__btn de /stand/, ses QUATRE variantes
@@ -1678,10 +1328,6 @@
     /* Une section qui reçoit le focus par script (le hero y descend) ne
        s'encadre pas : le focus sert au prochain Tab, pas au regard. */
     section[tabindex="-1"]:focus { outline: none; }
-    /* L'invitation « Visite sonore » : une pilule discrète, en pointillé
-       quand le son est muet (une invitation, pas un bouton de plus). */
-    .situations__son { color: var(--text-main); }
-    .situations__son[data-niveau="muet"] { border-style: dashed; color: var(--text-soft); }
     .situations__regarder { font-size: 0.9rem; color: var(--text-muted); text-underline-offset: 3px; }
     .situations__regarder:hover { color: var(--text-main); }
     /* Le bloc d'identité du hero est un lien vers le fondateur (spec
@@ -1769,140 +1415,6 @@
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 26px rgba(139, 92, 246, 0.5);
     }
 
-    /* ── Le dock ── */
-    .dock {
-      position: fixed;
-      left: 0; right: 0;
-      bottom: calc(1rem + env(safe-area-inset-bottom));
-      margin-inline: auto;
-      width: fit-content;
-      max-width: min(100% - 2rem, 1100px);
-      z-index: 90;      /* sous le bandeau (102) et son menu plein écran (150) */
-      transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    .dock[data-visible="non"] { opacity: 0; transform: translateY(calc(100% + 1.5rem)); pointer-events: none; }
-    .dock__panneau {
-      display: flex; align-items: center; gap: 0.35rem;
-      padding: 0.35rem 0.5rem;
-      border-radius: 999px;
-      background: rgba(10, 11, 20, 0.72);
-      border: 1px solid var(--glass-border);
-      backdrop-filter: blur(14px) saturate(150%);
-      -webkit-backdrop-filter: blur(14px) saturate(150%);
-      box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
-    }
-    .dock button { font: inherit; color: var(--text-main); background: none; border: 0; cursor: pointer; }
-    .dock :focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }
-    .dock__btn { width: 44px; height: 44px; border-radius: 50%; font-size: 1.4rem; line-height: 1; }
-    .dock__btn:hover:not(:disabled),
-    .dock__choix:hover { background: var(--glass-bg-hover); }
-    .dock__btn:disabled { opacity: 0.3; cursor: default; }
-    .dock__position { min-width: 11.5rem; text-align: center; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
-    .dock__sep { width: 1px; height: 24px; margin-inline: 0.25rem; background: var(--glass-border-highlight); }
-    .dock__situation { position: relative; }
-    .dock__choix { min-height: 44px; padding: 0 1rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; white-space: nowrap; }
-    /* Règle 9 : les boutons du menu partagent la largeur de la pile. */
-    .dock__menu {
-      position: absolute; bottom: calc(100% + 0.6rem); left: 50%; transform: translateX(-50%);
-      list-style: none; margin: 0; padding: 0.4rem; min-width: 15rem;
-      display: flex; flex-direction: column; gap: 0.3rem;
-      border-radius: 16px; background: rgba(10, 11, 20, 0.92);
-      border: 1px solid var(--glass-border); box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
-    }
-    .dock__menu[hidden] { display: none; }
-    .dock__menu button {
-      width: 100%; min-height: 44px; padding: 0 0.9rem; border-radius: 10px;
-      display: flex; align-items: center; gap: 0.6rem; text-align: left; font-size: 0.9rem;
-    }
-    .dock__menu button:hover,
-    .dock__menu button[aria-current="true"] { background: var(--glass-bg-hover); }
-    /* ⚠️ `.dock button` (deux sélecteurs) bat `.fi-bascule-son` : fond,
-       bordure et couleur du dock s'appliquent, c'est voulu. */
-    .dock .fi-bascule-son { font-size: 0.9rem; }
-    .dock .fi-bascule-son:hover { background: var(--glass-bg-hover); }
-    .dock__pastille,
-    .dock__fermer { display: none; }
-
-    /* ── La pastille (< 768 px) : rôle `affordance` ── */
-    @media (max-width: 767px) {
-      .dock { bottom: calc(0.75rem + env(safe-area-inset-bottom)); }
-      /* `.dock .dock__pastille` et non `.dock__pastille` : `.dock button`
-         (fond transparent) l'emporterait sinon. */
-      .dock .dock__pastille {
-        display: grid; place-items: center; position: relative;
-        width: 56px; height: 56px; padding: 0; border-radius: 50%;
-        background: rgba(10, 11, 20, 0.82);
-        box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--glass-border);
-        -webkit-tap-highlight-color: transparent;
-      }
-      /* L'anneau : un dégradé conique rempli jusqu'à la progression, évidé
-         au centre par un masque radial. */
-      .dock__anneau {
-        position: absolute; inset: 0; border-radius: 50%;
-        background: conic-gradient(var(--accent-blue) 0deg,
-                    var(--accent-pink) calc(var(--progression, 0) * 360deg),
-                    rgba(255, 255, 255, 0.12) 0deg);
-        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
-        mask: radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px));
-      }
-      .dock__centre { position: relative; font-size: 1.05rem; font-weight: 700; }
-      .dock__centre .pic { width: 22px; height: 22px; }
-      .dock__sep { display: none; }
-
-      .dock[data-etat="replie"] .dock__panneau { display: none; }
-      .dock[data-etat="deplie"] { left: 16px; right: 16px; width: auto; max-width: none; }
-      .dock[data-etat="deplie"] .dock__pastille { display: none; }
-      .dock[data-etat="deplie"] .dock__panneau {
-        display: grid;
-        grid-template-columns: 44px 1fr auto 44px;
-        grid-template-areas: "prec pos pos suiv" "sit sit sit sit" "son son fermer fermer";
-        gap: 0.25rem; padding: 0.5rem; border-radius: 20px;
-        transform-origin: 50% 100%;
-        animation: dockDeplie 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-      }
-      #dockPrec { grid-area: prec; }
-      #dockPosition { grid-area: pos; min-width: 0; }
-      #dockSuiv { grid-area: suiv; }
-      .dock__situation { grid-area: sit; }
-      .dock__choix { width: 100%; }
-      .dock__son { grid-area: son; justify-content: center; }
-      .dock__menu { left: 0; transform: none; min-width: 0; width: min(18rem, calc(100vw - 48px)); }
-      .dock[data-etat="deplie"] .dock__fermer {
-        grid-area: fermer; display: inline-flex; align-items: center; justify-content: center;
-        min-height: 44px; padding: 0 1rem; border-radius: 999px; font-size: 0.9rem; color: var(--text-muted);
-      }
-
-      /* Les trois effets. ::before = le halo, ::after = le reflet. */
-      .dock__pastille::before,
-      .dock__pastille::after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; opacity: 0; }
-      .dock__pastille::before { inset: -6px; border: 2px solid var(--accent-purple); }
-      .dock__pastille::after {
-        inset: 0;
-        background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.55) 50%, transparent 65%);
-        background-size: 250% 100%;
-      }
-      .dock--entree .dock__pastille { animation: pastilleEntree 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
-      .dock--entree .dock__pastille::after { animation: pastilleReflet 0.9s 0.35s ease-out both; }
-      .dock--bascule .dock__centre { animation: centreBascule 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
-      .dock--bascule .dock__pastille::before { animation: pastilleHalo 0.6s ease-out; }
-      .dock--invite .dock__pastille { animation: pastilleInvite 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
-    }
-    @keyframes pastilleEntree { from { transform: translateY(140%) scale(0.6); } to { transform: none; } }
-    @keyframes pastilleReflet {
-      0% { opacity: 1; background-position: 120% 0; }
-      80% { opacity: 1; }
-      100% { opacity: 0; background-position: -30% 0; }
-    }
-    @keyframes centreBascule { from { transform: rotateX(90deg); opacity: 0; } to { transform: none; opacity: 1; } }
-    @keyframes pastilleHalo { from { opacity: 0.9; transform: scale(0.85); } to { opacity: 0; transform: scale(1.35); } }
-    @keyframes pastilleInvite {
-      0%, 100% { transform: none; }
-      30% { transform: translateY(-10px); }
-      55% { transform: translateY(0); }
-      75% { transform: translateY(-4px); }
-    }
-    @keyframes dockDeplie { from { opacity: 0; transform: scale(0.4, 0.3); } to { opacity: 1; transform: none; } }
-
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       .hero__halo,
@@ -1912,11 +1424,6 @@
       .page-rest { --page-rest-glow-mix: 1; }
       .aura { display: none; }
       .js .reveal { opacity: 1; transform: none; }
-      /* /stand/ coupe nommément la transition du CTA et du burger. */
-      .masthead-cta,
-      .masthead-cta::before,
-      .burger,
-      .main-nav { transition: none; }
       .contact::before,
       .contact__aurora span,
       .contact__ring::before,
@@ -1927,13 +1434,6 @@
       .contact__links a { animation: none; transition: none; }
       /* Le filet du contact reste déployé plutôt que de disparaître. */
       .contact::before { transform: translateX(-50%) scaleX(1); }
-      /* Le parcours : états finaux, aucun mouvement. L'anneau reste à jour. */
-      .dock,
-      .dock__panneau,
-      .dock__pastille,
-      .dock__pastille::before,
-      .dock__pastille::after,
-      .dock__centre,
       .constellation path { animation: none !important; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
@@ -2168,15 +1668,15 @@
     body[data-situation="former"] .hero__verbe[data-verbe="former"],
     body[data-situation="garder"] .hero__verbe[data-verbe="garder"],
     /* …ou par le pilier survolé, qui l'emporte (0,5,0). */
-    .hero:has([data-situation-choix="convaincre"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="convaincre"],
-    .hero:has([data-situation-choix="former"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="former"],
-    .hero:has([data-situation-choix="garder"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="garder"] {
+    body:has([data-situation-choix="convaincre"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="convaincre"],
+    body:has([data-situation-choix="former"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="former"],
+    body:has([data-situation-choix="garder"]:is(:hover, :focus-visible)) .hero__verbe[data-verbe="garder"] {
       color: var(--text-main);
       background-size: 100% 2px;
     }
     /* Un pilier survolé éteint le verbe de la situation s'il n'est pas le
        sien (0,4,0 bat 0,3,1) : un seul verbe allumé à la fois. */
-    .hero:has(.fi-pilier:is(:hover, :focus-visible)) .hero__verbe { color: inherit; background-size: 0 2px; }
+    body:has(.fi-pilier:is(:hover, :focus-visible)) .hero__verbe { color: inherit; background-size: 0 2px; }
 
     /* ── Le fond vidéo ───────────────────────────────────────────────── */
     .hero__fond { position: absolute; inset: 0; pointer-events: none; }
@@ -2212,6 +1712,64 @@
     .hero__lecture-icone { display: none; }
     .hero__pause[aria-pressed="true"] .hero__pause-icone { display: none; }
     .hero__pause[aria-pressed="true"] .hero__lecture-icone { display: inline; fill: currentColor; }
+    /* ══════════════════════════════════════════════════════════════════
+       LE DOCK : ce que la page ajuste (28/09/2026)
+       Le dock lui-même vit dans composants/composants.css. Ici : le logo
+       en coin, la marge du bas, et les verbes du chapeau (les piliers ne
+       sont plus DANS le hero, d'où `body:has()` au lieu de `.hero:has()`).
+       ══════════════════════════════════════════════════════════════════ */
+    .logo-coin {
+      position: absolute; z-index: 5;
+      top: var(--fi-e2); left: var(--fi-e2); /* 16 px : la gouttière mobile */
+      display: inline-flex; align-items: center; min-height: var(--fi-cible); /* 44 px : cible tactile */
+    }
+    .logo-coin img { display: block; width: auto; height: 28px; } /* 28 px : lisible sans concurrencer le titre (place provisoire, à définir) */
+    .logo-coin:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 4px; border-radius: 6px; }
+    @media (min-width: 768px) { .logo-coin { top: var(--fi-e3); left: var(--fi-e3); } } /* 24 px dès la tablette */
+    /* Le pied de page ne passe pas sous le dock : sa hauteur mesurée
+       (--fi-dock-h, dock.js) plus 16 px de respiration. */
+    body { padding-bottom: calc(var(--fi-dock-h, 64px) + var(--fi-e2) + env(safe-area-inset-bottom)); }
+
+    /* « Réserver 30 min » : le dock le porte dans sa rangée ; le hero ne le
+       garde que sans JavaScript (pas de dock). */
+    .js .hero__actions { display: none; }
+
+    /* Les piliers sur UNE ligne : « Convaincre un acheteur », la phrase
+       entière, au lieu du verbe au-dessus de son complément. Même corps
+       pour les deux (t0) ; le verbe garde sa graisse et sa couleur. */
+    .situations .fi-pilier__texte { font-size: var(--fi-t0); }
+    .situations .fi-pilier__texte strong { display: inline; font-size: inherit; }
+
+    /* Le hero se centre dans l'espace LIBRE au-dessus du dock, dont la
+       hauteur réelle (--fi-dock-total, dock.js) change avec l'état : rien
+       ne passe sous la question, et l'air se répartit en haut et en bas. */
+    .js .hero { min-height: 100svh; align-items: stretch; } /* le premier écran entier : la question et le hero le partagent */
+    .js .hero__contenu {
+      justify-content: center;
+      padding-top: calc(var(--fi-cible) + 2 * var(--fi-e2)); /* 76 px : le logo en coin (44 de cible) et 16 px d'air de chaque côté */
+      padding-bottom: calc(var(--fi-dock-total, 5rem) + var(--fi-e2) + var(--fi-e3)); /* le dock, ses 16 px au bord, puis 24 px d'air */
+      transition: padding-bottom 400ms var(--fi-ease-sortie); /* à la réponse, le hero redescend au lieu de sauter */
+    }
+    @media (prefers-reduced-motion: reduce) { .js .hero__contenu { transition: none; } }
+    /* Écran court (≤ 860 px de haut, un téléphone courant) : le rythme se
+       resserre à 16 px partout plutôt que de laisser le dock couvrir la
+       signature. Mesuré à 375 × 812 : il manquait 48 px, ces trois
+       réglages les rendent (24 + 8 + 16). */
+    @media (max-height: 860px) {
+      .js .hero__contenu { gap: var(--fi-e2); padding-bottom: calc(var(--fi-dock-total, 5rem) + 2 * var(--fi-e2)); } /* 16 px entre les blocs, 16 au-dessus du dock */
+      .js .hero__identite { margin-top: 0; }
+      .fi-dock .situations { gap: var(--fi-e1); } /* 8 px entre question, choix et sortie : le bandeau serre */
+    }
+    /* Téléphone court (< 760 px de haut ET < 768 de large, petit Android) :
+       même serré, il manquait 22 px à 360 × 740. Le titre descend d'un cran
+       de l'échelle (t4 › t3, 41,5 › 33 px, toujours le plus gros de l'écran)
+       et la signature s'efface le temps de la question seulement ; la
+       réponse la rend. ⚠️ La largeur compte : à 1280 × 720, tout tenait
+       (78 px d'air), la hauteur seule masquait la signature à tort. */
+    @media (max-height: 759px) and (max-width: 767px) {
+      .js .hero__titre { font-size: var(--fi-t3); }
+      html.fi-verrou .hero__identite { visibility: hidden; }
+    }
   </style>
 </head>
 
@@ -2228,81 +1786,81 @@
     <symbol id="pic-garder" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></symbol>
   </svg>
 
-  <!-- ══ NAVIGATION ══════════════════════════════════════════════════════
-       ⚠️ L'ordre des éléments est celui de /stand/ et il compte : le fond
-       (.masthead-bg) est le DERNIER enfant, en z-index 0, pendant que les
-       autres sont en z-index 2. Le remonter le ferait passer devant les liens.
-       Le CTA « Contact » est DANS la nav : en grand écran il devient la
-       colonne 3 de la pilule, sur téléphone il entre dans le plein écran.
-  ══════════════════════════════════════════════════════════════════════ -->
-  <header class="masthead">
-    <div class="masthead-inner">
-      <a href="#top" class="masthead-brand" aria-label="Fractal Innov, retour en haut de la page">
-        <img src="/media/marque/fractalinnov-logo.webp" alt="Fractal Innov" class="masthead-logo-img"
-             width="770" height="142" loading="eager" decoding="async">
-      </a>
+  <!-- ══ LE LOGO ═════════════════════════════════════════════════════════
+       Place réservée en haut à gauche depuis que le dock remplace l'en-tête
+       (28/09/2026). Son traitement sera défini dans un prompt dédié ; en
+       attendant, le logo actuel, simple lien vers le haut de la page. -->
+  <a class="logo-coin" href="#top" aria-label="Fractal Innov, retour en haut de la page">
+    <img src="/media/marque/fractalinnov-logo.webp" alt="" width="770" height="142"
+         loading="eager" decoding="async">
+  </a>
 
-      <nav class="main-nav" id="mainNav" aria-label="Navigation principale">
-        <div class="main-nav-links">
-          <a href="#offre" class="nav-link">Agence WebXR</a>
-          <a href="#demos" class="nav-link">Démos</a>
-          <a href="#approche" class="nav-link">Approche</a>
-          <a href="#partenaires" class="nav-link">Partenaires</a>
-          <a href="#fondateur" class="nav-link">Fondateur</a>
-        </div>
-        <a href="#contact" class="masthead-cta">Contact</a>
-      </nav>
+  <!-- ══ LE DOCK : la navigation du site ══════════════════════════════════
+       Le patron du dock de la borne (salon_demo_app, Dock.tsx) : UNE surface
+       en bas de l'écran, la rangée de boutons, et au-dessus un bandeau qui
+       prend l'un de trois visages (composants/dock.js) :
+         question   la première question, qui débloque la suite de la page
+         situation  la situation cliquée dans la rangée
+         sommaire   « Tous » : les sept chapitres, celui en cours marqué
+       ⚠️ `hidden` au départ : sans JavaScript il n'existe pas, et la
+       question reste dans le hero, en liens vers #offre.
+       ⚠️ Placé AVANT <main> : l'ordre du DOM est l'ordre du clavier. -->
+  <div class="fi-dock" id="dock" data-composant="dock" data-etat="replie" hidden>
+    <div class="fi-dock__bandeau" id="dockBandeau">
+      <!-- question : dock.js y déplace le panneau .situations du hero. -->
+      <div class="fi-dock__vue fi-dock__vue--question" data-dock-vue="question" hidden></div>
 
-      <button class="burger" id="burgerBtn" type="button"
-              aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mainNav">
-        <span></span><span></span><span></span>
-      </button>
-
-      <div class="masthead-bg" aria-hidden="true"></div>
-    </div>
-  </header>
-
-  <!-- ══ LE DOCK : le fil du parcours ═════════════════════════════════════
-       Le reflet du dock de la borne STAND : où l'on en est, où l'on va, pour
-       quelle situation. ⚠️ `hidden` au départ : sans JavaScript il n'existe
-       pas. Centré dans la bande de contenu (règle 7 de Needle5).
-       ⚠️ Placé juste APRÈS la navigation, et non en fin de page : l'ordre du
-       DOM est l'ordre du clavier. En fin de page, on ne l'atteignait
-       qu'après tous les liens du pied de page. Sa position à l'écran ne
-       dépend pas de sa place (`position: fixed`). Le son a son bouton ;
-       la télécommande n'existe pas encore : aucun bouton mort tant que
-       son sous-projet n'est pas livré. -->
-  <div class="dock" id="dock" data-etat="replie" data-visible="non" hidden>
-    <button class="dock__pastille" id="dockPastille" type="button"
-            aria-expanded="false" aria-controls="dockPanneau">
-      <span class="dock__anneau" aria-hidden="true"></span>
-      <span class="dock__centre" id="dockCentre" aria-hidden="true">1</span>
-      <span class="sr-only" id="dockPastilleLibelle">Chapitre 1 sur 7, Accueil. Ouvrir le guide</span>
-    </button>
-    <nav class="dock__panneau" id="dockPanneau" aria-label="Guide de la page">
-      <button class="dock__btn" id="dockPrec" type="button" aria-label="Chapitre précédent" title="Chapitre précédent">‹</button>
-      <span class="dock__position" id="dockPosition" aria-live="polite">1 / 7 · Accueil</span>
-      <button class="dock__btn" id="dockSuiv" type="button" aria-label="Chapitre suivant" title="Chapitre suivant">›</button>
-      <span class="dock__sep" aria-hidden="true"></span>
-      <div class="dock__situation">
-        <button class="dock__choix" id="dockChoix" type="button" aria-expanded="false" aria-controls="dockMenu">
-          <span id="dockChoixLibelle">Choisir</span><span aria-hidden="true"> ▾</span>
+      <!-- situation : rempli par dock.js depuis la carte #usage-<id>, aucun
+           texte nouveau. -->
+      <div class="fi-dock__vue fi-dock__vue--situation" data-dock-vue="situation" hidden
+           role="region" aria-labelledby="dockSituationTitre">
+        <button class="fi-dock__fermer" type="button" data-dock-fermer aria-label="Fermer">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
         </button>
-        <ul class="dock__menu" id="dockMenu" hidden>
-          <li><button type="button" data-situation-choix="convaincre" data-origine="dock">
-            <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</button></li>
-          <li><button type="button" data-situation-choix="former" data-origine="dock">
-            <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</button></li>
-          <li><button type="button" data-situation-choix="garder" data-origine="dock">
-            <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Garder un savoir-faire</button></li>
-          <li><button type="button" data-situation-choix="aucune" data-origine="dock">Aucune</button></li>
-        </ul>
+        <p class="fi-dock__titre" id="dockSituationTitre"></p>
+        <p class="fi-dock__texte" data-dock-texte></p>
+        <p class="fi-dock__preuve" data-dock-preuve></p>
+        <a class="hero-cta__btn hero-cta__btn--primary fi-dock__suite" href="#offre" data-dock-suite><span>Voir la suite</span></a>
       </div>
-      <span class="dock__sep" aria-hidden="true"></span>
-      <!-- Le bouton son (composants/composants.js). `hidden` : sans JS, ou
-           sans le moteur son.js, il n'existe pas. -->
-      <button class="fi-bascule-son dock__son" type="button"
-              data-composant="bascule-son" hidden>
+
+      <!-- sommaire : les chapitres, dans l'ordre de CHAPITRES (script
+           « LE PARCOURS ») ; ⚠️ les `href` sont les id des sections. -->
+      <nav class="fi-dock__vue fi-dock__vue--sommaire" data-dock-vue="sommaire" hidden aria-label="Sommaire">
+        <p class="fi-dock__etiquette">Sommaire</p>
+        <ol class="fi-dock__chapitres">
+          <li><a href="#top" data-dock-chapitre="top">Accueil</a></li>
+          <li><a href="#offre" data-dock-chapitre="offre">Trois usages</a></li>
+          <li><a href="#demos" data-dock-chapitre="demos">Ça tourne déjà</a></li>
+          <li><a href="#approche" data-dock-chapitre="approche">L'approche</a></li>
+          <li><a href="#partenaires" data-dock-chapitre="partenaires">Partenaires</a></li>
+          <li><a href="#fondateur" data-dock-chapitre="fondateur">Le fondateur</a></li>
+          <li><a href="#contact" data-dock-chapitre="contact">Contact</a></li>
+        </ol>
+      </nav>
+    </div>
+
+    <nav class="fi-dock__rangee" aria-label="Navigation">
+      <button class="fi-dock__btn" type="button" data-dock-depart aria-label="Retour au début" title="Retour au début">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      </button>
+      <span class="fi-dock__sep" aria-hidden="true"></span>
+      <!-- Les situations : `data-situation-choix` fait le choix (script
+           « LE PARCOURS »), dock.js ouvre le bandeau. Pas d'ancre : on
+           choisit sans faire défiler. -->
+      <button class="fi-dock__btn" type="button" data-dock-situation="convaincre" data-situation-choix="convaincre" data-origine="dock"
+              aria-pressed="false" aria-label="Convaincre un acheteur" title="Convaincre un acheteur">
+        <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
+      </button>
+      <button class="fi-dock__btn" type="button" data-dock-situation="former" data-situation-choix="former" data-origine="dock"
+              aria-pressed="false" aria-label="Former un nouvel arrivant" title="Former un nouvel arrivant">
+        <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>
+      </button>
+      <button class="fi-dock__btn" type="button" data-dock-situation="garder" data-situation-choix="garder" data-origine="dock"
+              aria-pressed="false" aria-label="Conserver un savoir-faire" title="Conserver un savoir-faire">
+        <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
+      </button>
+      <span class="fi-dock__sep" aria-hidden="true"></span>
+      <button class="fi-bascule-son fi-dock__son" type="button" data-composant="bascule-son" hidden>
         <svg class="fi-bascule-son__icone" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M11 5 6 9H3v6h3l5 4z"/>
           <path class="fi-bascule-son__ondes fi-bascule-son__onde1" d="M15.5 8.5a5 5 0 0 1 0 7"/>
@@ -2311,7 +1869,18 @@
         </svg>
         <span data-bascule-libelle>Son doux</span>
       </button>
-      <button class="dock__fermer" id="dockFermer" type="button">Fermer</button>
+      <!-- Réserver : descend au contact, comme le bouton du hero (pas de
+           `data-rdv` : ce n'est pas encore la demande de rendez-vous). -->
+      <a class="fi-dock__btn fi-dock__rdv" href="#contact" data-dock-rdv title="Réserver 30 min">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+        <span class="fi-dock__libelle">Réserver 30 min</span>
+      </a>
+      <span class="fi-dock__sep" aria-hidden="true"></span>
+      <button class="fi-dock__btn" type="button" data-dock-tous aria-expanded="false" aria-controls="dockBandeau"
+              aria-label="Tous les chapitres" title="Tous les chapitres">
+        <svg class="fi-dock__grille" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5"/></svg>
+        <svg class="fi-dock__croix" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
     </nav>
   </div>
 
@@ -2344,26 +1913,13 @@
       <div class="hero__halo hero__halo--bas" aria-hidden="true"></div>
 
       <div class="hero__contenu">
-        <!-- La pastille et le son, sur une rangée : le son s'allume AVANT le
-             premier geste (l'accord de la situation joue au clic d'un
-             pilier), sans couper le fil choix › suite (passe du 27/09/2026,
-             remplace la place « sous le choix » du spec § 3 ter). -->
+        <!-- La pastille seule : le son est passé dans la rangée du dock
+             (retour du 28/09/2026, un seul bouton son par écran). -->
         <div class="hero__haut">
           <span class="hero__pastille">
             <span class="hero__point" aria-hidden="true"></span>
             <span>Agence &amp; conseil WebXR</span>
           </span>
-          <button class="fi-bascule-son situations__son" type="button"
-                  data-composant="bascule-son" hidden
-                  data-libelle-prefixe="Visite sonore">
-            <svg class="fi-bascule-son__icone" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M11 5 6 9H3v6h3l5 4z"/>
-              <path class="fi-bascule-son__ondes fi-bascule-son__onde1" d="M15.5 8.5a5 5 0 0 1 0 7"/>
-          <path class="fi-bascule-son__ondes fi-bascule-son__onde2" d="M18.5 5.5a9 9 0 0 1 0 13"/>
-              <path class="fi-bascule-son__coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
-            </svg>
-            <span data-bascule-libelle>Visite sonore · son doux</span>
-          </button>
         </div>
 
         <h1 class="hero__titre">Transmettre les savoirs
@@ -2399,7 +1955,7 @@
             <li><a class="fi-pilier" href="#offre" data-situation-choix="garder" data-choix-item data-eclat>
               <span class="fi-pilier__rond" aria-hidden="true"></span>
               <svg class="pic fi-pilier__icone" aria-hidden="true"><use href="#pic-garder"></use></svg>
-              <span class="fi-pilier__texte"><strong>Garder</strong> un savoir-faire</span>
+              <span class="fi-pilier__texte"><strong>Conserver</strong> un savoir-faire</span>
             </a></li>
           </ul>
           <a class="situations__regarder" href="#offre" data-situation-choix="aucune">ou juste regarder
@@ -2412,7 +1968,10 @@
                ce clic n'est pas encore une demande de rendez-vous, et le
                compter ici doublerait `rdv-demande` avec celui du contact.
                Secondaire depuis la passe du 27/09/2026 : l'action principale
-               du hero est le choix du besoin, pas la réservation. -->
+               du hero est le choix du besoin, pas la réservation.
+               ⚠️ Masqué dès que le JavaScript tourne (`.js`) : le dock porte
+               alors « Réserver » dans sa rangée. Il ne reste que pour qui
+               n'a pas de dock (retour du 28/09/2026, pas de doublon). -->
           <a class="hero-cta__btn hero-cta__btn--secondary" href="#contact"><span>Réserver 30 min</span></a>
         </div>
 
@@ -3039,77 +2598,6 @@
         }, { passive: true });
       }
 
-      /* ── Le menu mobile ────────────────────────────────────────────────
-         Le mécanisme de /stand/, aux mêmes noms de classes : `active` sur le
-         burger (la croix), `menu-open` sur la nav (elle glisse), et le
-         défilement du corps verrouillé pendant l'ouverture, sinon la page
-         continue de bouger derrière le plein écran.
-
-         ⚠️ Deux ajouts par rapport à /stand/, qui ne changent ni l'apparence
-         ni le geste : `aria-expanded` sur le bouton, et Échap qui referme en
-         rendant le focus. Sans eux, un lecteur d'écran n'annonce pas l'état
-         et le clavier reste prisonnier du panneau. */
-      var burgerBtn = document.getElementById('burgerBtn');
-      var mainNav = document.getElementById('mainNav');
-      if (burgerBtn && mainNav) {
-        var fermerMenu = function () {
-          burgerBtn.classList.remove('active');
-          mainNav.classList.remove('menu-open');
-          burgerBtn.setAttribute('aria-expanded', 'false');
-          burgerBtn.setAttribute('aria-label', 'Ouvrir le menu');
-          document.body.style.overflow = '';
-          journal('menu plein écran fermé');
-        };
-        burgerBtn.addEventListener('click', function () {
-          var ouvre = !mainNav.classList.contains('menu-open');
-          burgerBtn.classList.toggle('active', ouvre);
-          mainNav.classList.toggle('menu-open', ouvre);
-          burgerBtn.setAttribute('aria-expanded', ouvre ? 'true' : 'false');
-          burgerBtn.setAttribute('aria-label', ouvre ? 'Fermer le menu' : 'Ouvrir le menu');
-          document.body.style.overflow = ouvre ? 'hidden' : '';
-          journal('menu plein écran', ouvre ? 'ouvert' : 'fermé');
-        });
-        /* Le CTA fait partie du menu sur téléphone : il doit refermer aussi. */
-        mainNav.querySelectorAll('.nav-link, .masthead-cta').forEach(function (lien) {
-          lien.addEventListener('click', function () {
-            if (mainNav.classList.contains('menu-open')) fermerMenu();
-          });
-        });
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && mainNav.classList.contains('menu-open')) {
-            fermerMenu();
-            burgerBtn.focus();
-          }
-        });
-        /* Repasser en grand écran avec le menu ouvert laisserait le corps
-           verrouillé et un panneau fantôme au-dessus de la page.
-           ⚠️ La requête est la MÊME que celle du CSS (`min-width: 1061px`) :
-           un nombre recopié à la main en `innerWidth > …` divergeait déjà
-           (950 ici, 1060 là-bas), et `innerWidth` compte la barre de
-           défilement autrement que la media query. */
-        var grandEcran = window.matchMedia('(min-width: 1061px)');
-        window.addEventListener('resize', function () {
-          if (grandEcran.matches && mainNav.classList.contains('menu-open')) fermerMenu();
-        });
-
-        /* Garde de la règle « jamais deux rangées ». Avec `flex-wrap: nowrap`
-           les liens ne descendent plus : quand ils ne tiennent pas, ils
-           DÉBORDENT de leur colonne. C'est donc le débordement qu'on mesure
-           (comparer les hauts des liens ne verrait rien). Il signale des
-           libellés qui ont grandi (nouvelle section, version EN) : le point
-           de rupture est à remonter. Muet hors `?debug=1`. */
-        var rangeeNav = mainNav.querySelector('.main-nav-links');
-        function verifierRangeeNav() {
-          if (!grandEcran.matches || !rangeeNav) return;
-          var manque = rangeeNav.scrollWidth - rangeeNav.clientWidth;
-          if (manque > 1) {
-            journal('⚠️ nav trop large de ' + manque + ' px à ' + window.innerWidth + ' px : remonter le point de rupture (1060/1061 px, CSS et JS)');
-          }
-        }
-        window.addEventListener('resize', verifierRangeeNav);
-        verifierRangeeNav();
-      }
-
       /* ── Garde de la passe typographique (27/09/2026). Deux règles qui ont
          une raison, donc des dents : aucun défilement horizontal (mobile
          dès 360 px) et aucune cible isolée sous 44 px au doigt. Muet hors
@@ -3221,7 +2709,7 @@
         }
       })();
 
-      /* ── Le lien de navigation de la section courante ──────────────────
+      /* ── Le chapitre courant (le dock le marque dans son sommaire) ──────────────────
          ⚠️ /stand/ n'utilise PAS d'IntersectionObserver ici, et c'est un
          choix, pas un oubli. Un observateur répond « cette section est
          visible », ce qui est ambigu dès que deux sections le sont en même
@@ -3236,10 +2724,6 @@
          Le calcul est replanifié en `requestAnimationFrame` : le défilement
          peut émettre des dizaines d'événements par seconde, le navigateur ne
          repeint que soixante fois. */
-      var liensNav = document.querySelectorAll('#mainNav .nav-link');
-      /* ⚠️ Même ordre que la page (spec 2026-09-27 § 3 bis) : réponse,
-         preuve, méthode, confiance. */
-      var idsSections = ['offre', 'demos', 'approche', 'partenaires', 'fondateur'];
       /* Les SEPT chapitres du parcours (le hero et le contact en plus des
          liens de la nav). ⚠️ Même liste, même ordre que CHAPITRES dans le
          script « LE PARCOURS » : ce sont aussi les `navItemId` que la
@@ -3250,7 +2734,9 @@
 
       function majLienActif() {
         rafNav = 0;
-        var hauteurBandeau = 96;
+        /* Plus d'en-tête en haut depuis le dock (28/09/2026) : la ligne de
+           lecture n'a plus de bandeau à enjamber. */
+        var hauteurBandeau = 0;
         var pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
         var ligne = window.scrollY + Math.max(hauteurBandeau + 28, pad + 2);
 
@@ -3267,12 +2753,6 @@
           chapitre = idsChapitres[idsChapitres.length - 1];
         }
 
-        var actif = idsSections.indexOf(chapitre) >= 0 ? chapitre : null;
-        liensNav.forEach(function (a) {
-          var href = a.getAttribute('href') || '';
-          var id = href.charAt(0) === '#' ? href.slice(1) : '';
-          a.classList.toggle('active-link', id === actif && actif !== null);
-        });
 
         /* ⚠️ Le parcours, le son et la télécommande lisent CE résultat, et
            rien d'autre : une seconde ligne de lecture finirait par dire un
@@ -3712,191 +3192,11 @@
       }
 
       /* ── LE DOCK ───────────────────────────────────────────────────────
-         Il ne calcule rien : il AFFICHE le chapitre du premier script et
-         la situation, et ses flèches passent par fi:aller comme le fera la
-         télécommande. Invisible sur le hero (qui porte déjà le choix) et
-         quand le pied de page est à l'écran (il couvrirait le contact). */
-      var dock = document.getElementById('dock');
-      if (dock) {
-        var dockPrec = document.getElementById('dockPrec');
-        var dockSuiv = document.getElementById('dockSuiv');
-        var dockPosition = document.getElementById('dockPosition');
-        var dockChoix = document.getElementById('dockChoix');
-        var dockChoixLibelle = document.getElementById('dockChoixLibelle');
-        var dockMenu = document.getElementById('dockMenu');
-        /* ⚠️ Lu sur <body> et non attendu en événement : à l'arrivée par
-           `/#demos`, le premier `fi:chapitre` est parti avant ce script. */
-        var chapitreDock = document.body.getAttribute('data-chapitre') || 'top';
-        var footerVu = false;
-
-        var fermerMenuSituation = function () {
-          dockMenu.hidden = true;
-          dockChoix.setAttribute('aria-expanded', 'false');
-        };
-        var majFil = function () {
-          var i = Math.max(0, IDS.indexOf(chapitreDock));
-          dockPosition.textContent = (i + 1) + ' / ' + IDS.length + ' · ' + CHAPITRES[i].titre;
-          dockPrec.disabled = i === 0;
-          dockSuiv.disabled = i === IDS.length - 1;
-        };
-        var majVisibilite = function () {
-          var visible = chapitreDock !== 'top' && !footerVu;
-          if ((dock.getAttribute('data-visible') === 'oui') === visible) return;
-          dock.setAttribute('data-visible', visible ? 'oui' : 'non');
-          /* `inert` : un dock effacé ne doit pas voler le focus du clavier. */
-          dock.inert = !visible;
-          if (!visible) fermerMenuSituation();
-          journal('dock', visible ? 'visible' : 'effacé', '(' + chapitreDock + (footerVu ? ', pied de page à l\'écran' : '') + ')');
-          emettre('fi:dock', { visible: visible });
-        };
-
-        dockPrec.addEventListener('click', function () { emettre('fi:aller', { pas: -1 }); });
-        dockSuiv.addEventListener('click', function () { emettre('fi:aller', { pas: 1 }); });
-        dockChoix.addEventListener('click', function () {
-          var ouvre = dockMenu.hidden;
-          dockMenu.hidden = !ouvre;
-          dockChoix.setAttribute('aria-expanded', ouvre ? 'true' : 'false');
-          if (ouvre) dockMenu.querySelector('button').focus();
-        });
-        document.addEventListener('click', function (e) {
-          if (!dockMenu.hidden && !e.target.closest('.dock__situation')) fermerMenuSituation();
-        });
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && !dockMenu.hidden) { fermerMenuSituation(); dockChoix.focus(); }
-        });
-        document.addEventListener('fi:situation', function (e) {
-          dockChoixLibelle.textContent = e.detail.id ? SITUATIONS[e.detail.id] : 'Choisir';
-          fermerMenuSituation();
-        });
-        document.addEventListener('fi:chapitre', function (e) {
-          chapitreDock = e.detail.id;
-          majFil();
-          majVisibilite();
-        });
-        var piedDePage = document.querySelector('.footer');
-        if (piedDePage && 'IntersectionObserver' in window) {
-          new IntersectionObserver(function (entrees) {
-            footerVu = entrees[0].isIntersecting;
-            majVisibilite();
-          }).observe(piedDePage);
-        }
-
-        dock.hidden = false;
-        dock.inert = true;
-        majFil();
-        majVisibilite();
-
-        /* ── La pastille (téléphone) ─────────────────────────────────────
-           Sous 768 px, le dock replié tient en 56 px : un anneau qui se
-           remplit avec la lecture, le numéro du chapitre (ou le
-           pictogramme de la situation) au centre.
-           Trois effets, un par intention, AUCUN en boucle : un appel qui ne
-           s'arrête jamais devient du bruit, et fatigue en rendez-vous.
-             entrée  : « je suis là »       (première apparition)
-             bascule : « vous avancez »     (changement de chapitre)
-             invite  : « touchez-moi »      (une fois par visite) */
-        var mobile = window.matchMedia('(max-width: 767px)');
-        var pastille = document.getElementById('dockPastille');
-        var centre = document.getElementById('dockCentre');
-        var pastilleLibelle = document.getElementById('dockPastilleLibelle');
-        var dejaApparu = false;
-        var guideOuvert = false;
-        var inviteFaite = false;
-        var chapitresSansOuvrir = 0;
-        var ignorerDefilementJusqua = 0;
-
-        /* Rejoue une classe d'animation, même si elle tournait déjà. */
-        var jouer = function (classe, duree) {
-          if (sobre) return;
-          dock.classList.remove(classe);
-          void dock.offsetWidth;
-          dock.classList.add(classe);
-          clearTimeout(jouer[classe]);
-          jouer[classe] = setTimeout(function () { dock.classList.remove(classe); }, duree);
-        };
-        var majPastille = function () {
-          var i = Math.max(0, IDS.indexOf(chapitreDock));
-          var s = document.body.getAttribute('data-situation');
-          /* `s` vient de SITUATIONS (liste fermée) : l'innerHTML est sûr. */
-          centre.innerHTML = s && SITUATIONS[s]
-            ? '<svg class="pic" aria-hidden="true"><use href="#pic-' + s + '"></use></svg>'
-            : String(i + 1);
-          pastilleLibelle.textContent = 'Chapitre ' + (i + 1) + ' sur ' + IDS.length + ', ' + CHAPITRES[i].titre
-            + (s ? ', situation ' + SITUATIONS[s] : '') + '. Ouvrir le guide';
-        };
-        var deplier = function () {
-          dock.setAttribute('data-etat', 'deplie');
-          pastille.setAttribute('aria-expanded', 'true');
-          ignorerDefilementJusqua = performance.now() + 400;
-          journal('dock déplié');
-          if (!guideOuvert) { guideOuvert = true; mesurerUneFois('guide', MESURES.guideOuvert); }
-          (dockSuiv.disabled ? dockPrec : dockSuiv).focus();
-        };
-        var replier = function (raison) {
-          if (dock.getAttribute('data-etat') !== 'deplie') return;
-          dock.setAttribute('data-etat', 'replie');
-          pastille.setAttribute('aria-expanded', 'false');
-          fermerMenuSituation();
-          journal('dock replié :', raison);
-        };
-
-        pastille.addEventListener('click', deplier);
-        document.getElementById('dockFermer').addEventListener('click', function () {
-          replier('bouton Fermer');
-          pastille.focus();
-        });
-        /* Les flèches font défiler en douceur : ce défilement-là ne doit
-           pas replier le dock qu'on est en train d'utiliser. */
-        [dockPrec, dockSuiv].forEach(function (b) {
-          b.addEventListener('click', function () { ignorerDefilementJusqua = performance.now() + 1200; });
-        });
-        document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape' && dock.getAttribute('data-etat') === 'deplie') {
-            replier('Échap');
-            pastille.focus();
-          }
-        });
-        mobile.addEventListener('change', function () { replier('passage en grand écran'); });
-
-        /* L'anneau : une information, pas une décoration. Il reste à jour
-           en mouvement réduit. */
-        var rafProgression = 0;
-        var majProgression = function () {
-          rafProgression = 0;
-          var max = document.documentElement.scrollHeight - window.innerHeight;
-          var p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-          dock.style.setProperty('--progression', p.toFixed(3));
-        };
-        window.addEventListener('scroll', function () {
-          if (!rafProgression) rafProgression = requestAnimationFrame(majProgression);
-          if (performance.now() > ignorerDefilementJusqua) replier('défilement');
-        }, { passive: true });
-
-        document.addEventListener('fi:dock', function (e) {
-          if (!e.detail.visible) { replier('dock effacé'); return; }
-          if (!dejaApparu) {
-            dejaApparu = true;
-            if (mobile.matches) { jouer('dock--entree', 1300); journal('pastille : première apparition'); }
-          }
-        });
-        document.addEventListener('fi:chapitre', function () {
-          majPastille();
-          if (!mobile.matches || dock.getAttribute('data-visible') !== 'oui') return;
-          if (!dock.classList.contains('dock--entree')) jouer('dock--bascule', 650);
-          if (!guideOuvert && !inviteFaite && ++chapitresSansOuvrir >= 2) {
-            inviteFaite = true;
-            setTimeout(function () { jouer('dock--invite', 750); }, 700);
-            journal('pastille : invitation (une fois par visite)');
-          }
-        });
-        document.addEventListener('fi:situation', function () {
-          majPastille();
-          replier('situation choisie');
-        });
-
-        majPastille();
-        majProgression();
-      }
+         Le dock vit dans composants/dock.js depuis le 28/09/2026. Ce script
+         ne fait que COMPTER : la première ouverture du sommaire. */
+      document.addEventListener('fi:dock', function (e) {
+        if (e.detail.etat === 'sommaire') mesurerUneFois('guide', MESURES.guideOuvert);
+      });
 
       /* ── AU DÉMARRAGE ──────────────────────────────────────────────────
          ⚠️ Cette section reste la DERNIÈRE du script : tous les écouteurs

@@ -556,3 +556,51 @@ vivantes ; le contenu reste centré, sans image.
   le titre, chapeau en deux lignes, panneau sans bordure, signature
   pastille + fondateur, Réserver en ghost) est mise de côté et sera
   reprise dans le design du dock.
+
+## 17. Le dock remplace l'en-tête (28/09/2026)
+
+Décisions validées en brainstorming (design en chat, sans spec séparée à
+la demande de l'utilisateur) :
+
+- **Patron** : le dock de salon_demo_app (`Dock.tsx`). Une surface en bas,
+  une rangée `[Départ] | [Convaincre] [Former] [Garder] | [Son] [Réserver] | [Tous]`
+  (7 cibles de 44 px au téléphone, 48 au bureau), un bandeau au-dessus.
+  L'en-tête (pilule + burger) et l'ancien fil ‹ 1/7 › disparaissent ; le
+  chapitre en cours vit dans le sommaire. Le logo attend en haut à gauche
+  (`.logo-coin`, traitement à définir).
+- **Quatre états** (`data-etat`, `composants/dock.js`) : `question`,
+  `situation`, `sommaire`, `replie`. Un seul bandeau à la fois.
+- **La question débloque la suite** (option 1) : la suite reste dans la
+  page, atténuée et `inert`, défilement bloqué, jusqu'à la réponse ou
+  « ou juste regarder ». Pas de croix, Échap ne la ferme pas. Seul un
+  visiteur neuf arrivé en haut la voit (`fi:dock-repondu`, ancre,
+  `?situation=` ou page déjà défilée : arrivée repliée). Bandeau ouvert
+  aussi au téléphone, accepté.
+- **Un seul balisage** : le panneau `.situations` du hero est DÉPLACÉ dans
+  le bandeau par le script ; sans JavaScript il reste dans le hero, en liens.
+  Le verrou n'est posé qu'après le déplacement réussi.
+- **Apparence selon l'interaction demandée** : question = contour au
+  dégradé de la charte, halo qui respire une fois, ronds qui pulsent en
+  cascade ; situation = contour bleu, contenu tiré de `#usage-<id>` (aucun
+  texte nouveau), un seul bouton plein « Voir la suite » ; sommaire = verre
+  neutre, liste, « vous êtes ici ».
+- **Contrats** : `fi:situation` inchangé ; nouvel `fi:dock {etat, avant}`
+  (la mesure compte `guide-ouvert` à la première ouverture du sommaire) ;
+  le sommaire et « Départ » passent par `fi:aller`.
+- **Garde** (`?debug=1`, `FiDock.verifier()`) : question sans verrou
+  complet, verrou qui traîne, dock hors écran, cible sous 44 px. Chaque
+  règle vérifiée en la cassant exprès le 28/09/2026.
+- **Retour du 28/09/2026, première boucle** :
+  - doublons retirés du hero : le bouton son (il est dans la rangée) et
+    « Réserver 30 min » (masqué sous `.js`, gardé pour qui n'a pas de dock) ;
+  - les piliers disent leur phrase sur UNE ligne : « Convaincre un
+    acheteur », « Former un nouvel arrivant », « Conserver un savoir-faire »
+    (« Garder » devient « Conserver » dans le pilier et le bouton du dock ;
+    l'id technique reste `garder`). Trois colonnes dès 1024 px, bandeau de
+    la question à 62 rem ; empilés en dessous ;
+  - le hero se centre dans l'espace LIBRE au-dessus du dock
+    (`--fi-dock-total`, mesuré par dock.js) : rien ne passe sous la
+    question. Écran ≤ 860 px de haut : rythme resserré à 16 px. Téléphone
+    < 760 px de haut : titre en t3 et signature masquée le temps de la
+    question. Mesuré de 360 × 740 à 1440 × 900 : de 16 à 193 px d'air
+    entre le hero et le dock, aucun débordement.

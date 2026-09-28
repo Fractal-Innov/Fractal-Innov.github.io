@@ -296,3 +296,208 @@
 .fi-sobre .fi-pilier, .fi-sobre .fi-pilier .fi-pilier__fleche, .fi-sobre .fi-pilier .fi-pilier__rond, .fi-sobre .fi-pilier .fi-pilier__rond::after { transition: none; }
 .fi-sobre .fi-pilier:hover, .fi-sobre .fi-pilier:focus-visible, .fi-sobre .fi-pilier:active { transform: none; }
 .fi-sobre .fi-son--joue .fi-bascule-son__ondes { animation: none; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   LE DOCK (composants/dock.js, 28/09/2026)
+   Une surface de verre en bas de l'écran : la rangée, et au-dessus un
+   bandeau à trois visages, lus dans `data-etat`. Plus l'interaction
+   demandée est forte, plus le bandeau appelle :
+     question   réponse REQUISE : contour au dégradé, halo, ronds qui pulsent
+     situation  lecture, une suite PROPOSÉE : contour bleu, un seul bouton plein
+     sommaire   navigation LIBRE : verre neutre, une liste
+   ══════════════════════════════════════════════════════════════════════ */
+.fi-dock {
+  position: fixed; z-index: 90;
+  left: 0; right: 0; margin-inline: auto;
+  bottom: calc(var(--fi-e2) + env(safe-area-inset-bottom)); /* 16 px du bord : le pouce l'atteint sans toucher la barre système */
+  width: fit-content; /* la surface ÉPOUSE la rangée, comme la borne */
+  max-width: calc(100% - 2 * var(--fi-e2)); /* 16 px de gouttière de chaque côté : jamais collé au bord */
+  display: flex; flex-direction: column;
+  border-radius: 20px; /* 12 px des boutons + 8 px de padding : les rayons restent concentriques */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* le contour discret du verre (--glass-border) */
+  background: rgba(10, 11, 20, 0.72); /* verre sombre : lisible sur la vidéo comme sur une section claire */
+  backdrop-filter: blur(20px) saturate(165%);
+  -webkit-backdrop-filter: blur(20px) saturate(165%);
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7);
+  color: var(--fi-texte);
+  transition: border-color var(--fi-fx-court) ease;
+}
+.fi-dock[hidden] { display: none; }
+
+/* ── La rangée ───────────────────────────────────────────────────── */
+.fi-dock__rangee {
+  display: flex; align-items: center; justify-content: center;
+  gap: var(--fi-e05); /* 4 px entre deux boutons : groupés sans se toucher */
+  padding: var(--fi-e1); /* 8 px : 48 + 16 = 64 px de haut, la hauteur d'un dock de bureau */
+}
+.fi-dock__btn,
+.fi-dock .fi-bascule-son {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--fi-e1);
+  flex-shrink: 0;
+  min-width: 48px; height: 48px; /* 48 px au bureau, 44 au téléphone (plus bas) : la cible de la borne */
+  padding: 0;
+  border: 0; border-radius: 12px;
+  background: none; color: var(--fi-texte-doux);
+  font: inherit; font-size: var(--fi-t-05); font-weight: 600;
+  text-decoration: none; cursor: pointer;
+  transition: background-color var(--fi-fx-court) ease, color var(--fi-fx-court) ease;
+}
+.fi-dock__btn:hover,
+.fi-dock .fi-bascule-son:hover { background: color-mix(in oklab, var(--fi-accent) 10%, transparent); color: var(--fi-accent); }
+.fi-dock__btn:focus-visible,
+.fi-dock .fi-bascule-son:focus-visible { outline: 2px solid var(--fi-accent); outline-offset: 2px; }
+.fi-dock__btn[aria-pressed="true"],
+.fi-dock__btn[aria-expanded="true"] { background: color-mix(in oklab, var(--fi-accent) 20%, transparent); color: var(--fi-accent); }
+.fi-dock__btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fi-dock .fi-bascule-son { padding: 0 var(--fi-e1); } /* le libellé du niveau respire, 8 px */
+.fi-dock__rdv { padding: 0 var(--fi-e2); color: var(--fi-texte); } /* 16 px : le seul bouton à libellé, il se lit comme une action */
+.fi-dock__sep { width: 1px; height: 32px; margin: 0 var(--fi-e05); background: rgba(255, 255, 255, 0.08); flex-shrink: 0; } /* 32 px : les deux tiers d'un bouton, il sépare sans barrer */
+.fi-dock__croix { display: none; }
+.fi-dock [aria-expanded="true"] .fi-dock__grille { display: none; }
+.fi-dock [aria-expanded="true"] .fi-dock__croix { display: block; }
+
+@media (max-width: 767px) {
+  /* 7 cibles de 44 + 3 séparateurs + padding = 335 px : tient en 375 − 32. */
+  .fi-dock__rangee { gap: 0; padding: var(--fi-e05) 6px; } /* 6 px : le complément exact pour tenir à 360 px */
+  .fi-dock__btn,
+  .fi-dock .fi-bascule-son { min-width: 44px; width: 44px; height: 44px; padding: 0; }
+  .fi-dock__sep { margin: 0 2px; }
+  /* Libellés visibles au bureau, lus par le lecteur d'écran au téléphone. */
+  .fi-dock__libelle,
+  .fi-dock .fi-bascule-son [data-bascule-libelle] {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+  }
+}
+
+/* ── Le bandeau : commun ─────────────────────────────────────────── */
+.fi-dock__bandeau {
+  width: 0; min-width: 100%; /* la borne : il prend la largeur de la rangée sans l'élargir */
+  max-height: min(70dvh, 40rem); overflow-y: auto; /* jamais plus haut que l'écran : il défile en lui-même */
+}
+.fi-dock[data-etat="replie"] .fi-dock__bandeau { display: none; }
+.fi-dock__vue { position: relative; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+.fi-dock__vue[hidden] { display: none; }
+
+/* ── question : une réponse est requise ──────────────────────────── */
+.fi-dock[data-etat="question"] { border-color: transparent; }
+.fi-dock[data-etat="question"]::before {
+  /* Le contour au dégradé de la charte, 1 px, par masque : le verre reste
+     transparent au centre. */
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: var(--fi-degrade);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.fi-dock[data-etat="question"] {
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 36px -8px color-mix(in oklab, var(--fi-accent) 45%, transparent);
+  animation: fiDockHalo 2400ms var(--fi-ease-sortie) 400ms both; /* respire UNE fois, puis reste fixe (décision du 28/09/2026) */
+}
+.fi-dock[data-etat="question"] .fi-dock__bandeau { width: min(62rem, calc(100vw - 2 * var(--fi-e2))); } /* 992 px : trois choix côte à côte, chacun sa phrase sur UNE ligne (~200 px de texte) */
+.fi-dock[data-etat="question"] .fi-dock__vue--question { animation: fiDockPose 320ms var(--fi-ease-sortie) 300ms both; } /* se pose après le hero */
+/* Le panneau du hero, déplacé ici : le verre, c'est le dock. */
+.fi-dock .situations {
+  width: auto; margin: 0;
+  padding: var(--fi-e3) var(--fi-e3) var(--fi-e2); /* 24 px autour, 16 sous « ou juste regarder » */
+  border: 0; border-radius: 0; background: none;
+  backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.fi-dock .situations__question {
+  margin: 0; width: 100%;
+  font-size: var(--fi-t1); line-height: var(--fi-interligne-h3); font-weight: 700; /* t1 : la question se lit comme un titre qui attend */
+  text-align: center; color: var(--fi-texte);
+}
+.fi-dock .situations__question:focus { outline: none; } /* focus posé par script pour le prochain Tab, pas pour le regard */
+@media (max-width: 767px) {
+  .fi-dock .situations { padding: var(--fi-e2); align-items: stretch; }
+  .fi-dock .situations__question { text-align: left; } /* au téléphone, la question s'aligne sur les réponses empilées */
+}
+/* Les choix : chacun sa phrase sur UNE ligne (retour du 28/09/2026).
+   Trois colonnes seulement dès 1024 px ; en dessous, la phrase ne tient
+   pas dans un tiers de largeur : empilés (l'auto-fit donnait aussi 2 + 1
+   vers 700 px, un choix orphelin). */
+.fi-dock .situations__liste.fi-choix { width: 100%; grid-template-columns: minmax(0, 1fr); }
+.fi-dock .fi-pilier { column-gap: var(--fi-e1); padding-inline: 12px; } /* 8 px entre rond, icône et texte, 12 au bord : la phrase gagne 18 px */
+@media (min-width: 1024px) {
+  .fi-dock .situations__liste.fi-choix { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .fi-dock .fi-pilier__texte { white-space: nowrap; }
+}
+/* Les ronds vides pulsent une fois, en cascade : « c'est ici qu'on répond ». */
+.fi-dock[data-etat="question"] .fi-pilier:not([aria-current="true"]) .fi-pilier__rond {
+  animation: fiRondAppel 900ms var(--fi-ease-sortie) both;
+  animation-delay: calc(900ms + var(--fi-rang, 0) * 150ms); /* après la pose du bandeau, 150 ms d'un rond à l'autre */
+}
+.fi-dock .situations li:nth-child(2) { --fi-rang: 1; }
+.fi-dock .situations li:nth-child(3) { --fi-rang: 2; }
+
+/* ── situation : lecture, une suite proposée ─────────────────────── */
+.fi-dock[data-etat="situation"] { border-color: color-mix(in oklab, var(--fi-accent) 55%, transparent); }
+.fi-dock__vue--situation {
+  display: flex; flex-direction: column; gap: var(--fi-e1);
+  padding: var(--fi-e2) var(--fi-e2) var(--fi-e2); /* 16 px : le bandeau garde la largeur de la rangée, il serre */
+  animation: fiDockFondu var(--fi-fx-court) ease both;
+}
+.fi-dock__vue--situation[hidden] { display: none; }
+.fi-dock__titre {
+  display: flex; align-items: center; gap: var(--fi-e1);
+  margin: 0; padding-right: 44px; /* la croix occupe le coin */
+  font-size: var(--fi-t0); font-weight: 700; color: var(--fi-texte);
+}
+.fi-dock__titre .pic { width: 20px; height: 20px; color: var(--fi-accent); }
+.fi-dock__texte { margin: 0; font-size: var(--fi-t-05); line-height: var(--fi-interligne); color: var(--fi-texte-doux); }
+.fi-dock__preuve { margin: 0; font-size: var(--fi-t-1); color: var(--fi-texte-doux); }
+.fi-dock__preuve a { color: var(--fi-accent); }
+.fi-dock__suite { align-self: flex-start; margin-top: var(--fi-e05); }
+.fi-dock__fermer {
+  position: absolute; top: var(--fi-e05); right: var(--fi-e05);
+  display: inline-grid; place-items: center; width: 44px; height: 44px;
+  border: 0; border-radius: 12px; background: none; color: var(--fi-texte-doux); cursor: pointer;
+}
+.fi-dock__fermer:hover { color: var(--fi-texte); background: var(--fi-fond-survol); }
+.fi-dock__fermer svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+@media (max-width: 767px) { .fi-dock__suite { align-self: stretch; } } /* au pouce : toute la largeur */
+
+/* ── sommaire : navigation libre ─────────────────────────────────── */
+.fi-dock[data-etat="sommaire"] .fi-dock__bandeau { width: max-content; } /* son contenu décide, comme la borne */
+.fi-dock__vue--sommaire { padding: var(--fi-e2) var(--fi-e1) var(--fi-e1); animation: fiDockDeplie var(--fi-fx-court) ease-out both; }
+.fi-dock__etiquette {
+  margin: 0 0 var(--fi-e05); padding: 0 var(--fi-e1);
+  font-size: var(--fi-t-1); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fi-texte-doux);
+}
+.fi-dock__chapitres { list-style: none; margin: 0; padding: 0; }
+.fi-dock__chapitres a {
+  display: flex; align-items: center; gap: var(--fi-e1);
+  min-height: 44px; padding: 0 var(--fi-e1); border-radius: 10px;
+  color: var(--fi-texte); text-decoration: none; font-size: var(--fi-t-05);
+}
+.fi-dock__chapitres a::before { /* le rond : vide, plein pour le chapitre en cours */
+  content: ""; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  border: 1.5px solid var(--fi-texte-doux);
+}
+.fi-dock__chapitres a:hover { background: var(--fi-fond-survol); }
+.fi-dock__chapitres a[aria-current] { color: var(--fi-accent); font-weight: 700; }
+.fi-dock__chapitres a[aria-current]::before { background: var(--fi-accent); border-color: var(--fi-accent); }
+.fi-dock__chapitres a[aria-current]::after { content: "vous êtes ici"; margin-left: auto; padding-left: var(--fi-e2); font-size: var(--fi-t-1); font-weight: 400; color: var(--fi-texte-doux); }
+
+/* ── Le verrou de la question ─────────────────────────────────────── */
+html.fi-verrou { overflow: hidden; }
+html.fi-verrou .page-rest,
+html.fi-verrou .footer { opacity: 0.35; transition: opacity 400ms ease; } /* la suite est là, en attente : visible, pas atteignable */
+
+@keyframes fiDockPose { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes fiDockFondu { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fiDockDeplie { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fiDockHalo {
+  0% { box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 0 0 color-mix(in oklab, var(--fi-accent) 0%, transparent); }
+  45% { box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 56px 4px color-mix(in oklab, var(--fi-accent) 60%, transparent); }
+  100% { box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.7), 0 0 36px -8px color-mix(in oklab, var(--fi-accent) 45%, transparent); }
+}
+@keyframes fiRondAppel {
+  0%, 100% { transform: none; box-shadow: 0 0 0 0 transparent; }
+  40% { transform: scale(1.3); box-shadow: 0 0 0 6px color-mix(in oklab, var(--fi-accent) 35%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fi-dock, .fi-dock__vue, .fi-dock .fi-pilier__rond { animation: none !important; }
+  html.fi-verrou .page-rest, html.fi-verrou .footer { transition: none; }
+}
+.fi-sobre .fi-dock, .fi-sobre .fi-dock__vue, .fi-sobre .fi-dock .fi-pilier__rond { animation: none !important; }
