@@ -617,7 +617,11 @@ la demande de l'utilisateur) :
   dock), derrière lui une brume du verre du dock (flou 20 px + saturation
   165 %) au bord fondu. Révisé le même jour : **aucune teinte**, flou +
   saturation seuls, fondu **rectangulaire** (deux dégradés linéaires
-  croisés, `mask-composite: intersect`) au lieu de l'ovale radial. `scroll-padding-top`
+  croisés, `mask-composite: intersect`) au lieu de l'ovale radial.
+  Troisième boucle : la brume **part du coin haut gauche de l'écran**
+  (elle remonte de la marge du logo, `--logo-marge`), couvre tout le logo
+  et ne se fond qu'à droite (32 px) et en bas (24 px), coin bas droit
+  arrondi à 32 px. `scroll-padding-top`
   à 76 px pour qu'une ancre ne pose pas son titre sous le logo (vérifié sur
   les six sections au téléphone). Voile plein si `prefers-reduced-transparency`.
 - **Bug du 28/09/2026** : un visiteur ayant déjà répondu gardait le panneau
@@ -633,3 +637,11 @@ la demande de l'utilisateur) :
   l'écran) et la section Contact (conclusion, un seul geste). Vérifié de
   360 × 740 à 1440 × 900 : même bord gauche hero et sections, de 27 à
   97 px d'air au-dessus de la question, aucun débordement.
+- **Logo : retour en arrière (28/09/2026)**. Toute brume fixe, même sans
+  teinte, masquait la page en passant dessus. Le logo reste donc DANS le
+  hero (position absolue en haut à gauche, part au défilement) et la marque
+  continue dans le dock : le glyphe Fi, blanc, remplace le picto « Départ »
+  (même taille, 20 px, même rôle : retour au début, libellé « Fractal
+  Innov, retour au début »). Glyphe servi en masque
+  (`media/marque/fi-glyphe.png`, 128 px), peint par `background-color`.
+  Plus rien de fixe en haut : `scroll-padding-top` revient à 24 px.

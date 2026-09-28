@@ -349,6 +349,15 @@
 .fi-dock__btn[aria-pressed="true"],
 .fi-dock__btn[aria-expanded="true"] { background: color-mix(in oklab, var(--fi-accent) 20%, transparent); color: var(--fi-accent); }
 .fi-dock__btn svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* Le glyphe Fi : une image servie en MASQUE, peinte par background-color.
+   Il garde ainsi la taille des pictos (20 px) et reste blanc, la marque ne
+   prend pas la couleur d'état des autres boutons. */
+.fi-dock__marque {
+  display: block; width: 20px; height: 20px; background-color: #fff;
+  -webkit-mask: url("/media/marque/fi-glyphe.png") center / contain no-repeat;
+  mask: url("/media/marque/fi-glyphe.png") center / contain no-repeat;
+}
+@media (forced-colors: active) { .fi-dock__marque { background-color: ButtonText; } }
 .fi-dock .fi-bascule-son { padding: 0 var(--fi-e1); } /* le libellé du niveau respire, 8 px */
 .fi-dock__rdv { padding: 0 var(--fi-e2); color: var(--fi-texte); } /* 16 px : le seul bouton à libellé, il se lit comme une action */
 .fi-dock__sep { width: 1px; height: 32px; margin: 0 var(--fi-e05); background: rgba(255, 255, 255, 0.08); flex-shrink: 0; } /* 32 px : les deux tiers d'un bouton, il sépare sans barrer */

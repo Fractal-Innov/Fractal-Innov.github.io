@@ -189,12 +189,11 @@
 
     *, *::before, *::after { box-sizing: border-box; }
 
-    /* Plus de pilule de navigation en haut (le dock est en bas), mais le
-       logo reste FIXE en haut à gauche : une ancre pose son titre sous lui.
-       76 px = 44 de cible + 16 d'air de chaque côté. */
+    /* Plus rien de fixe en haut (le dock est en bas, le logo reste dans
+       le hero depuis le 28/09/2026) : une ancre garde juste 24 px d'air. */
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: calc(var(--fi-cible, 44px) + 2 * var(--fi-e2, 1rem));
+      scroll-padding-top: var(--fi-e3, 1.5rem);
     }
 
     body {
@@ -1719,40 +1718,13 @@
        en coin, la marge du bas, et les verbes du chapeau (les piliers ne
        sont plus DANS le hero, d'où `body:has()` au lieu de `.hero:has()`).
        ══════════════════════════════════════════════════════════════════ */
-    /* Le logo reste à l'écran pendant toute la lecture (décision du
-       28/09/2026) : la marque en haut, le dock en bas. Derrière lui, une
-       brume du même verre que le dock (flou + saturation), au bord FONDU :
-       pas de cadre qui concurrence le dock, le logo reste lisible sur une
-       section claire comme sur la vidéo. */
+    /* Le logo vit DANS le hero, en haut à gauche, et part avec lui au
+       défilement (retour du 28/09/2026 : une brume fixe masquait la page).
+       Ensuite, la marque reste présente par le glyphe Fi du dock. */
     .logo-coin {
-      position: fixed; z-index: 80; /* sous le dock (90) : un bandeau déplié passe devant, jamais l'inverse */
+      position: absolute; z-index: 80;
       top: var(--fi-e2); left: var(--fi-e2); /* 16 px : la gouttière mobile */
       display: inline-flex; align-items: center; min-height: var(--fi-cible); /* 44 px : cible tactile */
-      isolation: isolate; /* la brume (z-index -1) reste derrière le logo, pas derrière la page */
-    }
-    .logo-coin::before {
-      content: ""; position: absolute; z-index: -1; pointer-events: none;
-      inset: calc(-1 * var(--fi-e2)) calc(-1 * var(--fi-e3)); /* déborde de 16 px en haut et en bas, 24 sur les côtés : la bande où le flou s'efface */
-      /* AUCUNE teinte (retour du 28/09/2026) : seulement la matière du
-         dock, flou + saturation. Le logo se détache par le flou de ce qui
-         passe dessous, pas par un voile sombre. */
-      backdrop-filter: blur(20px) saturate(165%);
-      -webkit-backdrop-filter: blur(20px) saturate(165%);
-      /* Le bord diffus suit le RECTANGLE du logo (pas un ovale) : deux
-         dégradés croisés, plein sur le logo, qui s'effacent sur les 24 px
-         des côtés et les 16 px du haut et du bas. Leur intersection donne
-         un rectangle aux bords fondus. */
-      -webkit-mask-image:
-        linear-gradient(to right, transparent, #000 var(--fi-e3), #000 calc(100% - var(--fi-e3)), transparent),
-        linear-gradient(to bottom, transparent, #000 var(--fi-e2), #000 calc(100% - var(--fi-e2)), transparent);
-      -webkit-mask-composite: source-in;
-      mask-image:
-        linear-gradient(to right, transparent, #000 var(--fi-e3), #000 calc(100% - var(--fi-e3)), transparent),
-        linear-gradient(to bottom, transparent, #000 var(--fi-e2), #000 calc(100% - var(--fi-e2)), transparent);
-      mask-composite: intersect;
-    }
-    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      .logo-coin::before { background: rgba(10, 11, 20, 0.6); } /* seul cas avec une teinte : sans flou, rien d'autre ne détache le logo */
     }
     /* L'étiquette d'une carte d'offre, au téléphone : à 0,2 em d'espacement,
        « CONSERVER UN SAVOIR-FAIRE » (et déjà « FORMER UN NOUVEL ARRIVANT »)
@@ -1761,9 +1733,6 @@
        tient les trois étiquettes sur une ligne à 360 px, capitales toujours
        espacées. */
     @media (max-width: 400px) { .section .offre__eyebrow { letter-spacing: 0.08em; } }
-    @media (prefers-reduced-transparency: reduce) {
-      .logo-coin::before { background: rgb(10, 11, 20); backdrop-filter: none; -webkit-backdrop-filter: none; }
-    }
     .logo-coin img { display: block; width: auto; height: 28px; } /* 28 px : lisible sans concurrencer le titre (place provisoire, à définir) */
     .logo-coin:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 4px; border-radius: 6px; }
     @media (min-width: 768px) { .logo-coin { top: var(--fi-e3); left: var(--fi-e3); } } /* 24 px dès la tablette */
@@ -1920,8 +1889,11 @@
     </div>
 
     <nav class="fi-dock__rangee" aria-label="Navigation">
-      <button class="fi-dock__btn" type="button" data-dock-depart aria-label="Retour au début" title="Retour au début">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+      <!-- La marque tient le premier bouton : le logo du hero part au
+           défilement, le glyphe Fi reste (retour du 28/09/2026). Même rôle
+           qu'un logo d'en-tête : revenir au début. -->
+      <button class="fi-dock__btn fi-dock__btn--marque" type="button" data-dock-depart aria-label="Fractal Innov, retour au début" title="Fractal Innov, retour au début">
+        <span class="fi-dock__marque" aria-hidden="true"></span>
       </button>
       <span class="fi-dock__sep" aria-hidden="true"></span>
       <!-- Les situations : `data-situation-choix` fait le choix (script
