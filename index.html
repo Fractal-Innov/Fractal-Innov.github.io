@@ -1372,10 +1372,6 @@
     body[data-situation="garder"] .repere[data-usages~="garder"] { order: -1; }
 
     /* ── Les gestes ── */
-    /* ⚠️ On éteint les ENFANTS de l'étape, pas l'étape : elle porte déjà
-       l'opacité de `.reveal`, et deux règles d'opacité se battraient. */
-    .etapes[data-etape] .etape > * { transition: opacity 0.4s ease; }
-    .etapes[data-etape] .etape:not(.etape--allumee) > * { opacity: 0.38; }
 
     .partenaires { position: relative; }
     .partenaire { position: relative; z-index: 1; }
@@ -2019,6 +2015,171 @@
       .demos .demo { animation: none !important; transition: none; }
       .demos[data-js] .demos__bande { scroll-behavior: auto; }
     }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : APPROCHE (28/09/2026)
+       Une carte par étape, au vocabulaire de /stand/ : tuile en dégradé
+       avec un picto, numéro discret dans le coin, filet dégradé en haut.
+       Un FIL relie les tuiles d'une carte à l'autre et se remplit une
+       seule fois, segment après segment, quand la frise reçoit `.active`
+       (le « reveal » de la page). Sans JS, il est rempli d'office.
+
+       ⚠️ Le fil passe AU-DESSUS des cartes (il traverse l'écart et le bord
+       de la carte suivante) et SOUS les tuiles. Pour ça, les cartes ne
+       doivent pas créer de contexte d'empilement : pas de backdrop-filter
+       ni de transform (le survol ne soulève donc pas ces cartes). Le fil
+       (z 2) et les tuiles (z 3) se rangent alors dans la même pile.
+
+       Un segment par carte sauf la dernière (::before), piste et
+       remplissage dans un seul fond : le dégradé grandit par
+       background-size. Au bureau il va vers la droite, au mobile vers le
+       bas ; sa longueur se calcule depuis la carte, l'écart (--ecart) et
+       le rembourrage (--pad), jamais en dur.
+       ══════════════════════════════════════════════════════════════════ */
+    .section .etapes {
+      --tuile: 56px; --pad: var(--fi-e4); --ecart: var(--fi-e3); --pas-fil: 0.6s;
+      list-style: none; margin: var(--fi-e6) 0 0; padding: 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ecart);
+    }
+    .section .etape.carte {
+      position: relative; padding: var(--pad);
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      /* Le filet dégradé du haut, comme les cartes de /stand/. */
+      background:
+        linear-gradient(90deg, transparent 4%, rgba(244, 114, 182, 0.55), rgba(139, 92, 246, 0.55), transparent 96%) top / 100% 1px no-repeat,
+        var(--glass-bg);
+    }
+    /* Affordance : ces cartes ne se cliquent pas. Le survol hérité de
+       .carte (soulèvement, fond plus clair) est annulé ; le seul retour
+       est le souffle léger plus bas, sur la tuile. */
+    .section .etape.carte:hover { transform: none; background:
+        linear-gradient(90deg, transparent 4%, rgba(244, 114, 182, 0.55), rgba(139, 92, 246, 0.55), transparent 96%) top / 100% 1px no-repeat,
+        var(--glass-bg); }
+
+    .etape__tuile {
+      position: relative; z-index: 3;
+      display: grid; place-items: center;
+      width: var(--tuile); height: var(--tuile); margin-bottom: var(--fi-e3);
+      border-radius: 14px; background: var(--brand-gradient); color: #fff;
+      box-shadow: 0 10px 28px -14px rgba(139, 92, 246, 0.7);
+      /* --d : le retard de l'éclat (le fil qui arrive), réservé à l'ombre ;
+         le survol (transform, filter) répond, lui, tout de suite. */
+      transition: box-shadow 0.5s ease var(--d, 0s), transform 0.35s var(--fi-ease-sortie, ease-out), filter 0.35s ease;
+    }
+    .etape__tuile svg {
+      width: 26px; height: 26px;
+      fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .etape__tuile circle { fill: currentColor; }
+    /* La tuile s'éclaire quand le fil l'atteint. */
+    .section .etape:nth-child(2) .etape__tuile { --d: var(--pas-fil); }
+    .section .etape:nth-child(3) .etape__tuile { --d: calc(var(--pas-fil) * 2); }
+    .etapes.active .etape__tuile,
+    html:not(.js) .etapes .etape__tuile { box-shadow: 0 12px 34px -8px rgba(139, 92, 246, 0.95); }
+
+    /* Le numéro, en discret dans le coin (comme /stand/). ⚠️ Il loge
+       AU-DESSUS du fil : le fil passe à mi-hauteur de la tuile (pad +
+       tuile / 2), le numéro s'arrête avant (haut 16 px, 26,6 px de
+       corps, fini à ~43 px ; le fil le plus haut, au bureau bas, est à
+       48 px). Retour du 28/09/2026 : à hauteur de tuile, le fil le coupait. */
+    .section .etape__num {
+      position: absolute; top: var(--fi-e2); right: var(--fi-e3); margin: 0;
+      font-family: inherit; font-size: var(--fi-t2); font-weight: 800; line-height: 1;
+      background: none; color: rgba(255, 255, 255, 0.06); -webkit-text-fill-color: currentColor;
+      transition: color 0.35s ease;
+    }
+    /* Le survol : un souffle, pas une promesse de clic. La tuile monte de
+       3 px et s'éclaire, le numéro et le bord sortent un peu de l'ombre.
+       ⚠️ La carte elle-même ne bouge pas (un transform sur la carte
+       enfermerait le fil sous la carte suivante). Souris seulement. */
+    @media (hover: hover) {
+      .section .etape.carte:hover { border-color: rgba(255, 255, 255, 0.14); }
+      .section .etape.carte:hover .etape__tuile { transform: translateY(-3px); filter: brightness(1.12); }
+      .section .etape.carte:hover .etape__num { color: rgba(255, 255, 255, 0.14); }
+    }
+
+    /* Le fil : du bord droit de la tuile à la tuile de la carte suivante. */
+    .section .etape:not(:last-child)::before {
+      content: ""; position: absolute; z-index: 2; height: 2px;
+      top: calc(var(--pad) + var(--tuile) / 2 - 1px);
+      left: calc(var(--pad) + var(--tuile));
+      width: calc(100% + var(--ecart) - var(--tuile) + 2px); /* + les 2 bords de carte : 100 % est la boîte intérieure */
+      background: var(--brand-gradient) left / 0% 100% no-repeat, rgba(255, 255, 255, 0.12);
+      transition: background-size var(--pas-fil) linear;
+    }
+    .section .etape:nth-child(2)::before { transition-delay: var(--pas-fil); }
+    .etapes.active .etape::before,
+    html:not(.js) .etapes .etape::before { background-size: 100% 100%, auto; }
+
+    .section .etape h3 { font-size: var(--fi-t1); margin: 0 0 var(--fi-e2); }
+    .etape__badge {
+      display: inline-block; vertical-align: 0.2em; margin-left: var(--fi-e1);
+      padding: 2px 10px; border-radius: 999px; border: 0;
+      background: rgba(110, 168, 255, 0.14); /* plein et pâle : une étiquette, pas un bouton en contour */
+      font-size: var(--fi-t-1); font-weight: 600; color: var(--accent-blue-light);
+    }
+    /* Le gain : une petite étiquette sur sa ligne, puis le résultat en
+       texte clair (retour du 28/09/2026 : étiquette et résultat sur une
+       même ligne, avec coche et gras bleu, faisaient trois styles). */
+    .section .etape__gain {
+      margin: 0 0 var(--fi-e2); font-size: var(--fi-t0); font-weight: 500; line-height: 1.4;
+      color: var(--text-main);
+    }
+    /* L'étiquette s'efface devant le résultat : petite, en casse normale,
+       dans le gris du texte secondaire (retour du 28/09/2026 : en
+       capitales bleues espacées, répétée trois fois, elle criait plus
+       fort que le résultat). */
+    .etape__gain-intro {
+      display: block; margin-bottom: 2px;
+      font-size: var(--fi-t-1); font-weight: 400;
+      color: var(--text-muted);
+    }
+    .section .etape__texte { margin: 0; color: var(--text-muted); }
+    #approche .etapes__geste { margin-top: var(--fi-e6); }
+
+    /* Mobile et tablette : les cartes s'empilent, la tuile à gauche, le
+       fil descend d'une tuile à l'autre ; le texte long se tait, le gain
+       reste (réponse 4a du 28/09/2026). */
+    @media (max-width: 899px) {
+      .section .etapes { --tuile: 44px; --pad: var(--fi-e2); --ecart: var(--fi-e2); grid-template-columns: 1fr; margin-top: var(--fi-e4); }
+      .section .etape.carte { padding-left: calc(var(--pad) * 2 + var(--tuile)); min-height: calc(var(--tuile) + var(--pad) * 2); }
+      .etape__tuile { position: absolute; left: var(--pad); top: var(--pad); margin: 0; border-radius: 12px; }
+      .etape__tuile svg { width: 22px; height: 22px; }
+      .section .etape__num { font-size: var(--fi-t2); }
+      .section .etape h3 { margin: 0 0 var(--fi-e1); }
+      .section .etape__gain { margin: 0; }
+      .section .etape:not(:last-child)::before {
+        top: calc(var(--pad) + var(--tuile)); left: calc(var(--pad) + var(--tuile) / 2 - 1px);
+        width: 2px; height: calc(100% + var(--ecart) - var(--tuile) + 2px);
+        background: var(--brand-gradient) top / 100% 0% no-repeat, rgba(255, 255, 255, 0.12);
+      }
+      .etapes.active .etape::before,
+      html:not(.js) .etapes .etape::before { background-size: 100% 100%, auto; }
+      .section .etape__texte { display: none; }
+      .section .etape__gain { font-size: var(--fi-t-05); }
+      /* L'intro redit ce que chaque étiquette « Vous repartez avec » dit
+         déjà : au mobile, elle cède sa place aux étapes. */
+      #approche > h2 + p { display: none; }
+      #approche .etapes__geste { margin-top: var(--fi-e4); }
+    }
+    /* Bureau bas (1280×720) : cartes et fil se resserrent. */
+    @media (min-width: 900px) and (max-height: 800px) {
+      .section .etapes { --tuile: 48px; --pad: var(--fi-e3); margin-top: var(--fi-e4); }
+      .etape__tuile { margin-bottom: var(--fi-e2); }
+      .etape__tuile svg { width: 22px; height: 22px; }
+      #approche .etapes__geste { margin-top: var(--fi-e4); }
+    }
+    /* Mobile bas (360×740) : tout se rapproche, le bouton reste au-dessus
+       du dock. */
+    @media (max-width: 899px) and (max-height: 760px) {
+      .section .etapes { --ecart: var(--fi-e1); margin-top: var(--fi-e3); }
+      #approche .etapes__geste { margin-top: var(--fi-e3); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .etape__tuile,
+      .section .etape__num,
+      .section .etape::before { transition: none !important; }
+      .section .etape.carte:hover .etape__tuile { transform: none; }
+    }
   </style>
 </head>
 
@@ -2503,59 +2664,43 @@
       <!-- ══ APPROCHE ════════════════════════════════════════════════════ -->
       <section class="section" id="approche">
         <p class="section-number reveal">L'approche</p>
-        <h2 class="reveal">Trois étapes, de l'idée à l'outil que vous gardez</h2>
-        <p class="reveal">Trois temps, trois livrables. Vous savez à chaque étape ce que vous
-          recevez, et ce qu'il vous reste à fournir.</p>
+        <h2 class="reveal" data-essentiel>Trois étapes, de l'idée à l'outil que vous gardez</h2>
+        <p class="reveal">À chaque étape, vous savez ce que vous recevez.</p>
 
-        <div class="etapes">
-          <article class="carte etape reveal">
+        <!-- La frise (passe graphique du 28/09/2026, vocabulaire de /stand/) :
+             une carte par étape, un picto dans la tuile en dégradé, le
+             numéro en discret dans le coin. Un fil relie les tuiles et se
+             remplit UNE fois quand la frise apparaît (`.reveal.active`,
+             aucun JS propre). Au bureau : horizontale ; au mobile :
+             verticale, le texte long se tait, le gain reste. -->
+        <ol class="etapes reveal" aria-label="Les trois étapes">
+          <li class="etape carte">
+            <span class="etape__tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span>
             <p class="etape__num" aria-hidden="true">01</p>
-            <h3>Partir de votre situation</h3>
-            <p class="etape__court">L'atelier de 30 min</p>
-            <p class="etape__texte">Nous partons de votre besoin et du socle qui tourne déjà. Vos
-              fichiers 3D, photos et vidéos sont regardés ensemble, et vous repartez en sachant
-              par quel usage commencer. C'est gratuit.</p>
-            <ul class="tag-liste">
-              <li class="tag">Recherche &amp; Innovation</li>
-              <li class="tag">Ateliers</li>
-              <li class="tag">Charge cognitive</li>
-            </ul>
-          </article>
-
-          <article class="carte etape reveal">
+            <h3>L'atelier <span class="etape__badge">Gratuit</span></h3>
+            <p class="etape__gain" data-essentiel><span class="etape__gain-intro">Vous repartez avec<span class="sr-only"> :</span></span> L'usage par lequel commencer</p>
+            <p class="etape__texte">On regarde ensemble vos fichiers 3D, photos et vidéos.</p>
+          </li>
+          <li class="etape carte">
+            <span class="etape__tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
             <p class="etape__num" aria-hidden="true">02</p>
-            <h3>Création</h3>
-            <p class="etape__court">La 3D au service de la clarté</p>
-            <p class="etape__texte">Scène 3D temps réel, parcours guidé, contenus au bon moment :
-              l'expérience se construit sur vos fichiers existants.</p>
-            <ul class="tag-liste">
-              <li class="tag">Contenus WebXR</li>
-              <li class="tag">3D temps réel</li>
-              <li class="tag">AR / VR</li>
-            </ul>
-          </article>
-
-          <article class="carte etape reveal">
+            <h3>La création</h3>
+            <p class="etape__gain" data-essentiel><span class="etape__gain-intro">Vous repartez avec<span class="sr-only"> :</span></span> Votre expérience est accessible (en ligne ou en réseau local)</p>
+            <p class="etape__texte">Scène 3D temps réel et parcours guidé, construits sur vos fichiers existants.</p>
+          </li>
+          <li class="etape carte">
+            <span class="etape__tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5"/></svg></span>
             <p class="etape__num" aria-hidden="true">03</p>
-            <h3>Structuration</h3>
-            <p class="etape__court">Un outil qui vous reste</p>
-            <p class="etape__texte">L'expérience est livrée, documentée et mesurée. Vos équipes la
-              font vivre et la réutilisent, sans développeur.</p>
-            <ul class="tag-liste">
-              <li class="tag">Gestion de Projet</li>
-              <li class="tag">Déploiement</li>
-              <li class="tag">Mesure d'usage</li>
-            </ul>
-          </article>
-        </div>
+            <h3>La livraison</h3>
+            <p class="etape__gain" data-essentiel><span class="etape__gain-intro">Vous repartez avec<span class="sr-only"> :</span></span> Un outil qui vous reste</p>
+            <p class="etape__texte">Documentée et mesurée, vos équipes la font vivre sans développeur.</p>
+          </li>
+        </ol>
 
-        <!-- Le geste de l'approche. « Étape suivante » est masqué sans
-             JavaScript : les trois temps sont alors tous visibles. -->
         <div class="etapes__geste">
-          <button class="hero-cta__btn hero-cta__btn--secondary" id="etapeSuivante" type="button" hidden>Étape suivante</button>
           <a class="hero-cta__btn hero-cta__btn--primary"
              href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-             target="_blank" rel="noopener" data-rdv="approche"><span>Réserver 30 min</span></a>
+             target="_blank" rel="noopener" data-rdv="approche" data-essentiel><span>Réserver 30 min</span></a>
         </div>
       </section>
 
@@ -3388,33 +3533,8 @@
       /* ── LES GESTES ────────────────────────────────────────────────────
          Un geste par chapitre, qui se joue et ne se subit pas : aucun ne
          fait défiler la page. Le fondateur, l'offre, les démos et le
-         contact sont « joués » par la situation (CSS) ; restent ces deux. */
-
-      /* L'approche : « Étape suivante » allume les trois temps l'un après
-         l'autre. Sans JS, le bouton reste `hidden` et tout est allumé. */
-      var boiteEtapes = document.querySelector('#approche .etapes');
-      var etapes = boiteEtapes ? boiteEtapes.querySelectorAll('.etape') : [];
-      var btnEtape = document.getElementById('etapeSuivante');
-      if (etapes.length && btnEtape) {
-        var allumees = 0;
-        var allumer = function (n) {
-          allumees = n;
-          etapes.forEach(function (el, i) {
-            el.classList.toggle('etape--allumee', i < n);
-            if (i === n - 1) el.setAttribute('aria-current', 'step');
-            else el.removeAttribute('aria-current');
-          });
-          btnEtape.textContent = n >= etapes.length ? 'Revoir depuis le début' : 'Étape suivante';
-        };
-        boiteEtapes.setAttribute('data-etape', '');
-        allumer(1);
-        btnEtape.hidden = false;
-        btnEtape.addEventListener('click', function () {
-          allumer(allumees >= etapes.length ? 1 : allumees + 1);
-          journal('approche : étape', allumees, 'allumée');
-          emettre('fi:geste', { chapitre: 'approche', geste: 'etape', etape: allumees });
-        });
-      }
+         contact sont « joués » par la situation (CSS) ; reste la constellation
+         (l'approche n'a plus de geste propre depuis la frise du 28/09/2026). */
 
       /* Les partenaires : au survol ou au toucher, les monogrammes se
          relient en constellation. Le tracé est recalculé à chaque fois, sur
