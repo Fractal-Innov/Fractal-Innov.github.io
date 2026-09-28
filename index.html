@@ -2122,6 +2122,17 @@
       display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
       gap: var(--fi-e6); align-items: center;
     }
+    /* La signature : nom + rôle ; la photo ne s'affiche qu'au mobile. */
+    .equipe__signature { display: flex; align-items: center; gap: var(--fi-e2); margin: 0 0 var(--fi-e2); }
+    .equipe__photo {
+      flex: none; width: 56px; height: 56px; padding: 2px; border-radius: 50%;
+      background: var(--brand-gradient); object-fit: cover; object-position: 50% 20%;
+    }
+    .section .equipe__signature p { margin: 0; display: grid; gap: 2px; line-height: 1.3; }
+    .equipe__signature strong { font-size: var(--fi-t0); font-weight: 700; color: var(--text-main); }
+    .equipe__signature span { font-size: var(--fi-t-05); color: var(--accent-blue-light); }
+    .orbite__legende { display: none; }
+    @media (min-width: 900px) { .equipe__photo { display: none; } }
     .section .equipe__bio { margin: 0 0 var(--fi-e3); color: var(--text-muted); }
     .equipe__bio strong { color: var(--text-main); font-weight: 600; }
     .equipe__faits { margin: 0 0 var(--fi-e4); }
@@ -2170,7 +2181,10 @@
       transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
     /* Les trois rangées : 1 en haut ; 2 et 5 au milieu, sur les bords ;
-       3 et 4 en bas. L'ordre du HTML reste celui de la lecture. */
+       3 et 4 en bas : la lecture tourne dans le sens des aiguilles d'une
+       montre depuis le haut. L'ordre du HTML est celui de l'importance
+       (décision du 28/09/2026) : logiciel, studio 3D, écosystème,
+       mobilier, atelier d'art. */
     .role:nth-child(1) { left: 50%; top: 0; transform: translateX(-50%); }
     .role:nth-child(2) { right: 0; top: 48%; transform: translateY(-50%); }
     .role:nth-child(3) { left: 72%; bottom: 0; transform: translateX(-50%); }
@@ -2199,31 +2213,30 @@
       .orbite__centre { width: 96px; height: 96px; } /* après le bureau bas : il gagne à 1024×768 */
     }
 
-    /* Mobile et tablette : la liste. */
+    /* Mobile et tablette : la liste. Le portrait de l'orbite se retire (la
+       photo est dans la signature, à côté du nom) ; les rôles, sous une
+       petite légende, passent sur deux colonnes dès 600 px. Plus de rail :
+       sans le centre, il ne reliait plus rien (retour du 28/09/2026). */
     @media (max-width: 899px) {
-      .equipe__grille { grid-template-columns: 1fr; gap: var(--fi-e4); }
+      .equipe__grille { grid-template-columns: 1fr; gap: var(--fi-e6); }
+      .section .equipe__citation p { font-size: var(--fi-t0); }
       .orbite { height: auto; }
-      .orbite__fils { display: none; }
-      .orbite__centre { position: static; transform: none; width: 56px; height: 56px; margin-bottom: var(--fi-e2); }
-      .orbite__roles { position: relative; display: grid; gap: var(--fi-e2); }
+      .orbite__fils,
+      .orbite__centre { display: none; }
+      .section .orbite__legende {
+        display: block; margin: 0 0 var(--fi-e3);
+        font-size: var(--fi-t-05); color: var(--text-muted);
+      }
+      .orbite__roles { display: grid; gap: var(--fi-e3); }
       /* ⚠️ `.orbite .role:nth-child(n)` : il faut battre les rangées du
          bureau (`.role:nth-child(1)`…), plus spécifiques qu'un `.role`. */
       .orbite .role:nth-child(n) {
         position: relative; left: auto; right: auto; top: auto; bottom: auto; transform: none;
-        width: auto; padding: 0 0 0 10px; border: 0; background: none; box-shadow: none;
+        width: auto; padding: 0; border: 0; background: none; box-shadow: none;
       }
-      /* Le rail : du portrait à la première tuile, puis de tuile en tuile
-         (tuile de 36 px décalée de 10 px : son milieu est celui du portrait). */
-      .orbite__roles::before {
-        content: ""; position: absolute; left: 27px; width: 2px;
-        top: calc(-1 * var(--fi-e2)); height: var(--fi-e2);
-        background: rgba(255, 255, 255, 0.14);
-      }
-      .role:not(:last-child)::after {
-        content: ""; position: absolute; left: 27px; width: 2px;
-        top: 36px; height: calc(100% - 36px + var(--fi-e2));
-        background: rgba(255, 255, 255, 0.14);
-      }
+    }
+    @media (min-width: 600px) and (max-width: 899px) {
+      .orbite__roles { grid-template-columns: 1fr 1fr; column-gap: var(--fi-e4); }
     }
     @media (prefers-reduced-motion: reduce) {
       .orbite__fils path { transition: none !important; stroke-dashoffset: 0; }
@@ -2767,8 +2780,16 @@
           <div class="equipe__texte">
             <p class="section-number reveal">L'équipe</p>
             <h2 class="reveal" data-essentiel>Un seul interlocuteur, les bons experts autour</h2>
-            <p class="equipe__bio reveal">Corentin Duboc, architecte d'expériences WebXR.
-              J'accompagne les industriels (<strong>Greentech</strong>, <strong>Mobilité</strong>,
+            <!-- La signature : le nom et le rôle, et la photo au mobile
+                 seulement (au bureau, le portrait est au centre de l'orbite ;
+                 retour du 28/09/2026 : au mobile, seule au-dessus de la liste,
+                 la photo ne se rattachait à rien). -->
+            <div class="equipe__signature reveal">
+              <img class="equipe__photo" src="/media/accueil/portrait.webp" alt=""
+                   width="56" height="56" loading="lazy" decoding="async">
+              <p><strong>Corentin Duboc</strong><span>Architecte d'expériences WebXR</span></p>
+            </div>
+            <p class="equipe__bio reveal">J'accompagne les industriels (<strong>Greentech</strong>, <strong>Mobilité</strong>,
               <strong>Énergie</strong>) de l'atelier à la livraison, et je mobilise les experts du
               réseau projet par projet.</p>
             <ul class="tag-liste equipe__faits reveal" aria-label="En bref">
@@ -2787,11 +2808,8 @@
               <img src="/media/accueil/portrait.webp"
                    alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280" loading="lazy" decoding="async">
             </figure>
-            <ul class="orbite__roles" aria-label="Le réseau, par rôle">
-            <li class="role" data-role="ecosysteme">
-              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
-              <span class="role__corps"><strong class="role__nom">Écosystème d'innovation</strong><span class="role__texte">Mobilise tout un réseau selon vos besoins, pour les projets les plus complexes.</span></span>
-            </li>
+            <p class="orbite__legende" aria-hidden="true">Le réseau, mobilisé selon le projet</p>
+            <ul class="orbite__roles" aria-label="Le réseau, mobilisé selon le projet">
             <li class="role" data-role="logiciel">
               <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></span>
               <span class="role__corps"><strong class="role__nom">Ingénierie logicielle</strong><span class="role__texte">Le socle technique commun à toutes les expériences.</span></span>
@@ -2800,13 +2818,17 @@
               <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></svg></span>
               <span class="role__corps"><strong class="role__nom">Studio 3D</strong><span class="role__texte">Modélise les environnements les plus riches en décors et objets.</span></span>
             </li>
-            <li class="role" data-role="atelier-art">
-              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
-              <span class="role__corps"><strong class="role__nom">Atelier d'art</strong><span class="role__texte">Produit les œuvres dont chaque étape de fabrication est documentée.</span></span>
+            <li class="role" data-role="ecosysteme">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Écosystème d'innovation</strong><span class="role__texte">Mobilise tout un réseau selon vos besoins, pour les projets les plus complexes.</span></span>
             </li>
             <li class="role" data-role="mobilier">
               <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span>
               <span class="role__corps"><strong class="role__nom">Fabricant de mobilier</strong><span class="role__texte">La borne physique qui accueille l'expérience sur le stand.</span></span>
+            </li>
+            <li class="role" data-role="atelier-art">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Atelier d'art</strong><span class="role__texte">Produit les œuvres dont chaque étape de fabrication est documentée.</span></span>
             </li>
             </ul>
           </div>
