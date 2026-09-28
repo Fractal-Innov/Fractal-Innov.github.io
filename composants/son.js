@@ -30,14 +30,19 @@
         réservation** : entendue seule, elle ne peut être que ça.
 
    Ce qu'il promet aussi :
-     - coupé par défaut ; allumé seulement par FiSon.basculer() (le bouton
-       son), et le choix est retenu (localStorage « fi:son ») ;
+     - trois niveaux, comme fi-v3 : « plein », « doux », « muet ».
+       **Doux par défaut** (retour du 27/09/2026) : le visiteur entend
+       dès son premier geste, discrètement, par-dessus sa musique. Le
+       bouton son fait tourner les niveaux (FiSon.cycler()) et le choix
+       est retenu (localStorage « fi:son-niveau ») ;
      - le moteur audio du navigateur n'existe pas tant qu'un geste ne l'a
-       pas demandé : la page ne paie rien tant que le son est coupé ;
+       pas demandé : le premier clic ou la première touche le réveille,
+       et rien ne joue avant ;
      - jamais d'exception : sans Web Audio ou sans stockage, il se tait.
 
-   API    : window.FiSon = { actif(), basculer(), jouer(degre) }
-   Émet   : fi:son {actif}
+   API    : window.FiSon = { niveau(), actif(), cycler(), regler(n),
+                          basculer() (alias de cycler), jouer(degre) }
+   Émet   : fi:son {actif, niveau}
    Journal: « ?debug=1 » (clé fi:debug), préfixe [son].
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
@@ -77,14 +82,27 @@
     return NOMS[i] + palier;
   }
 
-  var VOLUME = 0.3;               /* le « doux » du village */
+  /* Les gains de fi-v3 : « doux » (0,3) est le volume que ce moteur a
+     toujours eu ; « plein » (0,85) reste sous 1 pour garder de la marge
+     aux notes doublées de la réservation. */
+  var NIVEAUX = { plein: 0.85, doux: 0.3, muet: 0 };
+  var ORDRE = ['plein', 'doux', 'muet'];   /* l'ordre du cycle, celui de fi-v3 */
   var COUPURE = 900;              /* passe-bas au palier 0, en Hz */
   var OUVERTURE_PAR_PALIER = 1.35;
   var PLAFOND_COUPURE = 3200;
   var DELAI_SUSPENSION = 1500;    /* ms en arrière-plan avant de suspendre */
 
-  var actif = false;
-  try { actif = localStorage.getItem('fi:son') === '1'; } catch (e) {}
+  /* Le niveau retenu. ⚠️ Migration : l'ancienne clé « fi:son » était un
+     booléen ; « 1 » (allumé) devient doux, « 0 » (coupé) devient muet,
+     pour qu'un visiteur qui avait coupé le son ne l'entende pas revenir. */
+  var niveau = 'doux';
+  try {
+    var retenu = localStorage.getItem('fi:son-niveau');
+    var ancien = localStorage.getItem('fi:son');
+    if (NIVEAUX.hasOwnProperty(retenu)) niveau = retenu;
+    else if (ancien === '0') niveau = 'muet';
+  } catch (e) {}
+  var actif = niveau !== 'muet';
   var ctx = null;
   var maitre = null;
   var envoiEcho = null;
@@ -125,7 +143,7 @@
         if (!AC) { journal('Web Audio absent : le son reste muet'); return false; }
         ctx = new AC();
         maitre = ctx.createGain();
-        maitre.gain.value = VOLUME;
+        maitre.gain.value = NIVEAUX[niveau];
         maitre.connect(ctx.destination);
         var convolveur = ctx.createConvolver();
         convolveur.buffer = construireImpulsion(ctx);
@@ -288,8 +306,9 @@
     }
   });
 
-  /* ── Son allumé à une visite précédente ──────────────────────────────
-     Le moteur attend le premier geste dans la page pour naître. */
+  /* ── Le premier geste ────────────────────────────────────────────────
+     Le son est doux par défaut, mais le moteur attend le premier geste
+     dans la page pour naître : le navigateur l'exige. */
   function auPremierGeste() {
     document.removeEventListener('pointerdown', auPremierGeste, true);
     document.removeEventListener('keydown', auPremierGeste, true);
@@ -301,13 +320,27 @@
   }
 
   /* ── L'API ───────────────────────────────────────────────────────── */
-  function basculer() {
-    actif = !actif;
-    try { localStorage.setItem('fi:son', actif ? '1' : '0'); } catch (e) {}
-    journal('son', actif ? 'allumé' : 'coupé');
-    if (actif && reveiller()) { finQueue = 0; gongs(); }
-    document.dispatchEvent(new CustomEvent('fi:son', { detail: { actif: actif } }));
-    return actif;
+  /* Régler un niveau : le gain glisse (80 ms) au lieu de sauter, et un
+     niveau audible se fait entendre tout de suite : les deux gongs
+     servent d'aperçu, le visiteur sait ce qu'il vient de choisir. */
+  function regler(n) {
+    if (!NIVEAUX.hasOwnProperty(n)) return niveau;
+    niveau = n;
+    actif = n !== 'muet';
+    try { localStorage.setItem('fi:son-niveau', n); } catch (e) {}
+    journal('son', n, '(gain', NIVEAUX[n] + ')');
+    if (actif && reveiller()) {
+      maitre.gain.setTargetAtTime(NIVEAUX[n], ctx.currentTime, 0.08);
+      finQueue = 0;
+      gongs();
+    }
+    document.dispatchEvent(new CustomEvent('fi:son', { detail: { actif: actif, niveau: niveau } }));
+    return niveau;
+  }
+  /* Le bouton son : niveau suivant dans l'ordre de fi-v3 (plein, doux,
+     muet, puis on reboucle). Depuis doux : muet, puis plein. */
+  function cycler() {
+    return regler(ORDRE[(ORDRE.indexOf(niveau) + 1) % ORDRE.length]);
   }
   /* Pour la galerie : une note seule, au degré donné (palier 1). */
   function jouer(degre) {
@@ -318,9 +351,12 @@
   }
 
   window.FiSon = {
+    niveau: function () { return niveau; },
     actif: function () { return actif; },
-    basculer: basculer,
+    cycler: cycler,
+    regler: regler,
+    basculer: cycler,   /* l'ancien nom, gardé pour ne rien casser */
     jouer: jouer
   };
-  journal('prêt, son', actif ? 'allumé (en attente d\'un geste)' : 'coupé', '· silence au défilement, un symbole par CTA');
+  journal('prêt, son', niveau + (actif ? ' (en attente d\'un geste)' : ''), '· silence au défilement, un symbole par CTA');
 })();

@@ -1679,9 +1679,9 @@
        s'encadre pas : le focus sert au prochain Tab, pas au regard. */
     section[tabindex="-1"]:focus { outline: none; }
     /* L'invitation « Visite sonore » : une pilule discrète, en pointillé
-       tant que le son est coupé (une invitation, pas un bouton de plus). */
-    .situations__son { border-style: dashed; color: var(--text-soft); }
-    .situations__son[aria-pressed="true"] { border-style: solid; color: var(--text-main); }
+       quand le son est muet (une invitation, pas un bouton de plus). */
+    .situations__son { color: var(--text-main); }
+    .situations__son[data-niveau="muet"] { border-style: dashed; color: var(--text-soft); }
     .situations__regarder { font-size: 0.9rem; color: var(--text-muted); text-underline-offset: 3px; }
     .situations__regarder:hover { color: var(--text-main); }
     /* Le bloc d'identité du hero est un lien vers le fondateur (spec
@@ -2302,13 +2302,14 @@
       <!-- Le bouton son (composants/composants.js). `hidden` : sans JS, ou
            sans le moteur son.js, il n'existe pas. -->
       <button class="fi-bascule-son dock__son" type="button"
-              data-composant="bascule-son" aria-pressed="false" hidden>
+              data-composant="bascule-son" hidden>
         <svg class="fi-bascule-son__icone" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M11 5 6 9H3v6h3l5 4z"/>
-          <path class="fi-bascule-son__ondes" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+          <path class="fi-bascule-son__ondes fi-bascule-son__onde1" d="M15.5 8.5a5 5 0 0 1 0 7"/>
+          <path class="fi-bascule-son__ondes fi-bascule-son__onde2" d="M18.5 5.5a9 9 0 0 1 0 13"/>
           <path class="fi-bascule-son__coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
         </svg>
-        <span data-bascule-libelle>Son coupé</span>
+        <span data-bascule-libelle>Son doux</span>
       </button>
       <button class="dock__fermer" id="dockFermer" type="button">Fermer</button>
     </nav>
@@ -2353,14 +2354,15 @@
             <span>Agence &amp; conseil WebXR</span>
           </span>
           <button class="fi-bascule-son situations__son" type="button"
-                  data-composant="bascule-son" aria-pressed="false" hidden
-                  data-libelle-coupe="Visite sonore" data-libelle-allume="Visite sonore activée">
+                  data-composant="bascule-son" hidden
+                  data-libelle-prefixe="Visite sonore">
             <svg class="fi-bascule-son__icone" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M11 5 6 9H3v6h3l5 4z"/>
-              <path class="fi-bascule-son__ondes" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>
+              <path class="fi-bascule-son__ondes fi-bascule-son__onde1" d="M15.5 8.5a5 5 0 0 1 0 7"/>
+          <path class="fi-bascule-son__ondes fi-bascule-son__onde2" d="M18.5 5.5a9 9 0 0 1 0 13"/>
               <path class="fi-bascule-son__coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
             </svg>
-            <span data-bascule-libelle>Visite sonore</span>
+            <span data-bascule-libelle>Visite sonore · son doux</span>
           </button>
         </div>
 
@@ -3519,7 +3521,9 @@
         mesurerUneFois('geste:' + d.chapitre + ':' + d.geste, MESURES.geste, { chapitre: d.chapitre, geste: d.geste });
       });
       document.addEventListener('fi:son', function (e) {
-        mesurer(e.detail.actif ? MESURES.sonActive : MESURES.sonCoupe, { situation: situationActuelle() });
+        /* Trois niveaux depuis le 27/09/2026 : l'événement garde ses deux
+           noms (actif / coupé), le niveau part en donnée. */
+        mesurer(e.detail.actif ? MESURES.sonActive : MESURES.sonCoupe, { situation: situationActuelle(), niveau: e.detail.niveau });
       });
 
       /* Les clics qui comptent : la réservation (LA conversion), une démo,

@@ -127,26 +127,37 @@
     });
   }
 
-  /* ── BOUTON SON ──────────────────────────────────────────────────── */
+  /* ── BOUTON SON ──────────────────────────────────────────────────────
+     Trois niveaux, comme fi-v3 : chaque clic passe au suivant (plein,
+     doux, muet). Le niveau se lit dans data-niveau (le CSS montre deux
+     ondes, une onde ou la croix) et se dit dans le libellé + le title.
+     Un bouton peut porter son propre préfixe (data-libelle-prefixe,
+     « Visite sonore » dans le hero) : il s'affiche alors devant le niveau. */
+  var NIVEAUX_SON = {
+    plein: { libelle: 'Son fort', detail: 'Repères bien audibles' },
+    doux: { libelle: 'Son doux', detail: 'Discret, par-dessus votre musique' },
+    muet: { libelle: 'Silence', detail: 'Aucun repère sonore' }
+  };
   function activerBasculeSon(btn) {
-    if (!window.FiSon) { journal('bascule-son : FiSon absent, le bouton reste caché'); return; }
+    if (!window.FiSon || !window.FiSon.niveau) { journal('bascule-son : FiSon absent, le bouton reste caché'); return; }
     var libelle = btn.querySelector('[data-bascule-libelle]');
-    /* Chaque bouton peut porter ses mots (l'invitation du hero dit
-       « Visite sonore ») ; sinon, les libellés par défaut. */
-    var coupe = btn.getAttribute('data-libelle-coupe') || 'Son coupé';
-    var allume = btn.getAttribute('data-libelle-allume') || 'Son allumé';
-    var maj = function (actif) {
-      btn.setAttribute('aria-pressed', actif ? 'true' : 'false');
-      if (libelle) libelle.textContent = actif ? allume : coupe;
+    var prefixe = btn.getAttribute('data-libelle-prefixe');
+    var maj = function (niveau) {
+      var n = NIVEAUX_SON[niveau] || NIVEAUX_SON.doux;
+      btn.setAttribute('data-niveau', niveau);
+      if (libelle) libelle.textContent = prefixe ? prefixe + ' · ' + n.libelle.toLowerCase() : n.libelle;
+      btn.title = n.detail + ' (cliquer pour changer)';
+      btn.setAttribute('aria-label', (prefixe ? prefixe + ' : ' : 'Son : ') + n.libelle + '. ' + n.detail + '. Changer de niveau');
     };
-    maj(window.FiSon.actif());
+    maj(window.FiSon.niveau());
     btn.hidden = false;
-    btn.addEventListener('click', function () { window.FiSon.basculer(); });
-    /* Plusieurs boutons (dock, galerie) restent d'accord : ils écoutent
+    btn.addEventListener('click', function () { window.FiSon.cycler(); });
+    /* Plusieurs boutons (hero, dock) restent d'accord : ils écoutent
        tous fi:son au lieu de se croire sur parole. */
     document.addEventListener('fi:son', function (e) {
-      maj(e.detail.actif);
+      maj(e.detail.niveau || (e.detail.actif ? 'doux' : 'muet'));
       if (e.detail.actif && !sobre(btn)) rejouer(btn, 'fi-son--joue', 900);
+      journal('bascule-son : niveau', e.detail.niveau);
     });
   }
 

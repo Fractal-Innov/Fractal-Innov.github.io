@@ -32,7 +32,7 @@ cela.
 | Architecture | **A** : fichiers servis tels quels, chargés par l'accueil ET la galerie | B : recopie dans `index.html` (deux copies divergent) ; C : injection par script (réintroduit une compilation) |
 | Découpage | section par section, une PR chacune, finie | par couche (rien de fini avant la fin) |
 | Niveau des effets | marqué mais ponctuel, rien en boucle, CSS + JS léger, aucune librairie | discret ; spectaculaire (canvas, WebGL, poids, mobile) |
-| Activation du son | **coupé par défaut**, bouton dans le dock, choix mémorisé | invite au premier geste ; allumé par défaut |
+| Activation du son | **doux par défaut** depuis le 27/09/2026 (d'abord coupé), trois niveaux fort / doux / silence comme fi-v3, bouton dans le hero et le dock, choix mémorisé (`fi:son-niveau`) | invite au premier geste ; allumé par défaut |
 | Source du son | synthèse Web Audio, 0 Ko de fichiers | échantillons ; hybride |
 | Intention mélodique | **le degré suit le chapitre, le timbre suit la situation** | l'un des deux seulement |
 | Démos | cartes **groupées par usage**, toutes visibles | onglets (masquent 4 démos sur 5, contredit « rien n'est masqué ») |
@@ -181,7 +181,7 @@ Dans l'ordre de la page (§ 3 bis) ; la colonne # garde le numéro de PR.
 | 6 | Partenaires | `wiring__cable` | la ligne de constellation devient le composant `fil` : une impulsion la parcourt au survol | impulsion le long du câble | `relie` : tintement |
 | 2 | Fondateur | `kit-card` | les 3 repères deviennent des cartes à étiquette ; celui de la situation d'abord (déjà le cas) | le repère choisi se pose en « tampon », les autres en cascade | note du chapitre |
 | 7 | Contact | `share` | bouton « Emporter cette page » : QR du lien de relance réglé (`?situation=…`), lien copiable | le QR se déplie depuis le bouton | `ouvre` ; `rdv` : accord résolu |
-| · | Dock | aucune | bouton son, coupé par défaut, libellé, dans le dock et la pastille mobile | ondes à l'activation | accord de confirmation |
+| · | Dock | aucune | bouton son à trois niveaux, doux par défaut, libellé, dans le dock et la pastille mobile | ondes à l'activation | accord de confirmation |
 
 **Les groupes des démos** (d'après les `data-usages` en place) :
 
@@ -220,7 +220,7 @@ dans la galerie. Noms en français, préfixe de classe du composant.
 | `partage` | `data-composant="partage"` | bouton, panneau, QR paresseux, lien copiable | `share` |
 | `eclat` | `data-eclat` ou `FiComposants.eclat(el)` | 8 particules en CSS, créées puis retirées (≈ 500 ms) | nouveau |
 | `reflet` | `data-reflet` ou `FiComposants.reflet(el)` | un reflet traverse l'élément une fois | nouveau |
-| `bascule-son` | `data-composant="bascule-son"` | bouton `aria-pressed`, libellé « Son coupé » / « Son allumé », ondes | nouveau |
+| `bascule-son` | `data-composant="bascule-son"` | bouton `data-niveau` (plein / doux / muet), libellé « Son fort » / « Son doux » / « Silence », deux ondes / une onde / croix | nouveau |
 
 - `window.FiComposants` expose `eclat(el)`, `reflet(el)` et `activer(racine)`
   (active les `data-composant` d'un fragment ajouté après coup).
@@ -542,3 +542,17 @@ vivantes ; le contenu reste centré, sans image.
   du panneau réduits sous 768 px) ; poster seul, zéro requête vidéo.
 - Vidéo d'essai : WebM retenu, pause, pause hors écran et reprise vérifiées ;
   débordement horizontal 0 partout.
+
+## 16. Son à trois niveaux, et passe hero gelée (27-28/09/2026)
+
+- **Trois niveaux, comme fi-v3.** Fort (gain 0,85), doux (0,3, le volume
+  historique du moteur) et silence. Doux par défaut : le moteur naît au
+  premier clic ou à la première touche, rien ne joue avant. Chaque clic du
+  bouton passe au suivant (fort, doux, silence) et fait entendre les deux
+  gongs pour un niveau audible. `fi:son` porte `{actif, niveau}` ;
+  migration de l'ancienne clé : « 0 » (coupé) devient silence.
+- **Passe hero gelée.** Le dock de salon_demo_app va remplacer l'en-tête
+  (brainstorming en cours) : la mise en page du dernier retour (son sous
+  le titre, chapeau en deux lignes, panneau sans bordure, signature
+  pastille + fondateur, Réserver en ghost) est mise de côté et sera
+  reprise dans le design du dock.

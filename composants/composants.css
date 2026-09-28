@@ -155,8 +155,8 @@
 .fi-choix > li > .fi-pilier { flex: 1; }
 
 /* ── BOUTON SON ─────────────────────────────────────────────────────────
-   Icône ET libellé (règle 6) : les ondes quand il est allumé, la croix
-   quand il est coupé. `hidden` tant que le JS ne l'a pas activé. */
+   Icône ET libellé (règle 6) : les ondes selon le niveau, la croix
+   quand il est muet. `hidden` tant que le JS ne l'a pas activé. */
 .fi-bascule-son {
   display: inline-flex; align-items: center; gap: 0.5rem;
   min-height: var(--fi-cible, 44px); padding: 0 0.9rem;
@@ -170,9 +170,13 @@
   width: 20px; height: 20px; overflow: visible;
   fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
-.fi-bascule-son[aria-pressed="true"] .fi-bascule-son__icone { color: var(--fi-accent); }
-.fi-bascule-son[aria-pressed="true"] .fi-bascule-son__coupe,
-.fi-bascule-son[aria-pressed="false"] .fi-bascule-son__ondes { display: none; }
+/* Trois niveaux (fi-v3), lus dans data-niveau : deux ondes pour « plein »,
+   la petite seule pour « doux », la croix pour « muet ». Le pictogramme
+   dit le volume sans lire le libellé. */
+.fi-bascule-son:not([data-niveau="muet"]) .fi-bascule-son__icone { color: var(--fi-accent); }
+.fi-bascule-son:not([data-niveau="muet"]) .fi-bascule-son__coupe,
+.fi-bascule-son[data-niveau="muet"] .fi-bascule-son__ondes,
+.fi-bascule-son[data-niveau="doux"] .fi-bascule-son__onde2 { display: none; }
 .fi-bascule-son__ondes { transform-origin: 30% 50%; }
 .fi-son--joue .fi-bascule-son__ondes { animation: fiOndes 900ms var(--fi-ease-sortie); }
 @keyframes fiOndes {
