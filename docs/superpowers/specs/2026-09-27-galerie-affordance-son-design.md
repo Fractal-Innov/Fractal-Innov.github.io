@@ -615,6 +615,21 @@ la demande de l'utilisateur) :
     réel », à trancher.
 - **Logo en coin (28/09/2026)** : fixe en haut à gauche (z 80, sous le
   dock), derrière lui une brume du verre du dock (flou 20 px + saturation
-  165 %, voile 72 %) au bord fondu par masque radial. `scroll-padding-top`
+  165 %) au bord fondu. Révisé le même jour : **aucune teinte**, flou +
+  saturation seuls, fondu **rectangulaire** (deux dégradés linéaires
+  croisés, `mask-composite: intersect`) au lieu de l'ovale radial. `scroll-padding-top`
   à 76 px pour qu'une ancre ne pose pas son titre sous le logo (vérifié sur
   les six sections au téléphone). Voile plein si `prefers-reduced-transparency`.
+- **Bug du 28/09/2026** : un visiteur ayant déjà répondu gardait le panneau
+  dans le hero (« ancienne apparence »). dock.js déplace désormais TOUJOURS
+  le panneau dans le bandeau, puis décide s'il pose la question.
+- **Passe de designer (28/09/2026) : un seul axe de lecture**. Le hero
+  centré flottait seul au-dessus d'une page alignée à gauche : l'œil
+  changeait d'axe en quittant le hero. Le hero s'aligne sur l'axe des
+  sections (même bord gauche que les h2, 1100 px, 3 rem ; 1,5 rem au
+  téléphone), titre sur deux lignes dès 768 px, onglets de l'offre à
+  gauche, introductions de section à 38 rem (environ 65 signes). Restent
+  centrés, par choix : la question du dock (élément flottant, centré sur
+  l'écran) et la section Contact (conclusion, un seul geste). Vérifié de
+  360 × 740 à 1440 × 900 : même bord gauche hero et sections, de 27 à
+  97 px d'air au-dessus de la question, aucun débordement.

@@ -1732,18 +1732,27 @@
     }
     .logo-coin::before {
       content: ""; position: absolute; z-index: -1; pointer-events: none;
-      inset: calc(-1 * var(--fi-e2)) calc(-1 * var(--fi-e3)); /* déborde de 16 px en haut et en bas, 24 sur les côtés : la brume enveloppe sans coller */
-      background: rgba(10, 11, 20, 0.72); /* 72 %, comme le dock : à 55 %, un titre blanc qui défilait dessous se lisait À TRAVERS le logo (mesuré le 28/09/2026) */
-      backdrop-filter: blur(20px) saturate(165%); /* la matière du dock */
+      inset: calc(-1 * var(--fi-e2)) calc(-1 * var(--fi-e3)); /* déborde de 16 px en haut et en bas, 24 sur les côtés : la bande où le flou s'efface */
+      /* AUCUNE teinte (retour du 28/09/2026) : seulement la matière du
+         dock, flou + saturation. Le logo se détache par le flou de ce qui
+         passe dessous, pas par un voile sombre. */
+      backdrop-filter: blur(20px) saturate(165%);
       -webkit-backdrop-filter: blur(20px) saturate(165%);
-      /* Le bord fondu : plein jusqu'à 62 % du rayon (le logo entier y tient),
-         puis transparent. Le masque découpe aussi le flou, d'où l'effet de
-         brume et non de cadre. */
-      -webkit-mask-image: radial-gradient(closest-side, #000 62%, transparent);
-      mask-image: radial-gradient(closest-side, #000 62%, transparent);
+      /* Le bord diffus suit le RECTANGLE du logo (pas un ovale) : deux
+         dégradés croisés, plein sur le logo, qui s'effacent sur les 24 px
+         des côtés et les 16 px du haut et du bas. Leur intersection donne
+         un rectangle aux bords fondus. */
+      -webkit-mask-image:
+        linear-gradient(to right, transparent, #000 var(--fi-e3), #000 calc(100% - var(--fi-e3)), transparent),
+        linear-gradient(to bottom, transparent, #000 var(--fi-e2), #000 calc(100% - var(--fi-e2)), transparent);
+      -webkit-mask-composite: source-in;
+      mask-image:
+        linear-gradient(to right, transparent, #000 var(--fi-e3), #000 calc(100% - var(--fi-e3)), transparent),
+        linear-gradient(to bottom, transparent, #000 var(--fi-e2), #000 calc(100% - var(--fi-e2)), transparent);
+      mask-composite: intersect;
     }
     @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      .logo-coin::before { background: rgba(10, 11, 20, 0.9); } /* sans flou, le voile porte seul la lisibilité */
+      .logo-coin::before { background: rgba(10, 11, 20, 0.6); } /* seul cas avec une teinte : sans flou, rien d'autre ne détache le logo */
     }
     /* L'étiquette d'une carte d'offre, au téléphone : à 0,2 em d'espacement,
        « CONSERVER UN SAVOIR-FAIRE » (et déjà « FORMER UN NOUVEL ARRIVANT »)
@@ -1807,6 +1816,40 @@
       .js .hero__titre { font-size: var(--fi-t3); }
       html.fi-verrou .hero__identite { visibility: hidden; }
     }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE DE DESIGNER (28/09/2026) : UN SEUL AXE DE LECTURE
+       Relevé à 1440 px : le hero était la seule zone centrée avec le
+       contact ; les cinq sections du milieu s'alignent à gauche. On
+       arrivait sur un axe central, puis tout basculait à gauche au premier
+       défilement, et le chapeau centré (36 puis 75 signes) dessinait un
+       vase. Le hero se cale donc sur l'axe des sections. Le contact reste
+       centré : c'est la conclusion, un seul point focal. La question du
+       dock reste centrée : c'est un élément flottant, pas du texte.
+       ══════════════════════════════════════════════════════════════════ */
+    .hero__contenu {
+      max-width: 1100px; /* la largeur de .section : même boîte, même axe */
+      width: 100%; /* dans le hero en flex, sinon la boîte épouse le titre et l'axe gauche bouge avec lui */
+      padding-inline: 3rem; /* 48 px, la marge intérieure de .section au bureau */
+      align-items: flex-start;
+      text-align: left;
+    }
+    @media (max-width: 767px) { .hero__contenu { padding-inline: 1.5rem; } } /* 24 px, celle de .section au téléphone */
+    .hero__haut,
+    .hero__actions { justify-content: flex-start; }
+    .hero__lead { margin-inline: 0; }
+    /* Le titre en deux temps, comme le chapeau : ce qu'on fait, puis
+       comment. Aligné à gauche, un bloc de deux lignes tient mieux l'axe
+       qu'une ligne de 1000 px. */
+    @media (min-width: 768px) { .hero__accent { display: block; } }
+
+    /* Les onglets de l'offre suivent le titre et le texte de leur section
+       (ils étaient centrés sous un en-tête aligné à gauche). */
+    .offre-story__pastilles { justify-content: flex-start; }
+
+    /* Les introductions de section : 80 signes par ligne mesurés (680 px à
+       17 px), au-delà du confort de lecture (60 à 75). 38 rem ≈ 65 signes.
+       ⚠️ Pas le contact : il a déjà sa mesure (560 px), centrée. */
+    .section:not(.contact) h2 + p { max-width: 38rem; }
   </style>
 </head>
 

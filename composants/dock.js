@@ -250,22 +250,30 @@
   marquerChapitre(document.body.getAttribute('data-chapitre') || 'top');
   dock.hidden = false;
 
+  /* Le panneau du hero rejoint TOUJOURS le dock quand le script tourne :
+     sans cela, un visiteur qui revient le voyait resté dans le hero, en
+     double avec la rangée (bug relevé le 28/09/2026). Seul le verrou
+     dépend de la question ; le déplacement, jamais. */
+  var panneau = document.querySelector('.hero .situations');
+  if (panneau) {
+    vues.question.appendChild(panneau);
+    vues.question.setAttribute('role', 'region');
+    vues.question.setAttribute('aria-labelledby', 'situationsQuestion');
+  } else {
+    journal('⚠️ panneau .situations introuvable : pas de question, page libre');
+  }
+
   var repondu = false;
   try { repondu = localStorage.getItem(CLE_REPONDU) === '1'; } catch (e) {}
   var ancre = location.hash && location.hash !== '#top';
   var viaSituation = document.body.hasAttribute('data-situation');
   var descendu = window.scrollY > 40;
-  if (repondu || ancre || viaSituation || descendu) {
-    journal('pas de question :', repondu ? 'déjà répondu' : ancre ? 'arrivée sur ' + location.hash : viaSituation ? 'situation venue de l\'URL' : 'page déjà défilée');
+  if (!panneau || repondu || ancre || viaSituation || descendu) {
+    if (panneau) journal('pas de question :', repondu ? 'déjà répondu' : ancre ? 'arrivée sur ' + location.hash : viaSituation ? 'situation venue de l\'URL' : 'page déjà défilée');
     verifier();
     return;
   }
-  /* Règle 3 : on déplace le panneau du hero, PUIS on verrouille. */
-  var panneau = document.querySelector('.hero .situations');
-  if (!panneau) { journal('⚠️ panneau .situations introuvable : pas de question, page libre'); return; }
-  vues.question.appendChild(panneau);
-  vues.question.setAttribute('role', 'region');
-  vues.question.setAttribute('aria-labelledby', 'situationsQuestion');
+  /* Règle 3 : le panneau est déjà déplacé (plus haut), PUIS on verrouille. */
   ouvrir('question', 'visiteur neuf');
   /* Le focus se pose sur la question, sans faire sauter la page. */
   var titreQuestion = document.getElementById('situationsQuestion');
