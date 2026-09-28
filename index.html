@@ -54,6 +54,9 @@
   <script defer src="/composants/son.js"></script>
   <script defer src="/composants/composants.js"></script>
   <script defer src="/composants/dock.js"></script>
+  <script defer src="/composants/demos.js"></script> <!-- les démos : une en avant, les autres en bande -->
+  <script defer src="/composants/orbite.js"></script> <!-- l'équipe : le fondateur au centre, les fils vers le réseau -->
+  <script defer src="/composants/garde-ecran.js"></script> <!-- ?debug=1 : ce qui tient à l'écran, section par section -->
   <link rel="stylesheet" href="/composants/composants.css">
 
   <!-- Polices AUTO-HÉBERGÉES, aucun appel à Google Fonts : le RGPD interdit
@@ -437,24 +440,26 @@
     }
     .hero-cta__btn--primary:hover::before { opacity: 1; }
     .hero-cta__btn--primary:active { transform: translateY(0) scale(0.98); }
-
-    .hero-cta__btn--secondary {
-      color: #fff;
-      background: var(--accent-blue-muted);
-      border-color: transparent;
+    /* La flèche de /stand/ : elle dit « c'est plus bas » et descend deux
+       fois, 1,1 s après l'arrivée, puis se tait. */
+    .hero-cta__arrow {
+      width: 18px; height: 18px; flex: none;
+      animation: ctaArrow 1.5s cubic-bezier(0.22, 1, 0.36, 1) 1.1s 2;
     }
-    .hero-cta__btn--secondary:hover {
-      color: #fff;
-      background: var(--accent-purple-muted);
-      border-color: transparent;
-      box-shadow: none;
-    }
+    @keyframes ctaArrow { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(4px); } }
+    @media (prefers-reduced-motion: reduce) { .hero-cta__arrow { animation: none; } }
 
+    /* Le secondaire EST le fantôme du hero de /stand/ (décision du
+       28/09/2026) : à côté du primaire plein, un contour blanc, fond
+       transparent. Le bleu atténué d'avant faisait un second bouton plein
+       qui concurrençait le primaire. `--ghost` reste un alias. */
+    .hero-cta__btn--secondary,
     .hero-cta__btn--ghost {
       color: #fff;
       background: transparent;
       border: 1px solid rgba(255, 255, 255, 0.28);
     }
+    .hero-cta__btn--secondary:hover,
     .hero-cta__btn--ghost:hover {
       color: #fff;
       border-color: rgba(255, 255, 255, 0.6);
@@ -909,30 +914,6 @@
     .demo .hero-cta__btn span[aria-hidden] { transition: transform 0.2s ease; }
     .demo .hero-cta__btn:hover span[aria-hidden] { transform: translateX(3px); }
 
-    /* Les groupes par usage. Grand écran : trois colonnes, un groupe de
-       deux démos en prend deux. Tablette : deux. Téléphone : une. Pas de
-       `auto-fit` ici : un groupe qui « span 2 » dans une grille d'une
-       colonne créerait une colonne implicite et déborderait. */
-    .demos { grid-template-columns: minmax(0, 1fr); gap: 2rem 1.25rem; }
-    .demos__groupe { display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
-    .demos__cartes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.25rem; flex: 1; }
-    @media (min-width: 700px) {
-      .demos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .demos__groupe { grid-column: span var(--n, 1); }
-      .demos__cartes { grid-template-columns: repeat(var(--n, 1), minmax(0, 1fr)); }
-    }
-    @media (min-width: 1000px) {
-      .demos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    /* Le groupe de la situation passe en tête, son étiquette s'allume. */
-    body[data-situation="convaincre"] .demos__groupe[data-groupe="convaincre"],
-    body[data-situation="former"] .demos__groupe[data-groupe="former"],
-    body[data-situation="garder"] .demos__groupe[data-groupe="garder"] { order: -1; }
-    body[data-situation="convaincre"] .demos__groupe[data-groupe="convaincre"] .fi-groupe__etiquette,
-    body[data-situation="former"] .demos__groupe[data-groupe="former"] .fi-groupe__etiquette,
-    body[data-situation="garder"] .demos__groupe[data-groupe="garder"] .fi-groupe__etiquette { color: var(--text-main); }
-    /* Les cartes entrent en cascade dans leur groupe. */
-    .js .demos__cartes > .reveal:nth-child(2) { transition-delay: 0.12s; }
 
     /* ══════════════════════════════════════════════════════════════════════
        PARTENAIRES
@@ -979,8 +960,9 @@
     /* ══════════════════════════════════════════════════════════════════════
        CONTACT — la section .contact de /stand/, reprise entière
 
-       Le portrait est cerclé d'un dégradé conique qui tourne, posé sur une
-       lueur qui respire. Le bouton principal porte un reflet qui passe toutes
+       Le portrait (cerclé d'un dégradé conique qui tournait) a quitté la
+       section le 28/09/2026 : l'orbite de l'équipe, juste au-dessus, le
+       montre déjà. Le bouton principal porte un reflet qui passe toutes
        les cinq secondes et une lueur qui suit le curseur.
 
        ⚠️ Tout ce mouvement s'éteint dans le bloc `prefers-reduced-motion`,
@@ -1046,53 +1028,6 @@
       flex-direction: column;
       align-items: center;
     }
-    .contact__who {
-      margin: 0 0 1.75rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.85rem;
-    }
-    .contact__ring {
-      position: relative;
-      display: block;
-      width: clamp(120px, 14vw, 150px);
-      aspect-ratio: 1;
-      border-radius: 50%;
-      padding: 4px;
-      isolation: isolate;
-    }
-    .contact__ring::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      border-radius: 50%;
-      background: conic-gradient(from 0deg, var(--accent-blue), var(--accent-purple),
-        var(--accent-pink), var(--accent-blue));
-      animation: contactSpin 9s linear infinite;
-    }
-    .contact__ring::after {
-      content: '';
-      position: absolute;
-      inset: -10px;
-      z-index: -2;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(139, 92, 246, 0.45) 0%, transparent 70%);
-      animation: contactBreathe 4s ease-in-out infinite;
-    }
-    .contact__ring img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid var(--bg-base);
-      box-sizing: border-box;
-    }
-    .contact__who figcaption { display: grid; gap: 0.15rem; line-height: 1.3; }
-    .contact__who strong { font-size: 1.02rem; font-weight: 700; color: #fff; }
-    .contact__who span { font-size: 0.84rem; color: rgba(255, 255, 255, 0.62); }
 
     .contact h2 {
       margin: 0 0 1rem;
@@ -1276,11 +1211,6 @@
       from { transform: scale(0.5); opacity: 0.9; }
       to   { transform: scale(2.2); opacity: 0; }
     }
-    @keyframes contactSpin { to { transform: rotate(360deg); } }
-    @keyframes contactBreathe {
-      0%, 100% { transform: scale(0.92); opacity: 0.6; }
-      50% { transform: scale(1.06); opacity: 1; }
-    }
     @keyframes contactDrift {
       0%   { transform: translate3d(0, 0, 0) scale(1); }
       50%  { transform: translate3d(6vmax, -4vmax, 0) scale(1.08); }
@@ -1386,34 +1316,8 @@
     body[data-situation="former"] [data-pour="former"][hidden],
     body[data-situation="garder"] [data-pour="garder"][hidden] { display: inline; }
     body[data-situation] [data-pour="aucune"] { display: none; }
-    /* Le fondateur : le repère de la situation passe en tête de liste. */
-    body[data-situation="convaincre"] .repere[data-usages~="convaincre"],
-    body[data-situation="former"] .repere[data-usages~="former"],
-    body[data-situation="garder"] .repere[data-usages~="garder"] { order: -1; }
 
     /* ── Les gestes ── */
-    /* ⚠️ On éteint les ENFANTS de l'étape, pas l'étape : elle porte déjà
-       l'opacité de `.reveal`, et deux règles d'opacité se battraient. */
-    .etapes[data-etape] .etape > * { transition: opacity 0.4s ease; }
-    .etapes[data-etape] .etape:not(.etape--allumee) > * { opacity: 0.38; }
-
-    .partenaires { position: relative; }
-    .partenaire { position: relative; z-index: 1; }
-    .constellation {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      overflow: visible; pointer-events: none; z-index: 0;
-    }
-    .constellation path {
-      fill: none; stroke: var(--accent-purple); stroke-width: 1.5; stroke-linecap: round;
-      stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
-      transition: stroke-dashoffset 1.1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
-    }
-    .partenaires.reliee .constellation path { stroke-dashoffset: 0; opacity: 0.55; }
-    .partenaire__logo { transition: opacity 0.4s ease, box-shadow 0.4s ease; }
-    .partenaires.reliee .partenaire__logo {
-      opacity: 1;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 26px rgba(139, 92, 246, 0.5);
-    }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -1426,15 +1330,12 @@
       .js .reveal { opacity: 1; transform: none; }
       .contact::before,
       .contact__aurora span,
-      .contact__ring::before,
-      .contact__ring::after,
       .contact__primary,
       .contact__primary::after,
       .contact__primary-arrow,
       .contact__links a { animation: none; transition: none; }
       /* Le filet du contact reste déployé plutôt que de disparaître. */
       .contact::before { transform: translateX(-50%) scaleX(1); }
-      .constellation path { animation: none !important; transform: none; }
       * { transition-duration: 0.01ms !important; }
     }
 
@@ -1478,12 +1379,10 @@
     .etapes__geste { margin-top: var(--fi-e6); } /* contenu › geste suivant : autre groupe */
 
     /* Entre cartes : 24 px sur mobile, 32 px dès la tablette. */
-    .demos__cartes, .etapes, .partenaires { gap: var(--fi-e3); }
-    .demos { gap: var(--fi-e8); } /* 64 px entre groupes d'usage : plus large que les 24 px entre cartes */
-    .demos__groupe { gap: var(--fi-e2); } /* étiquette › ses cartes : même groupe */
+    .demos, .etapes, .partenaires { gap: var(--fi-e3); }
     .fondateur__grille { gap: var(--fi-e4); }
     @media (min-width: 768px) {
-      .demos__cartes, .etapes, .partenaires { gap: var(--fi-e4); }
+      .demos, .etapes, .partenaires { gap: var(--fi-e4); }
       .fondateur__grille { gap: var(--fi-e6); }
     }
 
@@ -1581,9 +1480,6 @@
       font-size: clamp(var(--fi-t3), 1.775rem + 1.279vw, var(--fi-t4)); /* 33,2 › 41,5 px : le titre de fin, un palier au-dessus des h2 */
       line-height: var(--fi-interligne-titre);
     }
-    .contact__who { margin-bottom: var(--fi-e4); }
-    .contact__who strong { font-size: var(--fi-t0); }
-    .contact__who span { font-size: var(--fi-t-1); }
     .contact__lead, .contact__primary { font-size: var(--fi-t0); }
     .contact__lead { margin-bottom: var(--fi-e4); }
     .contact__actions { gap: var(--fi-e2); }
@@ -1819,6 +1715,666 @@
        17 px), au-delà du confort de lecture (60 à 75). 38 rem ≈ 65 signes.
        ⚠️ Pas le contact : il a déjà sa mesure (560 px), centrée. */
     .section:not(.contact) h2 + p { max-width: 38rem; }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : OFFRE (28/09/2026)
+       Une carte = le problème (h3), une phrase, le RÉSULTAT, le geste.
+       - La ligne résultat est la seule chose en couleur de la carte : c'est
+         ce que le visiteur obtient, l'œil doit s'y poser.
+       - L'étiquette répète l'onglet : masquée dès que les pastilles sont là
+         (avec JS). Le badge « Votre situation » reste. Sans JS, tout reste.
+       - Téléphone : le texte et les boutons d'abord, l'image ensuite. Le
+         geste arrive ainsi au-dessus du dock (choix (a) du 28/09/2026).
+       ══════════════════════════════════════════════════════════════════ */
+    .section .offre__resultat {
+      display: flex; align-items: flex-start; gap: var(--fi-e1);
+      margin: 0; font-size: var(--fi-t0); font-weight: 600; line-height: 1.4;
+      color: var(--fi-accent);
+    }
+    .offre__resultat .pic {
+      flex: none; width: 20px; height: 20px; margin-top: 0.1em;
+      fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .offre-story:has(> .offre-story__pastilles:not([hidden])) .offre__eyebrow > :not(.badge-cas) { display: none; }
+    .offre-story:has(> .offre-story__pastilles:not([hidden])) .offre__eyebrow:has(> .badge-cas[hidden]) { display: none; }
+    @media (max-width: 767px) {
+      .offre .media-16x9 { order: 1; border-bottom: 0; border-top: 1px solid var(--glass-border); }
+    }
+    /* Écran de bureau bas (1280×720, portables) : 614 px utiles, la carte
+       en ligne (image de 22 rem) et 96 px d'air en haut ne tenaient pas, le
+       bouton passait sous le dock. On resserre l'air de TOUTES les sections
+       (même rythme partout, 64 px) et l'image de l'offre (18 rem). */
+    /* Les deux boutons tiennent sur UNE rangée dans la carte en ligne
+       (la story aligne les trois cartes sur la plus haute) : « Voir la démo
+       À fleur d'écorce ↓ » + « Réserver 30 min » gardent le rembourrage de
+       /stand/, c'est l'image qui cède de la place (42 % au lieu de 48). */
+    @media (min-width: 900px) {
+      .offre-story[data-story-actif] .offre .media-16x9 { flex-basis: 42%; }
+    }
+    @media (min-width: 900px) and (max-height: 800px) {
+      .section { padding-block: 4rem; }
+      .offre-story[data-story-actif] .offre .media-16x9 { min-height: 18rem; }
+      .offre-story__pastilles { margin-top: var(--fi-e2); }
+      .section .offre__corps { padding: var(--fi-e3); } /* 24 px : la carte gagne 16 px de haut */
+      .section .offre__actions { margin-top: var(--fi-e2); }
+    }
+    /* Téléphone court (360×740) : le bouton principal passait 60 px sous
+       le dock. Même logique qu'au bureau bas : moins d'air, rien de coupé. */
+    @media (max-width: 767px) and (max-height: 760px) {
+      .section { padding-top: 2.5rem; }
+      .offre-story__pastilles { margin-top: var(--fi-e2); }
+      .offres, .offre-story .offres { margin-top: var(--fi-e2); }
+      .section .offre__corps { padding: var(--fi-e2) var(--fi-e3); }
+      .section .offre h3, .section .offre__texte { margin-bottom: var(--fi-e1); }
+    }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : DÉMOS (28/09/2026)
+       Une démo EN AVANT (la scène : image, accroche, points, bouton), les
+       autres en VIGNETTES dans une bande de hauteur fixe qui défile : la
+       section garde sa hauteur quel que soit le nombre de démos. Qui est
+       en avant : composants/demos.js (la scène) ; sans JS, la grille et
+       :target (liste « en avant » ci-dessous, répétée à chaque règle).
+       ══════════════════════════════════════════════════════════════════ */
+    /* `.demos` n'est plus une grille : il empile la scène, l'en-tête de la
+       bande et la bande. La grille (sans JS) vit sur `.demos__bande`. */
+    .section .demos { display: block; margin-top: var(--fi-e4); }
+    .demo__usage {
+      display: flex; align-items: center; flex-wrap: wrap; gap: var(--fi-e1);
+      margin: 0 0 2px; font-size: var(--fi-t-1); font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent-blue-light);
+    }
+    .demo__lien { color: inherit; text-decoration: none; }
+    .demo__lien:focus-visible { outline: none; }
+
+    /* ── La vignette (toute démo hors scène) ── */
+    .demos .demo { position: relative; flex-direction: row; align-items: stretch; transition: border-color 0.2s ease, transform 0.2s ease; }
+    /* L'image en absolu, sans ratio : en ligne, le ratio se calculait sur la
+       largeur AVANT le partage flex et gonflait la vignette. Le texte fixe
+       la hauteur, l'image la remplit (object-fit: cover). */
+    .demos .demo .media-16x9 { flex: 0 0 30%; aspect-ratio: auto; border-bottom: 0; border-right: 1px solid var(--glass-border); }
+    .demos .demo .media-16x9 img { position: absolute; inset: 0; }
+    .section .demos .demo__corps { padding: 12px var(--fi-e2); gap: 2px; justify-content: center; }
+    .demos .demo__accroche, .demos .demo__points, .demos .demo__actions, .demos .demo .badge-cas { display: none; }
+    .section .demos .demo h3 { margin: 0; font-size: var(--fi-t0); }
+    .section .demos .demo__sous-titre {
+      margin: 0; font-size: var(--fi-t-05); color: var(--text-muted);
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+    }
+    /* Toute la vignette est cliquable : le lien du titre s'étire dessus. */
+    .demos .demo__lien::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+    .demos .demo:hover { border-color: rgba(110, 168, 255, 0.45); transform: translateY(-2px); }
+    .demos .demo:has(.demo__lien:focus-visible) { outline: 2px solid var(--accent-blue-light); outline-offset: 3px; }
+
+    /* ── En avant ── */
+    .demos__scene .demo,
+    .demos:not([data-js]) .demo:target,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] {
+      flex-direction: column; animation: fiDemoAvant 0.45s var(--fi-ease-sortie, ease-out);
+    }
+    .demos__scene .demo .demo__lien::after,
+    .demos:not([data-js]) .demo:target .demo__lien::after,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__lien::after { content: none; }
+    .demos__scene .demo:hover,
+    .demos:not([data-js]) .demo:target:hover,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"]:hover { transform: none; border-color: var(--glass-border); }
+    .demos__scene .demo .media-16x9,
+    .demos:not([data-js]) .demo:target .media-16x9,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .media-16x9 { flex: none; aspect-ratio: 16 / 9; border-right: 0; border-bottom: 1px solid var(--glass-border); }
+    .demos__scene .demo .demo__corps,
+    .demos:not([data-js]) .demo:target .demo__corps,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__corps { padding: var(--fi-e3); gap: 0; justify-content: flex-start; }
+    .demos__scene .demo .demo__accroche,
+    .demos:not([data-js]) .demo:target .demo__accroche,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__accroche,
+    .demos__scene .demo .demo__actions,
+    .demos:not([data-js]) .demo:target .demo__actions,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__actions { display: block; }
+    .demos__scene .demo .demo__points,
+    .demos:not([data-js]) .demo:target .demo__points,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__points { display: grid; }
+    .demos__scene .demo .badge-cas:not([hidden]),
+    .demos:not([data-js]) .demo:target .badge-cas:not([hidden]),
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .badge-cas:not([hidden]) { display: inline-flex; }
+    .demos__scene .demo h3,
+    .demos:not([data-js]) .demo:target h3,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] h3 { font-size: var(--fi-t2); margin-bottom: var(--fi-e05); }
+    .demos__scene .demo .demo__sous-titre,
+    .demos:not([data-js]) .demo:target .demo__sous-titre,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__sous-titre {
+      display: block; -webkit-line-clamp: unset; line-clamp: none;
+      margin-bottom: var(--fi-e2); color: var(--accent-blue-light); font-size: var(--fi-t0);
+    }
+    @keyframes fiDemoAvant { from { opacity: 0.35; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── La bande (avec JS) : défile, s'aimante, flèches si elle déborde ── */
+    .demos__scene[hidden] { display: none; }
+    /* Les flèches se posent sur les bords de la bande (pas de rangée
+       d'en-tête : 76 px gagnés), au bureau seulement ; au téléphone on
+       glisse, le bord de la vignette suivante dépasse. */
+    .demos__cadre { position: relative; margin-top: var(--fi-e3); }
+    .demos__fleche { position: absolute; top: 50%; z-index: 2; translate: 0 -50%; }
+    .demos__fleche--avant { left: calc(-1 * var(--fi-e3)); }
+    .demos__fleche--apres { right: calc(-1 * var(--fi-e3)); }
+    @media (max-width: 899px) { .demos__fleche { display: none !important; } }
+    .demos__fleche {
+      display: inline-grid; place-items: center; width: var(--fi-cible); height: var(--fi-cible);
+      border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.28); color: #fff; cursor: pointer;
+      background: rgba(10, 11, 20, 0.85); backdrop-filter: blur(8px); /* posée SUR une vignette : un fond, sinon elle se perd dans l'image */
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .demos__fleche:hover:not(:disabled) { border-color: rgba(255, 255, 255, 0.6); background: rgb(28, 30, 46); }
+    .demos__fleche:focus-visible { outline: 2px solid var(--accent-blue-light); outline-offset: 3px; }
+    .demos__fleche:disabled { opacity: 0; pointer-events: none; } /* au bout : elle s'efface */
+    .demos__fleche[hidden] { display: none; }
+    .demos__fleche .pic { width: 20px; height: 20px; }
+    .demos[data-js] .demos__bande {
+      display: flex; gap: var(--fi-e3); overflow-x: auto; overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory; scrollbar-width: none; scroll-padding-inline: 4px; /* l'aimant compte le rembourrage : au départ, scrollLeft = 0 */
+      padding: 6px 4px; margin: -6px -4px; /* le contour de focus et le soulevé au survol ne sont pas rognés */
+    }
+    .demos[data-js] .demos__bande::-webkit-scrollbar { display: none; }
+    .demos[data-js] .demos__bande > .demo { flex: 0 0 85%; scroll-snap-align: start; } /* téléphone : le bord de la suivante dépasse, on devine qu'il y en a d'autres */
+    @media (min-width: 600px) { .demos[data-js] .demos__bande > .demo { flex-basis: calc((100% - var(--fi-e3)) / 2); } }
+    @media (min-width: 900px) { .demos[data-js] .demos__bande > .demo { flex-basis: calc((100% - 2 * var(--fi-e3)) / 3); } }
+
+    /* ── Sans JS : une grille, la démo en avant en tête et en largeur ── */
+    .demos:not([data-js]) .demos__bande { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--fi-e3); }
+    .demos:not([data-js]) .demo:target,
+    .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] { order: -1; }
+    @media (min-width: 900px) {
+      .demos:not([data-js]) .demos__bande { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .demos:not([data-js]) .demo:target,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] { grid-column: 1 / -1; }
+    }
+
+    /* Bureau : la démo en avant en largeur, image à gauche. */
+    @media (min-width: 900px) {
+      .demos__scene .demo,
+      .demos:not([data-js]) .demo:target,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] { flex-direction: row; }
+      .demos__scene .demo .media-16x9,
+      .demos:not([data-js]) .demo:target .media-16x9,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .media-16x9 { flex: 0 0 50%; aspect-ratio: auto; border-bottom: 0; border-right: 1px solid var(--glass-border); }
+      .demos__scene .demo .demo__corps,
+      .demos:not([data-js]) .demo:target .demo__corps,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__corps { padding: var(--fi-e3) var(--fi-e4); justify-content: center; }
+      .demos__scene .demo .demo__actions,
+      .demos:not([data-js]) .demo:target .demo__actions,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__actions { margin-top: var(--fi-e2); }
+      .demos .demo__actions .hero-cta__btn { width: auto; }
+    }
+    /* Bureau bas (1280×720) : les trois points se taisent (la démo les
+       montre elle-même), le sous-titre d'une vignette tient sur une ligne. */
+    @media (min-width: 900px) and (max-height: 800px) {
+      .section .demos { margin-top: var(--fi-e3); }
+      .demos__scene .demo .demo__points,
+      .demos:not([data-js]) .demo:target .demo__points,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__points { display: none; }
+      .demos__scene .demo .demo__corps,
+      .demos:not([data-js]) .demo:target .demo__corps,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__corps { padding: var(--fi-e2) var(--fi-e4); }
+      .section .demos .demo__sous-titre { -webkit-line-clamp: 1; line-clamp: 1; }
+      .demos__cadre { margin-top: var(--fi-e2); }
+    }
+    /* Mobile : titre, accroche (le résultat) et bouton dans le premier
+       écran. Les trois points se taisent comme au bureau bas, le sous-titre
+       tient sur une ligne, l'image s'aplatit un peu (2:1). */
+    @media (max-width: 767px) {
+      .section .demos { margin-top: var(--fi-e3); }
+      .demos__scene .demo .demo__points,
+      .demos:not([data-js]) .demo:target .demo__points,
+      .demos:not([data-js]):not(:has(.demo:target)) .demo[data-avant-pour~="aucune"] .demo__points { display: none; }
+      .demos__scene .demo .media-16x9 { aspect-ratio: 2 / 1; }
+      .demos__scene .demo .media-16x9 img { width: 100%; height: 100%; object-fit: cover; }
+      .section .demos .demo__sous-titre { -webkit-line-clamp: 1; line-clamp: 1; }
+      .demos__scene .demo .demo__corps { padding: var(--fi-e2) var(--fi-e3); }
+    }
+    /* Mobile bas (360×740) : l'image passe en 5:2, la bande se rapproche. */
+    @media (max-width: 767px) and (max-height: 760px) {
+      .section .demos { margin-top: var(--fi-e2); }
+      .demos__scene .demo .media-16x9 { aspect-ratio: 5 / 2; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .demos .demo { animation: none !important; transition: none; }
+      .demos[data-js] .demos__bande { scroll-behavior: auto; }
+    }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : APPROCHE (28/09/2026)
+       Une carte par étape, au vocabulaire de /stand/ : tuile en dégradé
+       avec un picto, numéro discret dans le coin, filet dégradé en haut.
+       Un FIL relie les tuiles d'une carte à l'autre et se remplit une
+       seule fois, segment après segment, quand la frise reçoit `.active`
+       (le « reveal » de la page). Sans JS, il est rempli d'office.
+
+       ⚠️ Le fil passe AU-DESSUS des cartes (il traverse l'écart et le bord
+       de la carte suivante) et SOUS les tuiles. Pour ça, les cartes ne
+       doivent pas créer de contexte d'empilement : pas de backdrop-filter
+       ni de transform (le survol ne soulève donc pas ces cartes). Le fil
+       (z 2) et les tuiles (z 3) se rangent alors dans la même pile.
+
+       Un segment par carte sauf la dernière (::before), piste et
+       remplissage dans un seul fond : le dégradé grandit par
+       background-size. Au bureau il va vers la droite, au mobile vers le
+       bas ; sa longueur se calcule depuis la carte, l'écart (--ecart) et
+       le rembourrage (--pad), jamais en dur.
+       ══════════════════════════════════════════════════════════════════ */
+    .section .etapes {
+      --tuile: 56px; --pad: var(--fi-e4); --ecart: var(--fi-e3); --pas-fil: 0.6s;
+      list-style: none; margin: var(--fi-e6) 0 0; padding: 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ecart);
+    }
+    .section .etape.carte {
+      position: relative; padding: var(--pad);
+      backdrop-filter: none; -webkit-backdrop-filter: none;
+      /* Le filet dégradé du haut, comme les cartes de /stand/. */
+      background:
+        linear-gradient(90deg, transparent 4%, rgba(244, 114, 182, 0.55), rgba(139, 92, 246, 0.55), transparent 96%) top / 100% 1px no-repeat,
+        var(--glass-bg);
+    }
+    /* Affordance : ces cartes ne se cliquent pas. Le survol hérité de
+       .carte (soulèvement, fond plus clair) est annulé ; le seul retour
+       est le souffle léger plus bas, sur la tuile. */
+    .section .etape.carte:hover { transform: none; background:
+        linear-gradient(90deg, transparent 4%, rgba(244, 114, 182, 0.55), rgba(139, 92, 246, 0.55), transparent 96%) top / 100% 1px no-repeat,
+        var(--glass-bg); }
+
+    .etape__tuile {
+      position: relative; z-index: 3;
+      display: grid; place-items: center;
+      width: var(--tuile); height: var(--tuile); margin-bottom: var(--fi-e3);
+      border-radius: 14px; background: var(--brand-gradient); color: #fff;
+      box-shadow: 0 10px 28px -14px rgba(139, 92, 246, 0.7);
+      /* --d : le retard de l'éclat (le fil qui arrive), réservé à l'ombre ;
+         le survol (transform, filter) répond, lui, tout de suite. */
+      transition: box-shadow 0.5s ease var(--d, 0s), transform 0.35s var(--fi-ease-sortie, ease-out), filter 0.35s ease;
+    }
+    .etape__tuile svg {
+      width: 26px; height: 26px;
+      fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .etape__tuile circle { fill: currentColor; }
+    /* La tuile s'éclaire quand le fil l'atteint. */
+    .section .etape:nth-child(2) .etape__tuile { --d: var(--pas-fil); }
+    .section .etape:nth-child(3) .etape__tuile { --d: calc(var(--pas-fil) * 2); }
+    .etapes.active .etape__tuile,
+    html:not(.js) .etapes .etape__tuile { box-shadow: 0 12px 34px -8px rgba(139, 92, 246, 0.95); }
+
+    /* Le numéro, en discret dans le coin (comme /stand/). ⚠️ Il loge
+       AU-DESSUS du fil : le fil passe à mi-hauteur de la tuile (pad +
+       tuile / 2), le numéro s'arrête avant (haut 16 px, 26,6 px de
+       corps, fini à ~43 px ; le fil le plus haut, au bureau bas, est à
+       48 px). Retour du 28/09/2026 : à hauteur de tuile, le fil le coupait. */
+    .section .etape__num {
+      position: absolute; top: var(--fi-e2); right: var(--fi-e3); margin: 0;
+      font-family: inherit; font-size: var(--fi-t2); font-weight: 800; line-height: 1;
+      background: none; color: rgba(255, 255, 255, 0.06); -webkit-text-fill-color: currentColor;
+      transition: color 0.35s ease;
+    }
+    /* Le survol : un souffle, pas une promesse de clic. La tuile monte de
+       3 px et s'éclaire, le numéro et le bord sortent un peu de l'ombre.
+       ⚠️ La carte elle-même ne bouge pas (un transform sur la carte
+       enfermerait le fil sous la carte suivante). Souris seulement. */
+    @media (hover: hover) {
+      .section .etape.carte:hover { border-color: rgba(255, 255, 255, 0.14); }
+      .section .etape.carte:hover .etape__tuile { transform: translateY(-3px); filter: brightness(1.12); }
+      .section .etape.carte:hover .etape__num { color: rgba(255, 255, 255, 0.14); }
+    }
+
+    /* Le fil : du bord droit de la tuile à la tuile de la carte suivante. */
+    .section .etape:not(:last-child)::before {
+      content: ""; position: absolute; z-index: 2; height: 2px;
+      top: calc(var(--pad) + var(--tuile) / 2 - 1px);
+      left: calc(var(--pad) + var(--tuile));
+      width: calc(100% + var(--ecart) - var(--tuile) + 2px); /* + les 2 bords de carte : 100 % est la boîte intérieure */
+      background: var(--brand-gradient) left / 0% 100% no-repeat, rgba(255, 255, 255, 0.12);
+      transition: background-size var(--pas-fil) linear;
+    }
+    .section .etape:nth-child(2)::before { transition-delay: var(--pas-fil); }
+    .etapes.active .etape::before,
+    html:not(.js) .etapes .etape::before { background-size: 100% 100%, auto; }
+
+    .section .etape h3 { font-size: var(--fi-t1); margin: 0 0 var(--fi-e2); }
+    .etape__badge {
+      display: inline-block; vertical-align: 0.2em; margin-left: var(--fi-e1);
+      padding: 2px 10px; border-radius: 999px; border: 0;
+      background: rgba(110, 168, 255, 0.14); /* plein et pâle : une étiquette, pas un bouton en contour */
+      font-size: var(--fi-t-1); font-weight: 600; color: var(--accent-blue-light);
+    }
+    /* Le gain : une petite étiquette sur sa ligne, puis le résultat en
+       texte clair (retour du 28/09/2026 : étiquette et résultat sur une
+       même ligne, avec coche et gras bleu, faisaient trois styles). */
+    .section .etape__gain {
+      margin: 0 0 var(--fi-e2); font-size: var(--fi-t0); font-weight: 500; line-height: 1.4;
+      color: var(--text-main);
+    }
+    /* L'étiquette s'efface devant le résultat : petite, en casse normale,
+       dans le gris du texte secondaire (retour du 28/09/2026 : en
+       capitales bleues espacées, répétée trois fois, elle criait plus
+       fort que le résultat). */
+    .etape__gain-intro {
+      display: block; margin-bottom: 2px;
+      font-size: var(--fi-t-1); font-weight: 400;
+      color: var(--text-muted);
+    }
+    .section .etape__texte { margin: 0; color: var(--text-muted); }
+    #approche .etapes__geste { margin-top: var(--fi-e6); }
+
+    /* Mobile et tablette : les cartes s'empilent, la tuile à gauche, le
+       fil descend d'une tuile à l'autre ; le texte long se tait, le gain
+       reste (réponse 4a du 28/09/2026). */
+    @media (max-width: 899px) {
+      .section .etapes { --tuile: 44px; --pad: var(--fi-e2); --ecart: var(--fi-e2); grid-template-columns: 1fr; margin-top: var(--fi-e4); }
+      .section .etape.carte { padding-left: calc(var(--pad) * 2 + var(--tuile)); min-height: calc(var(--tuile) + var(--pad) * 2); }
+      .etape__tuile { position: absolute; left: var(--pad); top: var(--pad); margin: 0; border-radius: 12px; }
+      .etape__tuile svg { width: 22px; height: 22px; }
+      .section .etape__num { font-size: var(--fi-t2); }
+      .section .etape h3 { margin: 0 0 var(--fi-e1); }
+      .section .etape__gain { margin: 0; }
+      .section .etape:not(:last-child)::before {
+        top: calc(var(--pad) + var(--tuile)); left: calc(var(--pad) + var(--tuile) / 2 - 1px);
+        width: 2px; height: calc(100% + var(--ecart) - var(--tuile) + 2px);
+        background: var(--brand-gradient) top / 100% 0% no-repeat, rgba(255, 255, 255, 0.12);
+      }
+      .etapes.active .etape::before,
+      html:not(.js) .etapes .etape::before { background-size: 100% 100%, auto; }
+      .section .etape__texte { display: none; }
+      .section .etape__gain { font-size: var(--fi-t-05); }
+      /* L'intro redit ce que chaque étiquette « Vous repartez avec » dit
+         déjà : au mobile, elle cède sa place aux étapes. */
+      #approche > h2 + p { display: none; }
+      #approche .etapes__geste { margin-top: var(--fi-e4); }
+    }
+    /* Bureau bas (1280×720) : cartes et fil se resserrent. */
+    @media (min-width: 900px) and (max-height: 800px) {
+      .section .etapes { --tuile: 48px; --pad: var(--fi-e3); margin-top: var(--fi-e4); }
+      .etape__tuile { margin-bottom: var(--fi-e2); }
+      .etape__tuile svg { width: 22px; height: 22px; }
+      #approche .etapes__geste { margin-top: var(--fi-e4); }
+    }
+    /* Mobile bas (360×740) : tout se rapproche, le bouton reste au-dessus
+       du dock. */
+    @media (max-width: 899px) and (max-height: 760px) {
+      .section .etapes { --ecart: var(--fi-e1); margin-top: var(--fi-e3); }
+      #approche .etapes__geste { margin-top: var(--fi-e3); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .etape__tuile,
+      .section .etape__num,
+      .section .etape::before { transition: none !important; }
+      .section .etape.carte:hover .etape__tuile { transform: none; }
+    }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : ÉQUIPE (28/09/2026)
+       Le fondateur au centre d'une orbite, cinq rôles autour (sans noms),
+       reliés par des fils que trace composants/orbite.js. Les fils se
+       dessinent un par un à l'arrivée (`.orbite.active`), celui d'un rôle
+       s'allume au survol (`.orbite__fil--allume`).
+
+       Placement : trois rangées ancrées aux bords de l'orbite (haut, milieu,
+       bas) plutôt qu'un cercle en pourcentages : une carte de rôle garde sa
+       place quelle que soit la hauteur de son texte. Le portrait au centre
+       exact, les cartes opaques par-dessus les fils (z 3).
+       Au mobile (et < 900 px) : une liste, portrait en tête, un rail relie
+       les tuiles comme dans l'approche ; les fils SVG sont masqués.
+       ══════════════════════════════════════════════════════════════════ */
+    .equipe { position: relative; }
+    .equipe__ancre { position: absolute; top: 0; left: 0; }
+    .equipe__grille {
+      display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+      gap: var(--fi-e6); align-items: center;
+    }
+    /* La signature : nom + rôle ; la photo ne s'affiche qu'au mobile. */
+    .equipe__signature { display: flex; align-items: center; gap: var(--fi-e2); margin: 0 0 var(--fi-e2); }
+    .equipe__photo {
+      flex: none; width: 56px; height: 56px; padding: 2px; border-radius: 50%;
+      background: var(--brand-gradient); object-fit: cover; object-position: 50% 20%;
+    }
+    .section .equipe__signature p { margin: 0; display: grid; gap: 2px; line-height: 1.3; }
+    .equipe__signature strong { font-size: var(--fi-t0); font-weight: 700; color: var(--text-main); }
+    .equipe__signature span { font-size: var(--fi-t-05); color: var(--accent-blue-light); }
+    .orbite__legende { display: none; }
+    @media (min-width: 900px) { .equipe__photo { display: none; } }
+    .section .equipe__bio { margin: 0 0 var(--fi-e3); color: var(--text-muted); }
+    .equipe__bio strong { color: var(--text-main); font-weight: 600; }
+    .equipe__faits { margin: 0 0 var(--fi-e4); }
+    .equipe__citation {
+      margin: 0; padding-left: var(--fi-e3);
+      border-left: 2px solid var(--accent-purple); border-radius: 0;
+    }
+    .section .equipe__citation p {
+      margin: 0 0 var(--fi-e1); font-size: var(--fi-t1); font-weight: 500; line-height: 1.35;
+      color: var(--text-main);
+    }
+    .equipe__citation footer { font-size: var(--fi-t-1); color: var(--text-muted); }
+
+    .orbite { position: relative; height: 480px; } /* 3 rangées de cartes (jusqu'à 144 px) + 24 px d'air : tient à 1280×720 */
+    .orbite__fils {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      overflow: visible; pointer-events: none; z-index: 1;
+    }
+    .orbite__fils path {
+      fill: none; stroke: rgba(255, 255, 255, 0.16); stroke-width: 1.5; stroke-linecap: round;
+      stroke-dasharray: 1; stroke-dashoffset: 1;
+      transition: stroke-dashoffset 0.7s var(--fi-ease-sortie, ease-out) calc(0.3s + var(--i, 0) * 0.15s),
+                  stroke 0.3s ease, stroke-width 0.3s ease;
+    }
+    .orbite.active .orbite__fils path,
+    html:not(.js) .orbite__fils path { stroke-dashoffset: 0; }
+    .orbite__fils path.orbite__fil--allume { stroke: var(--accent-purple); stroke-width: 2.5; }
+
+    .orbite__centre {
+      position: absolute; left: 50%; top: 50%; z-index: 3; margin: 0;
+      width: 124px; height: 124px; transform: translate(-50%, -50%);
+      padding: 3px; border-radius: 50%; background: var(--brand-gradient);
+      box-shadow: 0 0 60px -12px rgba(139, 92, 246, 0.8);
+    }
+    .orbite__centre img {
+      display: block; width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; object-position: 50% 20%; background: var(--bg-base-2);
+    }
+
+    .orbite__roles { list-style: none; margin: 0; padding: 0; }
+    .role {
+      position: absolute; z-index: 3; width: 220px;
+      display: flex; align-items: flex-start; gap: calc(var(--fi-e1) + var(--fi-e05));
+      padding: calc(var(--fi-e1) + var(--fi-e05));
+      border-radius: 14px; border: 1px solid var(--glass-border); background: var(--bg-base-2);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    /* Les trois rangées : 1 en haut ; 2 et 5 au milieu, sur les bords ;
+       3 et 4 en bas : la lecture tourne dans le sens des aiguilles d'une
+       montre depuis le haut. L'ordre du HTML est celui de l'importance
+       (décision du 28/09/2026) : logiciel, studio 3D, écosystème,
+       mobilier, atelier d'art. */
+    .role:nth-child(1) { left: 50%; top: 0; transform: translateX(-50%); }
+    .role:nth-child(2) { right: 0; top: 48%; transform: translateY(-50%); }
+    .role:nth-child(3) { left: 72%; bottom: 0; transform: translateX(-50%); }
+    .role:nth-child(4) { left: 28%; bottom: 0; transform: translateX(-50%); }
+    .role:nth-child(5) { left: 0; top: 48%; transform: translateY(-50%); }
+    .role--allume { border-color: rgba(139, 92, 246, 0.6); box-shadow: 0 10px 30px -14px rgba(139, 92, 246, 0.8); }
+
+    .role__pic {
+      flex: none; display: grid; place-items: center;
+      width: 36px; height: 36px; border-radius: 10px;
+      background: var(--brand-gradient); color: #fff;
+    }
+    .role__pic svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .role__pic circle { fill: currentColor; }
+    .role__nom { display: block; margin-bottom: 2px; font-size: var(--fi-t-05); font-weight: 700; line-height: 1.3; color: var(--text-main); }
+    .role__texte { display: block; font-size: var(--fi-t-1); line-height: 1.4; color: var(--text-muted); }
+
+    /* Bureau bas (1280×720) : le portrait se tasse un peu. */
+    @media (min-width: 900px) and (max-height: 800px) {
+      .orbite__centre { width: 108px; height: 108px; }
+    }
+    /* Petit bureau (900 à 1100 px) : l'orbite n'a plus que ~560 px de
+       large ; c'est le portrait qui s'affine (une carte plus étroite
+       grandirait en hauteur et mordrait sur sa voisine). */
+    @media (min-width: 900px) and (max-width: 1100px) {
+      .orbite__centre { width: 96px; height: 96px; } /* après le bureau bas : il gagne à 1024×768 */
+    }
+
+    /* Mobile et tablette : la liste. Le portrait de l'orbite se retire (la
+       photo est dans la signature, à côté du nom) ; les rôles, sous une
+       petite légende, passent sur deux colonnes dès 600 px. Plus de rail :
+       sans le centre, il ne reliait plus rien (retour du 28/09/2026). */
+    @media (max-width: 899px) {
+      .equipe__grille { grid-template-columns: 1fr; gap: var(--fi-e6); }
+      .section .equipe__citation p { font-size: var(--fi-t0); }
+      .orbite { height: auto; }
+      .orbite__fils,
+      .orbite__centre { display: none; }
+      .section .orbite__legende {
+        display: block; margin: 0 0 var(--fi-e3);
+        font-size: var(--fi-t-05); color: var(--text-muted);
+      }
+      .orbite__roles { display: grid; gap: var(--fi-e3); }
+      /* ⚠️ `.orbite .role:nth-child(n)` : il faut battre les rangées du
+         bureau (`.role:nth-child(1)`…), plus spécifiques qu'un `.role`. */
+      .orbite .role:nth-child(n) {
+        position: relative; left: auto; right: auto; top: auto; bottom: auto; transform: none;
+        width: auto; padding: 0; border: 0; background: none; box-shadow: none;
+      }
+    }
+    @media (min-width: 600px) and (max-width: 899px) {
+      .orbite__roles { grid-template-columns: 1fr 1fr; column-gap: var(--fi-e4); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .orbite__fils path { transition: none !important; stroke-dashoffset: 0; }
+    }
+    /* ══════════════════════════════════════════════════════════════════
+       PASSE GRAPHIQUE : TRANSITIONS (28/09/2026)
+       Les passages d'une section à l'autre, au vocabulaire de /stand/
+       (validé comme qualitatif) : AUCUN filet entre les sections sombres,
+       un dégradé continu ; une seule rupture de fond, la bande claire ; le
+       seul filet de la page reste celui qui accueille le contact.
+
+         - Logo : sur l'axe du titre et des sections, 32 px / 24 px.
+         - Hero › offre : le long fondu du bas du hero (celui de /stand/),
+           puis, au choix d'une situation, un halo teinté par l'usage qui
+           s'allume au-dessus de l'offre et déborde sur la couture.
+         - Surtitres numérotés comme le rail du dock (02 à 05).
+         - Démos › approche › équipe : la bande claire.
+         - Cascade d'en-tête : surtitre, titre, intro, puis le contenu.
+         - Moins de vide : ~120 px entre deux sections au bureau (174).
+       ══════════════════════════════════════════════════════════════════ */
+
+    /* ── Le logo, sur l'axe ─────────────────────────────────────────────
+       Même bord gauche que le titre du hero et les h2 : la boîte de
+       .section (1100 px centrés) plus sa marge intérieure (48 px au
+       bureau, 24 px au téléphone). En 1440, il passe de 24 à ~218 px. */
+    .logo-coin { left: calc(max(0px, (100% - 1100px) / 2) + 3rem); }
+    .logo-coin img { height: 32px; }
+    @media (max-width: 767px) {
+      .logo-coin { left: 1.5rem; }
+      .logo-coin img { height: 24px; }
+    }
+
+    /* ── Hero › offre : le fondu de /stand/ ─────────────────────────────
+       Le bas du hero se dissout dans le fond de la page sur un tiers
+       d'écran (ou presque la moitié) : plus de halo coupé net. Au-dessus
+       du fond et des halos, SOUS le contenu (z 1). Pendant la question, la
+       suite attend sous ce voile, à 35 % (composants.css). */
+    .hero::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; z-index: 0;
+      height: max(33vh, clamp(280px, 46vh, 680px));
+      pointer-events: none;
+      background: linear-gradient(to bottom,
+        transparent 0%, transparent 6%,
+        rgba(9, 11, 19, 0.08) 22%, rgba(9, 11, 19, 0.28) 46%,
+        rgba(9, 11, 19, 0.58) 70%, rgba(9, 11, 19, 0.9) 92%,
+        var(--bg-base) 100%);
+    }
+
+    /* Le halo de l'offre : il s'allume au choix d'une situation, teinté
+       par l'usage (les trois arrêts du dégradé de la charte, dans l'ordre
+       des usages). Il déborde vers le haut sur la couture avec le hero :
+       c'est lui qui marque l'entrée dans la suite. z -1 : sous le contenu
+       de la section (qui fait sa propre pile, `.page-rest > *`). */
+    #offre { --halo-offre: 110 168 255; }
+    body[data-situation="former"] #offre { --halo-offre: 139 92 246; }
+    body[data-situation="garder"] #offre { --halo-offre: 244 114 182; }
+    #offre::after {
+      content: ""; position: absolute; z-index: -1; pointer-events: none;
+      left: 30%; top: 0;
+      width: min(110vw, 1000px); aspect-ratio: 1;
+      transform: translate(-50%, -38%);
+      border-radius: 50%;
+      background: radial-gradient(circle closest-side, rgb(var(--halo-offre) / 0.16), transparent);
+      opacity: 0;
+      transition: opacity 0.9s var(--fi-ease-sortie, ease-out) 0.2s;
+    }
+    body[data-situation] #offre::after { opacity: 1; }
+    @media (max-width: 767px) { #offre::after { left: 50%; } }
+
+    /* ── Surtitres numérotés : le rang du rail du dock ────────────────── */
+    .section-number__rang { font-variant-numeric: tabular-nums; opacity: 0.7; }
+
+    /* ── Cascade d'en-tête ─────────────────────────────────────────────
+       Surtitre › titre › intro › contenu : le regard suit l'ordre de
+       lecture. ⚠️ Les cartes de l'offre et des démos n'ont PAS de retard :
+       le reveal porte aussi leur transition de survol, qui traînerait. */
+    .js .section-number.reveal + h2.reveal { transition-delay: 70ms; }
+    .js .section-number.reveal + h2.reveal + .reveal:not(.carte) { transition-delay: 140ms; }
+    .js .etapes.reveal,
+    .js .orbite.reveal,
+    .js .equipe__bio.reveal,
+    .js .equipe__faits.reveal,
+    .js .equipe__citation.reveal { transition-delay: 210ms; }
+
+    /* ── Moins de vide entre les sections ───────────────────────────────
+       48 px › 60 px de chaque côté (au lieu de 64 › 96) : ~120 px entre
+       deux sections au bureau. Le bureau bas et le téléphone court gardent
+       leurs réglages, plus serrés. */
+    .section { padding-block: clamp(3rem, 2.2rem + 2.5vw, 3.75rem); }
+    @media (min-width: 900px) and (max-height: 800px) { .section { padding-block: 3rem; } }
+    @media (max-width: 767px) and (max-height: 760px) { .section { padding-top: 2.5rem; } }
+
+    /* ── La bande claire : l'approche ──────────────────────────────────
+       Reprise telle quelle de /stand/ (.band--light) : fond #f4f5fa, bords
+       nets, 2 à 4 rem de marge, cartes blanches à ombre douce. Les tuiles
+       au dégradé et le fil gardent leurs couleurs ; seuls les fonds, les
+       textes et la piste du fil passent au clair. */
+    .band--light {
+      --lt-bg: #f4f5fa;
+      --lt-text: #12162a;
+      --lt-muted: #4b5168;
+      --lt-card: #ffffff;
+      --lt-line: rgba(18, 22, 42, 0.09);
+      --lt-accent: var(--accent-blue-deep);
+      position: relative;
+      margin: clamp(2rem, 5vw, 4rem) 0;
+      background: var(--lt-bg);
+      color: var(--lt-text);
+    }
+    .band--light .section-number { color: var(--lt-accent); }
+    .band--light .section h2,
+    .band--light .section h3 { color: var(--lt-text); }
+    .band--light .section p { color: var(--lt-muted); }
+    .band--light .section .etape.carte,
+    .band--light .section .etape.carte:hover {
+      border: 1px solid var(--lt-line);
+      background:
+        linear-gradient(90deg, transparent 4%, rgba(244, 114, 182, 0.55), rgba(139, 92, 246, 0.55), transparent 96%) top / 100% 1px no-repeat,
+        var(--lt-card);
+      box-shadow: 0 14px 34px -22px rgba(18, 22, 42, 0.35);
+    }
+    .band--light .section .etape__gain { color: var(--lt-text); }
+    .band--light .etape__gain-intro { color: var(--lt-muted); }
+    .band--light .section .etape__num { color: rgba(18, 22, 42, 0.06); }
+    .band--light .etape__badge { background: rgba(40, 89, 255, 0.08); color: var(--lt-accent); }
+    .band--light .etape__tuile { box-shadow: 0 10px 24px -14px rgba(139, 92, 246, 0.6); }
+    .band--light .etapes.active .etape__tuile,
+    html:not(.js) .band--light .etapes .etape__tuile { box-shadow: 0 12px 28px -10px rgba(139, 92, 246, 0.7); }
+    .band--light .section .etape:not(:last-child)::before { background-color: rgba(18, 22, 42, 0.1); }
+    @media (hover: hover) {
+      .band--light .section .etape.carte:hover { border-color: rgba(18, 22, 42, 0.16); }
+      .band--light .section .etape.carte:hover .etape__num { color: rgba(18, 22, 42, 0.14); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #offre::after { transition: none; }
+      .js .reveal { transition-delay: 0s !important; }
+    }
   </style>
 </head>
 
@@ -1873,16 +2429,17 @@
       </div>
 
       <!-- sommaire : les chapitres, dans l'ordre de CHAPITRES (script
-           « LE PARCOURS ») ; ⚠️ les `href` sont les id des sections. -->
+           « LE PARCOURS ») ; ⚠️ les `href` sont les id des sections, et
+           chaque libellé est le sur-titre de sa section (28/09/2026) :
+           en changer un, c'est changer les deux. -->
       <nav class="fi-dock__vue fi-dock__vue--sommaire" data-dock-vue="sommaire" hidden aria-label="Sommaire">
         <p class="fi-dock__etiquette">Sommaire</p>
         <ol class="fi-dock__chapitres">
           <li><a href="#top" data-dock-chapitre="top">Accueil</a></li>
-          <li><a href="#offre" data-dock-chapitre="offre">Trois usages</a></li>
-          <li><a href="#demos" data-dock-chapitre="demos">Ça tourne déjà</a></li>
+          <li><a href="#offre" data-dock-chapitre="offre">L'offre</a></li>
+          <li><a href="#demos" data-dock-chapitre="demos">Démos</a></li>
           <li><a href="#approche" data-dock-chapitre="approche">L'approche</a></li>
-          <li><a href="#partenaires" data-dock-chapitre="partenaires">Partenaires</a></li>
-          <li><a href="#fondateur" data-dock-chapitre="fondateur">Le fondateur</a></li>
+          <li><a href="#equipe" data-dock-chapitre="equipe">L'équipe</a></li>
           <li><a href="#contact" data-dock-chapitre="contact">Contact</a></li>
         </ol>
       </nav>
@@ -1938,7 +2495,7 @@
 
   <main id="contenu">
     <!-- ══ HERO ════════════════════════════════════════════════════════ -->
-    <section class="hero" id="top">
+    <section class="hero" id="top" data-garde="plein-ecran">
       <!-- Le fond vidéo : montrer que les expériences sont en 3D et vivantes,
            sans rien dire. Contrat, pour quand la boucle sera produite
            (préréglage `hero` de Needle5/scripts/encoder-video.sh) :
@@ -1974,7 +2531,7 @@
           </span>
         </div>
 
-        <h1 class="hero__titre">Transmettre les savoirs
+        <h1 class="hero__titre" data-essentiel>Transmettre les savoirs
           <span class="hero__accent">par l'expérience</span>
         </h1>
 
@@ -1982,7 +2539,7 @@
              pilier (ou l'avoir choisi) l'allume ici. Le texte ne change pas. -->
         <!-- Deux lignes, deux temps (retour du 28/09/2026) : ce que le savoir
              devient, puis ce qu'il fait. -->
-        <p class="hero__lead">
+        <p class="hero__lead" data-essentiel>
           <span class="hero__lead-ligne">Votre savoir est mis en 3D une fois.</span>
           <span class="hero__lead-ligne">Ensuite,
           <span class="hero__verbe" data-verbe="convaincre">il vend</span>,
@@ -2031,7 +2588,7 @@
           <a class="hero-cta__btn hero-cta__btn--secondary" href="#contact"><span>Réserver 30 min</span></a>
         </div>
 
-        <a class="hero__identite" href="#fondateur">
+        <a class="hero__identite" href="#equipe">
           <span class="hero__avatar">
             <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
           </span>
@@ -2052,10 +2609,10 @@
            sans JavaScript. La situation choisie n'en masque aucune, elle
            allume la sienne (`body[data-situation]` + `data-usages`). -->
       <section class="section" id="offre">
-        <p class="section-number reveal">L'agence</p>
-        <h2 class="reveal">Un savoir, trois usages</h2>
-        <p class="reveal">Chaque usage part du même socle, qui tourne déjà dans cinq
-          démonstrateurs. L'atelier de 30 min sert à choisir par lequel commencer.</p>
+        <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">02 · </span>L'offre</p>
+        <h2 class="reveal" data-essentiel>Un savoir, trois usages</h2>
+        <p class="reveal">Un même socle, déjà en ligne dans cinq démos. En 30 min
+          d'atelier, on choisit par où commencer.</p>
 
         <!-- Les trois usages en story (composants/composants.js, « story ») :
              une carte à la fois, 5 s chacune, en boucle, tant que la section
@@ -2088,20 +2645,20 @@
                    width="1600" height="1063" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg><span class="offre__eyebrow-texte">Convaincre un acheteur</span>
                 <span class="badge-cas" hidden>Votre situation</span></p>
               <h3>Votre produit ne voyage pas ? Votre démo, si</h3>
-              <p class="offre__texte">Machines, équipements lourds, systèmes intégrés : leur jumeau
-                3D se présente sur une borne ou derrière un lien, sans transport, sans montage,
-                sans le coût ni l'impact logistique d'un convoi. Vos commerciaux gardent l'outil
-                d'un salon à l'autre.</p>
-              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-stand">STAND</a>,
+              <p class="offre__texte">Machines, équipements lourds, systèmes intégrés : leurs jumeaux
+                numériques se présentent sur une borne ou derrière un lien. Sans transport, sans
+                montage, sans convoi.</p>
+              <p class="offre__resultat" data-essentiel><svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Vos commerciaux gardent la démo d'un salon à l'autre.</p>
+              <p class="offre__preuve" hidden>Ça tourne déjà : <a href="#demo-stand">STAND</a>,
                 <a href="#demo-midipile">Midipile</a></p>
               <div class="offre__actions">
-                <a class="hero-cta__btn hero-cta__btn--primary"
+                <a class="hero-cta__btn hero-cta__btn--primary" href="#demo-stand" data-essentiel><span>Voir la démo STAND</span><svg class="hero-cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="4" x2="12" y2="20"></line><polyline points="6 14 12 20 18 14"></polyline></svg></a>
+                <a class="hero-cta__btn hero-cta__btn--secondary"
                    href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
-                <a class="hero-cta__btn hero-cta__btn--secondary" href="/stand/" data-demo="stand">Découvrir STAND</a>
+                   target="_blank" rel="noopener" data-rdv="offre">Réserver 30 min</a>
               </div>
             </div>
           </article>
@@ -2113,17 +2670,18 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg><span class="offre__eyebrow-texte">Former un nouvel arrivant</span>
                 <span class="badge-cas" hidden>Votre situation</span></p>
-              <h3>Vos nouveaux arrivants apprennent sur l'équipement en production ?</h3>
-              <p class="offre__texte">Ils le démontent, le parcourent et recommencent en 3D, sans
-                arrêter la ligne ni prendre de risque. Le parcours met en valeur votre savoir-faire
-                et respecte vos accords de confidentialité.</p>
-              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-rayon-x">Rayon X</a></p>
+              <h3>Ils se forment sur la ligne en production ?</h3>
+              <p class="offre__texte">Ils démontent et parcourent l'équipement en 3D, autant de fois
+                qu'il le faut. Vos accords de confidentialité sont respectés.</p>
+              <p class="offre__resultat" data-essentiel><svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Sans arrêter la ligne, sans prendre de risque.</p>
+              <p class="offre__preuve" hidden>Ça tourne déjà : <a href="#demo-rayon-x">Rayon X</a></p>
               <div class="offre__actions">
-                <a class="hero-cta__btn hero-cta__btn--primary"
+                <a class="hero-cta__btn hero-cta__btn--primary" href="#demo-rayon-x" data-essentiel><span>Voir la démo Rayon X</span><svg class="hero-cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="4" x2="12" y2="20"></line><polyline points="6 14 12 20 18 14"></polyline></svg></a>
+                <a class="hero-cta__btn hero-cta__btn--secondary"
                    href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
+                   target="_blank" rel="noopener" data-rdv="offre">Réserver 30 min</a>
               </div>
             </div>
           </article>
@@ -2135,18 +2693,19 @@
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
             <div class="offre__corps">
-              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver un savoir-faire
+              <p class="offre__eyebrow"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg><span class="offre__eyebrow-texte">Conserver un savoir-faire</span>
                 <span class="badge-cas" hidden>Votre situation</span></p>
               <h3>Vos savoir-faire partent avec ceux qui les ont ?</h3>
-              <p class="offre__texte">Un processus de fabrication, un tour de main, le geste d'une
-                artiste : capturés, découpés en étapes et rejouables sous tous les angles, aussi
-                souvent qu'il le faut. La captation se fait avec vous, ou avec un partenaire
-                spécialisé selon le besoin.</p>
-              <p class="offre__preuve">Ça tourne déjà : <a href="#demo-moulage">À fleur d'écorce</a></p>
+              <p class="offre__texte">Un procédé, un tour de main, le geste d'une artiste : capturés
+                et séquencés en étapes. La captation se fait avec vous, ou avec un partenaire
+                spécialisé.</p>
+              <p class="offre__resultat" data-essentiel><svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Rejouable sous tous les angles, aussi souvent qu'il le faut.</p>
+              <p class="offre__preuve" hidden>Ça tourne déjà : <a href="#demo-moulage">À fleur d'écorce</a></p>
               <div class="offre__actions">
-                <a class="hero-cta__btn hero-cta__btn--primary"
+                <a class="hero-cta__btn hero-cta__btn--primary" href="#demo-moulage" data-essentiel><span>Voir la démo À fleur d'écorce</span><svg class="hero-cta__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="4" x2="12" y2="20"></line><polyline points="6 14 12 20 18 14"></polyline></svg></a>
+                <a class="hero-cta__btn hero-cta__btn--secondary"
                    href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-                   target="_blank" rel="noopener" data-rdv="offre"><span>Réserver 30 min</span></a>
+                   target="_blank" rel="noopener" data-rdv="offre">Réserver 30 min</a>
               </div>
             </div>
           </article>
@@ -2156,343 +2715,263 @@
 
       <!-- ══ CE QUI TOURNE DÉJÀ ══════════════════════════════════════════ -->
       <section class="section" id="demos">
-        <p class="section-number reveal">Ce qui tourne déjà</p>
-        <h2 class="reveal">Ouvrez une démonstration, c'est plus court que de l'expliquer</h2>
-        <p class="reveal">Chacune tourne dans le navigateur, sans rien installer et sans casque.
-          Ce qu'on y voit fonctionner est ce qui est réalisable pour votre projet.</p>
+        <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">03 · </span>Démos</p>
+        <h2 class="reveal" data-essentiel>Ouvrez une démo, c'est plus court que de l'expliquer</h2>
+        <p class="reveal">Dans le navigateur, sans installation. Ce qui fonctionne ici est
+          réalisable pour votre projet.</p>
 
-        <!-- Les démos groupées par usage (spec 2026-09-27 § 4) : chaque groupe
-             répond à une des trois cartes de l'offre. L'étiquette porte
-             `data-groupe` et non `data-usages`, qui allumerait le groupe entier
-             comme une carte. Le groupe de la situation passe en tête (ordre
-             CSS, le DOM ne bouge pas). -->
-        <div class="demos">
-          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-convaincre" data-groupe="convaincre" style="--n: 2">
-            <p class="fi-groupe__etiquette reveal" id="groupe-convaincre"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre un acheteur</p>
-            <div class="demos__cartes">
-              <article class="carte demo reveal" id="demo-stand" data-usages="convaincre">
-                <div class="media-16x9">
-                  <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
-                       width="1200" height="675" loading="lazy" decoding="async">
-                </div>
-                <div class="demo__corps">
-                  <p class="badge-cas" hidden>Pour votre cas</p>
-                  <h3>STAND</h3>
-                  <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
-                  <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
-                  <ul class="demo__points">
-                  <li>Vos vidéos et vos fiches dans une interface soignée</li>
-                  <li>Les médias se changent depuis un espace d'administration</li>
-                  <li>Une télécommande pilote la borne depuis un téléphone</li>
-                  </ul>
-                  <div class="demo__actions">
-                    <a class="hero-cta__btn" href="/stand/" data-demo="stand" data-geste="ouvre">Voir la page
-                      <span aria-hidden="true">→</span></a>
-                  </div>
-                </div>
-              </article>
-              <article class="carte demo reveal" id="demo-midipile" data-usages="convaincre">
-                <div class="media-16x9">
-                  <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
-                       width="1200" height="675" loading="lazy" decoding="async">
-                </div>
-                <div class="demo__corps">
-                  <p class="badge-cas" hidden>Pour votre cas</p>
-                  <h3>Midipile</h3>
-                  <p class="demo__sous-titre">le démonstrateur produit</p>
-                  <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
-                  <ul class="demo__points">
-                  <li>Trois carrosseries se comparent : plateau, pick-up, fourgonnette</li>
-                  <li>Le véhicule se pose dans votre cour, à sa taille réelle</li>
-                  <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
-                  </ul>
-                  <div class="demo__actions">
-                    <a class="hero-cta__btn" href="/midipile/" target="_blank" rel="noopener" data-demo="midipile" data-geste="ouvre">Ouvrir la démo
-                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
-                  </div>
-                </div>
-              </article>
+        <!-- Les démos : UNE en avant (la scène), les autres en vignettes dans
+             une bande qui défile (composants/demos.js, passe du 28/09/2026).
+             Qui est en avant : la démo visée (clic, ancre), sinon la vitrine
+             de la situation, sinon STAND. Sans JS : une grille, la démo
+             visée (:target) ou STAND en grand.
+
+             ✚ AJOUTER UNE DÉMO (rien d'autre à toucher, ni CSS ni JS) :
+               1. copier un <article class="carte demo reveal"> DANS la bande,
+                  à la place voulue (l'ordre du HTML est l'ordre des vignettes) ;
+               2. id="demo-<nom>", data-usages="convaincre | former | garder" ;
+                  data-avant-pour="<usage>" SEULEMENT si elle devient la vitrine
+                  de cet usage (une vitrine par usage ; « aucune » = défaut) ;
+               3. l'image : webp 1200×675, moins de 120 Ko, dans /media/accueil/demos/ ;
+               4. les textes : nom, sous-titre (une ligne), accroche (une
+                  phrase), 3 points qui disent ce que la démo PERMET ;
+               5. le lien du titre vise sa propre ancre (#demo-<nom>).
+             Le village est sorti le temps du chantier (il reste sur /village/). -->
+        <div class="demos" data-composant="demos">
+          <div class="demos__scene" data-demos-scene hidden></div>
+          <div class="demos__cadre">
+            <button class="demos__fleche demos__fleche--avant" type="button" data-demos-fleche="-1" aria-label="Démos précédentes" hidden>
+              <svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+            <button class="demos__fleche demos__fleche--apres" type="button" data-demos-fleche="1" aria-label="Démos suivantes" hidden>
+              <svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+          <div class="demos__bande" data-demos-bande role="region" aria-label="Les autres démos">
+          <article class="carte demo reveal" id="demo-stand" data-usages="convaincre" data-avant-pour="aucune convaincre">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
+                   width="1200" height="675" loading="lazy" decoding="async">
             </div>
+            <div class="demo__corps">
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <h3><a class="demo__lien" href="#demo-stand">STAND</a></h3>
+              <p class="demo__sous-titre">le produit sur le stand sans le transporter</p>
+              <p class="demo__accroche">Une scène 3D qui sert de fil rouge au discours commercial.</p>
+              <ul class="demo__points">
+                    <li>Vos vidéos et vos fiches dans une interface soignée</li>
+                    <li>Les médias se changent depuis un espace d'administration</li>
+                    <li>Une télécommande pilote la borne depuis un téléphone</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" data-essentiel href="/stand/" data-demo="stand" data-geste="ouvre"><span>Voir la page</span>
+                  <span aria-hidden="true">→</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="carte demo reveal" id="demo-midipile" data-usages="convaincre">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>Convaincre<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <h3><a class="demo__lien" href="#demo-midipile">Midipile</a></h3>
+              <p class="demo__sous-titre">le démonstrateur produit</p>
+              <p class="demo__accroche">Le produit chez vous, en trois secondes, sans installer d'application.</p>
+              <ul class="demo__points">
+                    <li>Trois carrosseries se comparent : plateau, pick-up, fourgonnette</li>
+                    <li>Le véhicule se pose dans votre cour, à sa taille réelle</li>
+                    <li>Rien à installer : un lien suffit, sur téléphone comme sur écran</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" data-essentiel href="/midipile/" target="_blank" rel="noopener" data-demo="midipile" data-geste="ouvre"><span>Ouvrir la démo</span>
+                  <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="carte demo reveal" id="demo-rayon-x" data-usages="former" data-avant-pour="former">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <h3><a class="demo__lien" href="#demo-rayon-x">Rayon X</a></h3>
+              <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
+              <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
+              <ul class="demo__points">
+                    <li>Des points de vue guidés amènent le regard là où ça se passe</li>
+                    <li>La silhouette d'un opérateur s'affiche ou se masque, pour l'échelle</li>
+                    <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" data-essentiel href="/rayon-x/" target="_blank" rel="noopener" data-demo="rayon-x" data-geste="ouvre"><span>Ouvrir la démo</span>
+                  <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="carte demo reveal" id="demo-agorapod" data-usages="former">
+            <!-- ⚠️ Textes à valider (rédigés d'après l'interface de la démo,
+                 28/09/2026) ; image : capture provisoire. -->
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/agorapod.webp" alt="AgoraPod : le châssis et l'habitacle d'un véhicule en 3D, portes ouvertes"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <h3><a class="demo__lien" href="#demo-agorapod">AgoraPod</a></h3>
+              <p class="demo__sous-titre">un véhicule à comprendre, pour l'ICAM</p>
+              <p class="demo__accroche">Le châssis et l'habitacle d'un véhicule, à parcourir sous tous les angles.</p>
+              <ul class="demo__points">
+                    <li>La silhouette d'un opérateur s'affiche, pour l'échelle</li>
+                    <li>Le véhicule se pose chez vous, à sa taille réelle</li>
+                    <li>Des astuces guident la prise en main</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" data-essentiel href="https://albrice-montfort.github.io/ICAM-AgoraPod/" target="_blank" rel="noopener" data-demo="agorapod" data-geste="ouvre"><span>Ouvrir la démo</span>
+                  <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+              </div>
+            </div>
+          </article>
+          <article class="carte demo reveal" id="demo-moulage" data-usages="garder" data-avant-pour="garder">
+            <div class="media-16x9">
+              <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
+                   width="1200" height="675" loading="lazy" decoding="async">
+            </div>
+            <div class="demo__corps">
+              <p class="demo__usage"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver<span class="badge-cas" hidden>Pour votre cas</span></p>
+              <h3><a class="demo__lien" href="#demo-moulage">À fleur d'écorce</a></h3>
+              <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
+              <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
+              <ul class="demo__points">
+                    <li>Une roue temporelle remonte et redescend la performance</li>
+                    <li>Le son fait partie de l'œuvre : un casque est recommandé</li>
+                    <li>La caméra suit des points de vue composés, comme un storyboard</li>
+              </ul>
+              <div class="demo__actions">
+                <a class="hero-cta__btn hero-cta__btn--primary" data-essentiel href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener" data-demo="moulage" data-geste="ouvre"><span>Ouvrir la démo</span>
+                  <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
+              </div>
+            </div>
+          </article>
           </div>
-          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-former" data-groupe="former" style="--n: 1">
-            <p class="fi-groupe__etiquette reveal" id="groupe-former"><svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>Former un nouvel arrivant</p>
-            <div class="demos__cartes">
-              <article class="carte demo reveal" id="demo-rayon-x" data-usages="former">
-                <div class="media-16x9">
-                  <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
-                       width="1200" height="675" loading="lazy" decoding="async">
-                </div>
-                <div class="demo__corps">
-                  <p class="badge-cas" hidden>Pour votre cas</p>
-                  <h3>Rayon X</h3>
-                  <p class="demo__sous-titre">la formation à l'échangeur thermique</p>
-                  <p class="demo__accroche">Comprendre un équipement industriel sans le démonter.</p>
-                  <ul class="demo__points">
-                  <li>Des points de vue guidés amènent le regard là où ça se passe</li>
-                  <li>La silhouette d'un opérateur s'affiche ou se masque, pour l'échelle</li>
-                  <li>Un QR code ouvre la page sur mobile, et la machine se pose chez vous</li>
-                  </ul>
-                  <div class="demo__actions">
-                    <a class="hero-cta__btn" href="/rayon-x/" target="_blank" rel="noopener" data-demo="rayon-x" data-geste="ouvre">Ouvrir la démo
-                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-garder" data-groupe="garder" style="--n: 1">
-            <p class="fi-groupe__etiquette reveal" id="groupe-garder"><svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>Conserver un savoir-faire</p>
-            <div class="demos__cartes">
-              <article class="carte demo reveal" id="demo-moulage" data-usages="garder">
-                <div class="media-16x9">
-                  <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
-                       width="1200" height="675" loading="lazy" decoding="async">
-                </div>
-                <div class="demo__corps">
-                  <p class="badge-cas" hidden>Pour votre cas</p>
-                  <h3>À fleur d'écorce</h3>
-                  <p class="demo__sous-titre">une performance de Mathilde Thiennot</p>
-                  <p class="demo__accroche">Une performance artistique qu'on peut rejouer, et parcourir.</p>
-                  <ul class="demo__points">
-                  <li>Une roue temporelle remonte et redescend la performance</li>
-                  <li>Le son fait partie de l'œuvre : un casque est recommandé</li>
-                  <li>La caméra suit des points de vue composés, comme un storyboard</li>
-                  </ul>
-                  <div class="demo__actions">
-                    <a class="hero-cta__btn" href="/moulage-mathilde-thiennot/" target="_blank" rel="noopener" data-demo="moulage" data-geste="ouvre">Ouvrir la démo
-                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
-                  </div>
-                </div>
-              </article>
-            </div>
-          </div>
-          <div class="demos__groupe fi-groupe" role="group" aria-labelledby="groupe-site" data-groupe="site" style="--n: 1">
-            <p class="fi-groupe__etiquette reveal" id="groupe-site"><svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>Le site lui-même</p>
-            <div class="demos__cartes">
-              <article class="carte demo reveal" id="demo-village">
-                <div class="media-16x9">
-                  <img src="/media/accueil/demos/village.webp" alt="Le village Fractal Innov : le site présenté comme un monde 3D à parcourir"
-                       width="1200" height="675" loading="lazy" decoding="async">
-                </div>
-                <div class="demo__corps">
-                  <h3>Le village</h3>
-                  <p class="demo__sous-titre">le site lui-même comme expérience 3D</p>
-                  <p class="demo__accroche">Une visite guidée de l'offre, en douze arrêts dans un monde 3D.</p>
-                  <ul class="demo__points">
-                  <li>La caméra se déplace d'un arrêt à l'autre, comme un storyboard</li>
-                  <li>Un configurateur compose votre projet et en sort un code court</li>
-                  <li>Français et anglais, au même endroit</li>
-                  </ul>
-                  <div class="demo__actions">
-                    <a class="hero-cta__btn" href="/village/" target="_blank" rel="noopener" data-demo="village" data-geste="ouvre">Ouvrir la démo
-                      <span aria-hidden="true">↗</span><span class="sr-only"> (nouvel onglet)</span></a>
-                  </div>
-                </div>
-              </article>
-            </div>
           </div>
         </div>
       </section>
 
       <!-- ══ APPROCHE ════════════════════════════════════════════════════ -->
+      <!-- La bande claire de /stand/ (« ce qui est livré ») : la seule
+           rupture de fond de la suite, elle marque l'entrée ET la sortie
+           de l'approche (passe des transitions, 28/09/2026). -->
+      <div class="band band--light">
       <section class="section" id="approche">
-        <p class="section-number reveal">L'approche</p>
-        <h2 class="reveal">Trois étapes, de l'idée à l'outil que vous gardez</h2>
-        <p class="reveal">Trois temps, trois livrables. Vous savez à chaque étape ce que vous
-          recevez, et ce qu'il vous reste à fournir.</p>
+        <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">04 · </span>L'approche</p>
+        <h2 class="reveal" data-essentiel>Trois étapes, de l'idée à l'outil que vous gardez</h2>
+        <p class="reveal">À chaque étape, vous savez ce que vous recevez.</p>
 
-        <div class="etapes">
-          <article class="carte etape reveal">
+        <!-- La frise (passe graphique du 28/09/2026, vocabulaire de /stand/) :
+             une carte par étape, un picto dans la tuile en dégradé, le
+             numéro en discret dans le coin. Un fil relie les tuiles et se
+             remplit UNE fois quand la frise apparaît (`.reveal.active`,
+             aucun JS propre). Au bureau : horizontale ; au mobile :
+             verticale, le texte long se tait, le gain reste. -->
+        <ol class="etapes reveal" aria-label="Les trois étapes">
+          <li class="etape carte">
+            <span class="etape__tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z"/><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"/></svg></span>
             <p class="etape__num" aria-hidden="true">01</p>
-            <h3>Partir de votre situation</h3>
-            <p class="etape__court">L'atelier de 30 min</p>
-            <p class="etape__texte">Nous partons de votre besoin et du socle qui tourne déjà. Vos
-              fichiers 3D, photos et vidéos sont regardés ensemble, et vous repartez en sachant
-              par quel usage commencer. C'est gratuit.</p>
-            <ul class="tag-liste">
-              <li class="tag">Recherche &amp; Innovation</li>
-              <li class="tag">Ateliers</li>
-              <li class="tag">Charge cognitive</li>
-            </ul>
-          </article>
-
-          <article class="carte etape reveal">
+            <h3>L'atelier <span class="etape__badge">Gratuit</span></h3>
+            <p class="etape__gain" data-essentiel><span class="etape__gain-intro">Vous repartez avec<span class="sr-only"> :</span></span> L'usage par lequel commencer</p>
+            <p class="etape__texte">On regarde ensemble vos fichiers 3D, photos et vidéos.</p>
+          </li>
+          <li class="etape carte">
+            <span class="etape__tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
             <p class="etape__num" aria-hidden="true">02</p>
-            <h3>Création</h3>
-            <p class="etape__court">La 3D au service de la clarté</p>
-            <p class="etape__texte">Scène 3D temps réel, parcours guidé, contenus au bon moment :
-              l'expérience se construit sur vos fichiers existants.</p>
-            <ul class="tag-liste">
-              <li class="tag">Contenus WebXR</li>
-              <li class="tag">3D temps réel</li>
-              <li class="tag">AR / VR</li>
-            </ul>
-          </article>
-
-          <article class="carte etape reveal">
+            <h3>La création</h3>
+            <p class="etape__gain" data-essentiel><span class="etape__gain-intro">Vous repartez avec<span class="sr-only"> :</span></span> Votre expérience est accessible (en ligne ou en réseau local)</p>
+            <p class="etape__texte">Scène 3D temps réel et parcours guidé, construits sur vos fichiers existants.</p>
+          </li>
+          <li class="etape carte">
+            <span class="etape__tuile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5"/></svg></span>
             <p class="etape__num" aria-hidden="true">03</p>
-            <h3>Structuration</h3>
-            <p class="etape__court">Un outil qui vous reste</p>
-            <p class="etape__texte">L'expérience est livrée, documentée et mesurée. Vos équipes la
-              font vivre et la réutilisent, sans développeur.</p>
-            <ul class="tag-liste">
-              <li class="tag">Gestion de Projet</li>
-              <li class="tag">Déploiement</li>
-              <li class="tag">Mesure d'usage</li>
-            </ul>
-          </article>
-        </div>
+            <h3>La livraison</h3>
+            <p class="etape__gain" data-essentiel><span class="etape__gain-intro">Vous repartez avec<span class="sr-only"> :</span></span> Un outil qui vous reste</p>
+            <p class="etape__texte">Documentée et mesurée, vos équipes la font vivre sans développeur.</p>
+          </li>
+        </ol>
 
-        <!-- Le geste de l'approche. « Étape suivante » est masqué sans
-             JavaScript : les trois temps sont alors tous visibles. -->
         <div class="etapes__geste">
-          <button class="hero-cta__btn hero-cta__btn--secondary" id="etapeSuivante" type="button" hidden>Étape suivante</button>
-          <a class="hero-cta__btn hero-cta__btn--primary"
-             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6"
-             target="_blank" rel="noopener" data-rdv="approche"><span>Réserver 30 min</span></a>
+          <!-- Mène au contact, comme le bouton du hero (28/09/2026) : la
+               réservation elle-même (et son compte `data-rdv`) se fait là-bas. -->
+          <a class="hero-cta__btn hero-cta__btn--primary" href="#contact" data-essentiel><span>Réserver 30 min</span></a>
         </div>
       </section>
+      </div>
 
-      <!-- ══ PARTENAIRES ═════════════════════════════════════════════════ -->
-      <section class="section" id="partenaires">
-        <p class="section-number reveal">Les partenaires</p>
-        <h2 class="reveal">Un réseau d'experts, du code au mobilier</h2>
-        <p class="reveal">Un interlocuteur unique côté client, et les compétences mobilisées
-          projet par projet.</p>
-
-        <div class="partenaires">
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo" aria-hidden="true">H</span>
-            <h3>Hugo Daniel</h3>
-            <p class="partenaire__role">Ingénieur logiciel</p>
-            <p class="partenaire__texte">Conçoit le socle technique commun à toutes les expériences.</p>
-            <ul class="tag-liste">
-                <li class="tag">Architecture</li>
-                <li class="tag">Développement</li>
-            </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo" aria-hidden="true">S</span>
-            <h3>Studio 3D</h3>
-            <p class="partenaire__role">Création graphique</p>
-            <p class="partenaire__texte">Modélise les objets, décors et produits mis en scène.</p>
-            <ul class="tag-liste">
-                <li class="tag">Modélisation</li>
-                <li class="tag">Texturage</li>
-            </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo" aria-hidden="true">M</span>
-            <h3>Fabricant de mobilier</h3>
-            <p class="partenaire__role">Événementiel</p>
-            <p class="partenaire__texte">Donne une enveloppe physique au démonstrateur : la borne interactive.</p>
-            <ul class="tag-liste">
-                <li class="tag">Kiosque</li>
-                <li class="tag">Présentoir sur mesure</li>
-            </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo partenaire__logo--sigle" aria-hidden="true">MB</span>
-            <h3>MilkyBlue Factory</h3>
-            <p class="partenaire__role">Atelier d'art</p>
-            <p class="partenaire__texte">Réalise des œuvres et documente leurs étapes de fabrication.</p>
-            <ul class="tag-liste">
-                <li class="tag">Œuvres d'art</li>
-                <li class="tag">Conservation</li>
-            </ul>
-          </article>
-
-          <article class="carte partenaire reveal">
-            <!-- Monogramme provisoire. Pour poser le vrai logo : remplacer le
-                 contenu de ce span par <img src="…" alt="" width="88" height="88">
-                 et retirer `background` de la règle `.partenaire__logo`. -->
-            <span class="partenaire__logo partenaire__logo--sigle" aria-hidden="true">POLD</span>
-            <h3>Catalyseur POLD</h3>
-            <p class="partenaire__role">Écosystème d'innovation</p>
-            <p class="partenaire__texte">L'accélérateur du territoire Paris Ouest La Défense : mise en relation avec les entreprises et les collectivités du secteur.</p>
-            <ul class="tag-liste">
-                <li class="tag">Incubation</li>
-                <li class="tag">Mise en relation</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <!-- ══ FONDATEUR ═══════════════════════════════════════════════════ -->
-      <section class="section" id="fondateur">
-        <div class="fondateur__grille">
-
-          <div class="portrait reveal">
-            <div class="portrait__cadre">
-              <img src="/media/accueil/portrait.webp"
-                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280">
-              <ul class="portrait__barre tag-liste" aria-label="Trois usages">
-                <li class="tag">Convaincre</li>
-                <li class="tag">Former</li>
-                <li class="tag">Conserver</li>
-              </ul>
+      <!-- ══ L'ÉQUIPE (passe graphique du 28/09/2026) ══════════════════════
+           Fusion des anciennes sections « Partenaires » et « Le fondateur » :
+           le fondateur au CENTRE d'une orbite, le réseau autour, par rôles
+           (sans noms ni logos, décision du 28/09/2026). Les fils du centre
+           vers chaque rôle sont tracés par composants/orbite.js ; sans JS et
+           au mobile, une liste lisible (portrait, rôles).
+           ⚠️ Les anciennes ancres #partenaires et #fondateur restent posées
+           ici (liens partagés, JSON-LD `founder`) : ne pas les retirer.
+           ═══════════════════════════════════════════════════════════════ -->
+      <section class="section equipe" id="equipe">
+        <span class="equipe__ancre" id="partenaires" aria-hidden="true"></span>
+        <span class="equipe__ancre" id="fondateur" aria-hidden="true"></span>
+        <div class="equipe__grille">
+          <div class="equipe__texte">
+            <p class="section-number reveal"><span class="section-number__rang" aria-hidden="true">05 · </span>L'équipe</p>
+            <h2 class="reveal" data-essentiel>Un seul interlocuteur, les bons experts autour</h2>
+            <!-- La signature : le nom et le rôle, et la photo au mobile
+                 seulement (au bureau, le portrait est au centre de l'orbite ;
+                 retour du 28/09/2026 : au mobile, seule au-dessus de la liste,
+                 la photo ne se rattachait à rien). -->
+            <div class="equipe__signature reveal">
+              <img class="equipe__photo" src="/media/accueil/portrait.webp" alt=""
+                   width="56" height="56" loading="lazy" decoding="async">
+              <p><strong>Corentin Duboc</strong><span>Architecte d'expériences WebXR</span></p>
             </div>
+            <p class="equipe__bio reveal">J'accompagne les industriels (<strong>Greentech</strong>, <strong>Mobilité</strong>,
+              <strong>Énergie</strong>) de l'atelier à la livraison, et je mobilise les experts du
+              réseau projet par projet.</p>
+            <ul class="tag-liste equipe__faits reveal" aria-label="En bref">
+              <li class="tag">Consultant 3D/WebXR B2B</li>
+              <li class="tag">Catalyseur POLD</li>
+              <li class="tag">Unity · WebXR · Blender</li>
+            </ul>
+            <blockquote class="equipe__citation reveal">
+              <p>L'objectif n'est jamais la prouesse technologique, mais la clarté.</p>
+              <footer>Ma boussole : le design cognitif</footer>
+            </blockquote>
           </div>
 
-          <div>
-            <p class="section-number reveal">Le fondateur</p>
-            <h2 class="reveal">Corentin Duboc</h2>
-            <p class="fondateur__role reveal">Architecte d'expériences WebXR</p>
-            <p class="ligne-mono reveal">Consultant 3D/WebXR B2B · Freelance · Catalyseur POLD</p>
-
-            <p class="fondateur__bio reveal">J'accompagne les industriels
-              (<strong>Greentech</strong>, <strong>Mobilité</strong>, <strong>Énergie</strong>)
-              dans la création de <strong>démonstrateurs virtuels WebXR</strong> pour équiper leur
-              force de vente et réduire leurs coûts logistiques événementiels.</p>
-
-            <p class="bloc-titre reveal">Pour votre cas</p>
-            <ul class="reperes reveal">
-              <li class="repere" data-usages="convaincre">
-                <svg class="pic" aria-hidden="true"><use href="#pic-convaincre"></use></svg>
-                <span><strong>Convaincre</strong> : vos équipements lourds et encombrants,
-                  présentés sans le coût ni l'impact logistique du transport</span></li>
-              <li class="repere" data-usages="former">
-                <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg>
-                <span><strong>Former</strong> : des parcours sur équipement qui mettent en valeur
-                  un savoir-faire, compatibles avec vos accords de confidentialité (Rayon X)</span></li>
-              <li class="repere" data-usages="garder">
-                <svg class="pic" aria-hidden="true"><use href="#pic-garder"></use></svg>
-                <span><strong>Conserver</strong> : processus de fabrication, savoir-faire, geste
-                  d'une artiste, rejouables étape par étape (Mathilde Thiennot)</span></li>
+          <div class="orbite reveal" data-composant="orbite">
+            <figure class="orbite__centre">
+              <img src="/media/accueil/portrait.webp"
+                   alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280" loading="lazy" decoding="async">
+            </figure>
+            <p class="orbite__legende" aria-hidden="true">Le réseau, mobilisé selon le projet</p>
+            <ul class="orbite__roles" aria-label="Le réseau, mobilisé selon le projet">
+            <li class="role" data-role="logiciel">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Ingénierie logicielle</strong><span class="role__texte">Le socle technique commun à toutes les expériences.</span></span>
+            </li>
+            <li class="role" data-role="studio-3d">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Studio 3D</strong><span class="role__texte">Modélise les environnements les plus riches en décors et objets.</span></span>
+            </li>
+            <li class="role" data-role="ecosysteme">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="9" y="2" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/><path d="M12 12V8"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Écosystème d'innovation</strong><span class="role__texte">Mobilise tout un réseau selon vos besoins, pour les projets les plus complexes.</span></span>
+            </li>
+            <li class="role" data-role="mobilier">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Fabricant de mobilier</strong><span class="role__texte">La borne physique qui accueille l'expérience sur le stand.</span></span>
+            </li>
+            <li class="role" data-role="atelier-art">
+              <span class="role__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></span>
+              <span class="role__corps"><strong class="role__nom">Atelier d'art</strong><span class="role__texte">Produit les œuvres dont chaque étape de fabrication est documentée.</span></span>
+            </li>
             </ul>
-
-            <p class="bloc-titre reveal">Compétences</p>
-            <ul class="tag-liste reveal" aria-label="Compétences">
-              <li class="tag">Unity</li>
-              <li class="tag">WebXR</li>
-              <li class="tag">AR/VR</li>
-              <li class="tag">Blender</li>
-              <li class="tag">Procreate</li>
-            </ul>
-
-            <div class="carte boussole reveal">
-              <p class="boussole__titre">Ma boussole</p>
-              <p class="boussole__sous-titre">Le design cognitif</p>
-              <ul>
-                <li>L'objectif n'est jamais la prouesse technologique, mais la clarté</li>
-                <li>Réduire la charge mentale, maximiser l'engagement par l'action</li>
-              </ul>
-            </div>
           </div>
         </div>
       </section>
@@ -2502,29 +2981,21 @@
     <section class="contact reveal" id="contact">
       <div class="contact__aurora" aria-hidden="true"><span></span><span></span><span></span></div>
       <div class="contact__inner">
-        <figure class="contact__who reveal">
-          <span class="contact__ring">
-            <img src="/media/accueil/portrait.webp" alt="Photo de Corentin Duboc"
-                 width="240" height="240" loading="lazy" decoding="async">
-          </span>
-          <figcaption><strong>Corentin Duboc</strong><span>Fondateur de Fractal Innov</span></figcaption>
-        </figure>
-
         <!-- Les quatre titres sont dans le HTML (SEO) ; seul celui de la
              situation choisie s'affiche, par CSS (`data-pour`). Sans JS :
              le titre neutre. -->
-        <h2 class="reveal">
+        <h2 class="reveal" data-essentiel>
           <span data-pour="aucune">Un projet ou une idée en tête ?</span>
           <span data-pour="convaincre" hidden>Parlons de l'équipement qui ne voyage pas</span>
           <span data-pour="former" hidden>Parlons de vos nouveaux arrivants</span>
           <span data-pour="garder" hidden>Parlons du savoir-faire à conserver</span>
         </h2>
-        <p class="contact__lead reveal">Décrivez votre produit et votre public : nous regardons
-          ensemble ce qui existe et ce que l'expérience doit faire comprendre.</p>
+        <p class="contact__lead reveal">Votre produit, votre public : on regarde ensemble ce que
+          l'expérience doit faire comprendre.</p>
 
         <div class="contact__actions reveal">
           <a class="contact__primary" id="contactPrimary" data-rdv="contact"
-             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6" target="_blank" rel="noopener noreferrer">
+             href="https://calendar.app.google/SDuiKb9ZBQ6BcbED6" target="_blank" rel="noopener noreferrer" data-essentiel>
             <svg class="contact__primary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -2532,15 +3003,14 @@
               <line x1="8" y1="2" x2="8" y2="6"></line>
               <line x1="3" y1="10" x2="21" y2="10"></line>
             </svg>
-            <span>Réserver 30 min</span>
+            <span>Réserver 30 min, gratuit</span>
             <svg class="contact__primary-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6"></path>
             </svg>
           </a>
 
-          <p class="contact__atelier">L'atelier de cadrage, gratuit : nous partons de votre
-            situation et du socle existant.</p>
+          <p class="contact__atelier">Vous repartez avec l'usage par lequel commencer.</p>
 
           <p class="contact__or">ou, si vous préférez</p>
 
@@ -2780,11 +3250,12 @@
          Le calcul est replanifié en `requestAnimationFrame` : le défilement
          peut émettre des dizaines d'événements par seconde, le navigateur ne
          repeint que soixante fois. */
-      /* Les SEPT chapitres du parcours (le hero et le contact en plus des
+      /* Les SIX chapitres du parcours, sept avant la fusion de l'équipe du
+         28/09/2026 (le hero et le contact en plus des
          liens de la nav). ⚠️ Même liste, même ordre que CHAPITRES dans le
          script « LE PARCOURS » : ce sont aussi les `navItemId` que la
          télécommande enverra. */
-      var idsChapitres = ['top', 'offre', 'demos', 'approche', 'partenaires', 'fondateur', 'contact'];
+      var idsChapitres = ['top', 'offre', 'demos', 'approche', 'equipe', 'contact'];
       var rafNav = 0;
       var dernierActif = null;
 
@@ -2965,11 +3436,10 @@
          Même ordre que `idsChapitres` dans le premier script. */
       var CHAPITRES = [
         { id: 'top', titre: 'Accueil' },
-        { id: 'offre', titre: 'Trois usages' },
-        { id: 'demos', titre: 'Ça tourne déjà' },
+        { id: 'offre', titre: "L'offre" },
+        { id: 'demos', titre: 'Démos' },
         { id: 'approche', titre: "L'approche" },
-        { id: 'partenaires', titre: 'Partenaires' },
-        { id: 'fondateur', titre: 'Le fondateur' },
+        { id: 'equipe', titre: "L'équipe" },
         { id: 'contact', titre: 'Contact' }
       ];
       var IDS = CHAPITRES.map(function (c) { return c.id; });
@@ -3182,72 +3652,9 @@
       /* ── LES GESTES ────────────────────────────────────────────────────
          Un geste par chapitre, qui se joue et ne se subit pas : aucun ne
          fait défiler la page. Le fondateur, l'offre, les démos et le
-         contact sont « joués » par la situation (CSS) ; restent ces deux. */
-
-      /* L'approche : « Étape suivante » allume les trois temps l'un après
-         l'autre. Sans JS, le bouton reste `hidden` et tout est allumé. */
-      var boiteEtapes = document.querySelector('#approche .etapes');
-      var etapes = boiteEtapes ? boiteEtapes.querySelectorAll('.etape') : [];
-      var btnEtape = document.getElementById('etapeSuivante');
-      if (etapes.length && btnEtape) {
-        var allumees = 0;
-        var allumer = function (n) {
-          allumees = n;
-          etapes.forEach(function (el, i) {
-            el.classList.toggle('etape--allumee', i < n);
-            if (i === n - 1) el.setAttribute('aria-current', 'step');
-            else el.removeAttribute('aria-current');
-          });
-          btnEtape.textContent = n >= etapes.length ? 'Revoir depuis le début' : 'Étape suivante';
-        };
-        boiteEtapes.setAttribute('data-etape', '');
-        allumer(1);
-        btnEtape.hidden = false;
-        btnEtape.addEventListener('click', function () {
-          allumer(allumees >= etapes.length ? 1 : allumees + 1);
-          journal('approche : étape', allumees, 'allumée');
-          emettre('fi:geste', { chapitre: 'approche', geste: 'etape', etape: allumees });
-        });
-      }
-
-      /* Les partenaires : au survol ou au toucher, les monogrammes se
-         relient en constellation. Le tracé est recalculé à chaque fois, sur
-         la position réelle des logos : la grille change de colonnes avec la
-         largeur. ⚠️ Au toucher, `pointerleave` arrive dès que le doigt se
-         lève : on n'éteint alors qu'en quittant le chapitre. */
-      var grillePart = document.querySelector('#partenaires .partenaires');
-      if (grillePart) {
-        var ciel = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        ciel.setAttribute('class', 'constellation');
-        ciel.setAttribute('aria-hidden', 'true');
-        grillePart.appendChild(ciel);
-        var constellationVue = false;
-        var relier = function () {
-          var base = grillePart.getBoundingClientRect();
-          var d = Array.prototype.map.call(grillePart.querySelectorAll('.partenaire__logo'), function (logo, i) {
-            var r = logo.getBoundingClientRect();
-            return (i ? 'L' : 'M') + Math.round(r.left - base.left + r.width / 2) + ' ' + Math.round(r.top - base.top + r.height / 2);
-          }).join(' ');
-          ciel.setAttribute('viewBox', '0 0 ' + Math.round(base.width) + ' ' + Math.round(base.height));
-          ciel.innerHTML = '<path pathLength="1" d="' + d + '"></path>';
-        };
-        var allumerCiel = function () {
-          if (grillePart.classList.contains('reliee')) return;
-          relier();
-          ciel.getBoundingClientRect(); /* force le premier rendu : sans lui, pas de tracé animé */
-          grillePart.classList.add('reliee');
-          journal('partenaires : constellation reliée');
-          if (!constellationVue) {
-            constellationVue = true;
-            emettre('fi:geste', { chapitre: 'partenaires', geste: 'constellation', etape: 1 });
-          }
-        };
-        var eteindreCiel = function () { grillePart.classList.remove('reliee'); };
-        grillePart.addEventListener('pointerenter', allumerCiel);
-        grillePart.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') eteindreCiel(); });
-        document.addEventListener('fi:chapitre', function (e) { if (e.detail.id !== 'partenaires') eteindreCiel(); });
-        window.addEventListener('resize', function () { if (grillePart.classList.contains('reliee')) relier(); });
-      }
+         contact sont « joués » par la situation (CSS). Depuis la passe du
+         28/09/2026, l'approche n'a plus de geste propre (frise) et l'orbite
+         de l'équipe vit dans composants/orbite.js. */
 
       /* ── LE DOCK ───────────────────────────────────────────────────────
          Le dock vit dans composants/dock.js depuis le 28/09/2026. Ce script

@@ -125,8 +125,12 @@
     /* Le pictogramme de la situation, repris tel quel ; `id` vient d'une
        liste fermée (les trois boutons), l'innerHTML est sûr. */
     titre.insertAdjacentHTML('afterbegin', '<svg class="pic" aria-hidden="true"><use href="#pic-' + id + '"></use></svg>');
-    var nom = eyebrow ? Array.prototype.filter.call(eyebrow.childNodes, function (n) { return n.nodeType === 3; })
-      .map(function (n) { return n.textContent; }).join(' ').trim() : id;
+    /* Le nom de la situation : `.offre__eyebrow-texte` depuis la passe de
+       l'offre (28/09/2026) ; les nœuds texte nus en secours. */
+    var texteEyebrow = eyebrow && eyebrow.querySelector('.offre__eyebrow-texte');
+    var nom = texteEyebrow ? texteEyebrow.textContent.trim()
+      : eyebrow ? Array.prototype.filter.call(eyebrow.childNodes, function (n) { return n.nodeType === 3; })
+        .map(function (n) { return n.textContent; }).join(' ').trim() : id;
     titre.appendChild(document.createTextNode(nom));
     v.querySelector('[data-dock-texte]').textContent = accroche ? accroche.textContent.trim() : '';
     var zonePreuve = v.querySelector('[data-dock-preuve]');
@@ -144,11 +148,23 @@
   }
 
   /* ── Le sommaire : le chapitre en cours ──────────────────────────── */
+  /* Passe du 28/09/2026 : un rail relie les tuiles numérotées. Il est
+     rempli jusqu'au chapitre en cours (`--fi-rang` sur la liste, lu par le
+     CSS), les chapitres déjà passés portent `data-passe`. */
   function marquerChapitre(id) {
-    Array.prototype.forEach.call(dock.querySelectorAll('[data-dock-chapitre]'), function (a) {
-      if (a.getAttribute('data-dock-chapitre') === id) a.setAttribute('aria-current', 'location');
+    var liens = dock.querySelectorAll('[data-dock-chapitre]');
+    var rang = -1;
+    Array.prototype.forEach.call(liens, function (a, i) {
+      if (a.getAttribute('data-dock-chapitre') === id) { a.setAttribute('aria-current', 'location'); rang = i; }
       else a.removeAttribute('aria-current');
     });
+    Array.prototype.forEach.call(liens, function (a, i) {
+      if (rang > -1 && i < rang) a.setAttribute('data-passe', '');
+      else a.removeAttribute('data-passe');
+    });
+    var liste = dock.querySelector('.fi-dock__chapitres');
+    if (liste) liste.style.setProperty('--fi-rang', Math.max(rang, 0));
+    journal('sommaire : chapitre « ' + id + ' », rang ' + (rang + 1) + ' sur ' + liens.length + ', ' + Math.max(rang, 0) + ' passé(s)');
   }
 
   /* ── Les boutons de la rangée ────────────────────────────────────── */

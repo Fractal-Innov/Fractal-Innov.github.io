@@ -473,25 +473,72 @@
   margin: 0 0 var(--fi-e05); padding: 0 var(--fi-e1);
   font-size: var(--fi-t-1); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fi-texte-doux);
 }
-.fi-dock__chapitres { list-style: none; margin: 0; padding: 0; }
+/* Passe du 28/09/2026 (piste A), le vocabulaire de l'approche : une tuile
+   numérotée par chapitre (compteur CSS, rien dans le HTML), un rail qui
+   les relie, rempli jusqu'au chapitre en cours. Passés : tuile cerclée
+   de bleu ; en cours : tuile en dégradé, libellé en gras, ligne surlignée ; à venir :
+   tuile neutre.
+   Le rail se cale sur une ligne de 44 px et une tuile de 28 px posée à
+   8 px du bord : son axe est à 8 + 14 = 22 px, en x comme en y.
+   `--fi-rang` (nombre de chapitres passés) vient de dock.js. */
+.fi-dock__chapitres {
+  --fi-ligne-ch: 44px; --fi-tuile-ch: 28px;
+  position: relative; list-style: none; margin: 0; padding: 0;
+  counter-reset: fi-ch; /* ⚠️ pas de max-width : une ligne bornée à 20 rem s'arrêtait au milieu du panneau (retour du 28/09/2026) ; les lignes prennent toute sa largeur */
+}
+.fi-dock__chapitres::before,
+.fi-dock__chapitres::after {
+  content: ""; position: absolute; left: calc(var(--fi-e1) + var(--fi-tuile-ch) / 2 - 1px); width: 2px;
+  top: calc(var(--fi-ligne-ch) / 2);
+}
+.fi-dock__chapitres::before { bottom: calc(var(--fi-ligne-ch) / 2); background: rgba(255, 255, 255, 0.12); }
+.fi-dock__chapitres::after {
+  height: calc(var(--fi-rang, 0) * var(--fi-ligne-ch));
+  background: linear-gradient(180deg, var(--accent-blue, #6ea8ff), var(--accent-purple, #8b5cf6));
+  transition: height var(--fi-fx-court, 200ms) ease-out;
+}
 .fi-dock__chapitres a {
-  display: flex; align-items: center; gap: var(--fi-e1);
-  min-height: 44px; padding: 0 var(--fi-e1); border-radius: 10px;
+  position: relative; z-index: 1; /* au-dessus du rail */
+  display: flex; align-items: center; gap: var(--fi-e2);
+  min-height: var(--fi-ligne-ch); padding: 0 var(--fi-e1); border-radius: 10px;
   color: var(--fi-texte); text-decoration: none; font-size: var(--fi-t-05);
+  counter-increment: fi-ch;
+  transition: background var(--fi-fx-court, 200ms) ease;
 }
-.fi-dock__chapitres a::before { /* le rond : vide, plein pour le chapitre en cours */
-  content: ""; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
-  border: 1.5px solid var(--fi-texte-doux);
+.fi-dock__chapitres a::before { /* la tuile : opaque, pour masquer le rail qui passe dessous */
+  content: counter(fi-ch, decimal-leading-zero);
+  flex: none; display: grid; place-items: center;
+  width: var(--fi-tuile-ch); height: var(--fi-tuile-ch); border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1); background: var(--fi-fond-plein);
+  font-size: var(--fi-t-1); font-weight: 600; color: var(--fi-texte-doux);
+  transition: border-color var(--fi-fx-court, 200ms) ease, color var(--fi-fx-court, 200ms) ease;
 }
-.fi-dock__chapitres a:hover { background: var(--fi-fond-survol); }
-.fi-dock__chapitres a[aria-current] { color: var(--fi-accent); font-weight: 700; }
-.fi-dock__chapitres a[aria-current]::before { background: var(--fi-accent); border-color: var(--fi-accent); }
-.fi-dock__chapitres a[aria-current]::after { content: "vous êtes ici"; margin-left: auto; padding-left: var(--fi-e2); font-size: var(--fi-t-1); font-weight: 400; color: var(--fi-texte-doux); }
+/* Le chapitre en cours : tuile en dégradé, gras et fond de ligne ; le
+   survol, un voile plus léger, pour ne pas s'y confondre. Tous les
+   libellés gardent la même couleur : un chapitre à venir reste un lien,
+   pas un état désactivé ; la progression, le rail et les tuiles la disent. */
+.fi-dock__chapitres a:hover { background: rgba(255, 255, 255, 0.035); }
+.fi-dock__chapitres a:hover::before { border-color: rgba(255, 255, 255, 0.3); color: var(--fi-texte); }
+.fi-dock__chapitres a:focus-visible { outline: 2px solid var(--fi-accent); outline-offset: -2px; }
+.fi-dock__chapitres a[data-passe]::before { border-color: rgba(110, 168, 255, 0.45); color: var(--accent-blue-light, #a8c8ff); }
+.fi-dock__chapitres a[aria-current] { font-weight: 700; background: var(--fi-fond-survol); }
+.fi-dock__chapitres a[aria-current]::before {
+  border-color: transparent; color: #fff;
+  background: var(--brand-gradient, linear-gradient(100deg, #6ea8ff, #8b5cf6));
+  box-shadow: 0 6px 18px -8px rgba(139, 92, 246, 0.9);
+}
+@media (prefers-reduced-motion: reduce) { .fi-dock__chapitres::after { transition: none; } }
 
 /* ── Le verrou de la question ─────────────────────────────────────── */
 html.fi-verrou { overflow: hidden; }
 html.fi-verrou .page-rest,
-html.fi-verrou .footer { opacity: 0.35; transition: opacity 400ms ease; } /* la suite est là, en attente : visible, pas atteignable */
+html.fi-verrou .footer { opacity: 0.35; } /* la suite est là, en attente : visible, pas atteignable */
+/* La transition vit sur l'état de BASE : déclarée sous `.fi-verrou`
+   seulement, elle disparaissait avec la classe et la suite sautait à
+   100 % à la réponse. Désormais elle se révèle en 600 ms pendant que la
+   page descend vers l'offre (passe des transitions, 28/09/2026). */
+.page-rest,
+.footer { transition: opacity 600ms var(--fi-ease-sortie, ease-out); }
 
 @keyframes fiDockPose { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes fiDockFondu { from { opacity: 0; } to { opacity: 1; } }
@@ -507,6 +554,6 @@ html.fi-verrou .footer { opacity: 0.35; transition: opacity 400ms ease; } /* la 
 }
 @media (prefers-reduced-motion: reduce) {
   .fi-dock, .fi-dock__vue, .fi-dock .fi-pilier__rond { animation: none !important; }
-  html.fi-verrou .page-rest, html.fi-verrou .footer { transition: none; }
+  .page-rest, .footer { transition: none; }
 }
 .fi-sobre .fi-dock, .fi-sobre .fi-dock__vue, .fi-sobre .fi-dock .fi-pilier__rond { animation: none !important; }
