@@ -734,3 +734,39 @@ section en écrans, et essentiels hors du premier écran.
   la liste 8), nouvelles vignettes (webp 1200 × 675, moins de 120 Ko),
   chiffres de l'annexe du plan (à fournir, rien d'inventé), nettoyage du CSS
   mort (`.partenaire*`, `.portrait*`, `.boussole*`, `.repere*`).
+
+## 19. La question sur demande, le son muet, la couleur du navigateur (29/09/2026)
+
+Retour sur le téléphone : la barre de Safari restait blanche, et la
+question du dock ne s'ouvrait « pas toujours » à l'ouverture (elle ne
+s'ouvrait que pour un visiteur neuf arrivé en haut de page ; un retour,
+une ancre ou un lien `?situation=` ne la voyaient jamais).
+
+| Sujet | Décision | Écartée |
+|---|---|---|
+| Porte d'entrée | « Votre besoin : [Choisir] » dans le hero, avant la signature ; après un choix « Votre besoin : ◎ Former [Changer] » (la valeur se lit à part, le bouton ne porte que le geste, secondaire) | « Pour former · changer » dans un seul CTA ; le dock qui s'illumine avec « Commencez ici » |
+| Verrou | aucun : la question est une invitation, Échap et clic dehors la referment | verrou gardé quand la question est ouverte |
+| Ligne sous le bouton | « 3 réponses · le site s'adapte », tant qu'aucun usage n'est choisi | · |
+| Ouverture automatique | jamais : même expérience pour tous | au visiteur neuf, comme avant |
+| Son | muet par défaut ; pastille « Son » à côté du bouton (muet / doux), le dock garde ses trois niveaux ; un choix déjà fait est gardé | tout le monde remis à muet |
+| Couleur du navigateur | couleur pleine `--bg-base` et `color-scheme: dark` sur `<html>` (Safari iOS 26 teinte ses barres d'après le fond de la page, `theme-color` ne suffit plus) | `viewport-fit=cover`, gardé en réserve si l'essai ne suffit pas |
+
+- Code : `composants/hero-depart.js` (nouveau), `dock.js` (plus de verrou
+  ni d'ouverture automatique, `html.fi-question` pendant la question,
+  `?question=1` l'ouvre au chargement pour la recette), `son.js` (muet),
+  `composants.css` (bloc du verrou retiré), `index.html`.
+- La clé `fi:dock-repondu` n'est plus lue ; `dock.js` la retire au
+  passage.
+- Mesures : l'invitation tient à 360 × 740 (fin à 573 px, dock à 670),
+  375 × 812 et 1440 × 900 ; question ouverte au téléphone, l'invitation
+  s'efface et le texte reste au-dessus du dock ; garde du dock muette ;
+  aucun défilement horizontal.
+- Rythme vertical du hero : trois groupes, trois distances (bureau /
+  téléphone) : pastille › titre 16, titre › chapeau 24 / 16, chapeau ›
+  action 40 / 32, action › signature 48 / 40. Tout était à 24 / 16.
+- Dégradé du titre : « par l'expérience » sur sa ligne partout, en
+  `width: fit-content` (la boîte faisait 732 px pour 502 px de texte, le
+  rose n'arrivait jamais) et `box-decoration-break: clone` s'il se coupe.
+- Au téléphone : « Votre besoin » en surtitre au-dessus de la rangée,
+  « Son » en pictogramme seul ; « Convaincre [Changer] » + son tient en
+  321 px pour 336 à 360 px.

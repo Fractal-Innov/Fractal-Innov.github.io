@@ -54,6 +54,7 @@
   <script defer src="/composants/son.js"></script>
   <script defer src="/composants/composants.js"></script>
   <script defer src="/composants/dock.js"></script>
+  <script defer src="/composants/hero-depart.js"></script> <!-- l'invitation du hero : « Choisir mon usage » et le son -->
   <script defer src="/composants/partage.js"></script> <!-- le bandeau « Partager » : cet endroit, la télécommande -->
   <script defer src="/composants/telecommande-ecran.js"></script> <!-- la télécommande : l'écran obéit au téléphone -->
   <script defer src="/composants/demos.js"></script> <!-- les démos : une en avant, les autres en bande -->
@@ -197,6 +198,14 @@
     html {
       scroll-behavior: smooth;
       scroll-padding-top: var(--fi-e3, 1.5rem);
+      /* La couleur du navigateur (29/09/2026). Safari iOS 26 ignore
+         largement `theme-color` et teinte ses barres d'après la couleur
+         de FOND de la page : le fond du body est un dégradé, sans couleur
+         pleine, et Safari retombait sur du blanc. Une couleur pleine ici,
+         celle du haut du dégradé, et `color-scheme` pour les barres de
+         défilement et les contrôles natifs. */
+      background-color: var(--bg-base);
+      color-scheme: dark;
     }
 
     body {
@@ -567,6 +576,10 @@
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
+      /* Coupé sur deux lignes (petit écran), chaque ligne reçoit le
+         dégradé entier au lieu d'en recevoir la moitié. */
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone;
     }
     .hero__lead {
       margin: 0;
@@ -1498,7 +1511,7 @@
        (78 px d'air), la hauteur seule masquait la signature à tort. */
     @media (max-height: 759px) and (max-width: 767px) {
       .js .hero__titre { font-size: var(--fi-t3); }
-      html.fi-verrou .hero__identite { visibility: hidden; }
+      html.fi-question .hero__identite { visibility: hidden; }
     }
     /* ══════════════════════════════════════════════════════════════════
        PASSE DE DESIGNER (28/09/2026) : UN SEUL AXE DE LECTURE
@@ -1524,7 +1537,11 @@
     /* Le titre en deux temps, comme le chapeau : ce qu'on fait, puis
        comment. Aligné à gauche, un bloc de deux lignes tient mieux l'axe
        qu'une ligne de 1000 px. */
-    @media (min-width: 768px) { .hero__accent { display: block; } }
+    /* ⚠️ `width: fit-content` : en bloc, la boîte prenait toute la largeur
+       (732 px pour 502 px de texte) et le dégradé s'étirait dessus, le rose
+       n'arrivait jamais ; en ligne, il allait au rose. Même dégradé
+       partout désormais (retour du 29/09/2026). */
+    .hero__accent { display: block; width: fit-content; } /* sa ligne à lui partout : au téléphone, « par » restait sinon seul au bout de la ligne précédente */
 
     /* Les onglets de l'offre suivent le titre et le texte de leur section
        (ils étaient centrés sous un en-tête aligné à gauche). */
@@ -2233,6 +2250,79 @@
     .contact__emporter:hover { color: var(--text-main); }
     .contact__emporter:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; border-radius: 6px; }
     .contact__emporter svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ══════════════════════════════════════════════════════════════════
+       L'INVITATION DU HERO (29/09/2026)
+       « Choisir mon usage » ouvre la question du dock, qui ne s'ouvre
+       plus seule ; « Son » l'allume ou le coupe (muet par défaut). Même
+       vocabulaire que les CTA : primaire plein, secondaire au contour.
+       ══════════════════════════════════════════════════════════════════ */
+    .hero__depart { display: flex; flex-direction: column; align-items: flex-start; gap: var(--fi-e1); }
+    .hero__depart[hidden] { display: none; }
+    /* « Votre besoin : [Choisir] », puis « Votre besoin : ◎ Former [Changer] »
+       (retour du 29/09/2026) : le choix fait se LIT comme une valeur, le
+       bouton ne porte que le geste. Avant, « Pour former · changer »
+       mêlait les deux dans le même CTA. */
+    .hero__depart-rangee { display: flex; flex-wrap: wrap; align-items: center; gap: var(--fi-e1) var(--fi-e2); }
+    .hero__besoin-label { font-size: var(--fi-t0); font-weight: 500; color: var(--text-soft); }
+    .hero__besoin-label::after { content: "\00a0:"; }
+    .hero__besoin-valeur { display: inline-flex; align-items: center; gap: 0.4rem; font-size: var(--fi-t0); font-weight: 700; color: var(--text-main); }
+    .hero__besoin-valeur[hidden] { display: none; }
+    .hero__besoin-valeur .pic { width: 20px; height: 20px; color: var(--accent-blue-light); }
+    .hero__choisir-fleche,
+    .hero__son-icone {
+      width: 18px; height: 18px; flex-shrink: 0;
+      fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+    }
+    .hero__choisir-fleche { transition: transform 0.2s ease; }
+    .hero__choisir:hover .hero__choisir-fleche,
+    .hero__choisir:focus-visible .hero__choisir-fleche { transform: translateX(3px); }
+    .hero__choisir[aria-expanded="true"] .hero__choisir-fleche { transform: rotate(90deg); } /* la flèche montre la question, ouverte en bas dans le dock */
+    .hero__choisir.hero-cta__btn--secondary .hero__choisir-fleche { display: none; } /* « Changer » : un geste secondaire, sans flèche */
+    /* « Son » n'appartient pas au besoin : 8 px de plus l'en détachent. */
+    .hero__son { padding-inline: var(--fi-e2); gap: 0.4rem; margin-left: var(--fi-e1); }
+    /* Coupé ne veut pas dire désactivé : le libellé reste lisible (70 %),
+       seul le pictogramme barré dit l'état. À 55 % il passait pour grisé. */
+    .hero__son[aria-pressed="false"] { color: var(--text-soft); }
+    .hero__son[aria-pressed="false"] .hero__son-ondes,
+    .hero__son[aria-pressed="true"] .hero__son-coupe { display: none; }
+    .hero__depart-note { margin: 0; font-size: var(--fi-t-1); color: var(--text-muted); letter-spacing: 0.02em; }
+    .hero__depart-note[hidden] { display: none; }
+
+    /* Le rythme vertical du hero (29/09/2026) : trois groupes, trois
+       distances. Tout était à 24 px (16 au téléphone), sans groupe lisible.
+         pastille › titre   16  (l'étiquette colle à ce qu'elle nomme)
+         titre › chapeau    24 / 16
+         chapeau › action   40 / 32  (on passe du message au geste)
+         action › signature 48 / 40  (la signature ferme, à part) */
+    .js .hero__haut { margin-bottom: calc(var(--fi-e2) - var(--fi-e3)); }
+    .js .hero__depart { margin-top: var(--fi-e2); }
+    .js .hero__identite { margin-top: var(--fi-e3); }
+
+    @media (max-width: 767px) {
+      /* Au téléphone, la question ouverte prend le bas de l'écran : le
+         bouton qui l'a ouverte s'efface, le hero garde titre et chapeau. */
+      html.fi-question .hero__depart { display: none; }
+      .js .hero__haut { margin-bottom: 0; }
+      /* 312 px utiles à 360 : l'étiquette passe au-dessus, en surtitre, et
+         « Son » en pictogramme seul (cible de 44 px, nom gardé pour les
+         lecteurs d'écran). */
+      .hero__besoin-label {
+        flex-basis: 100%;
+        font-size: var(--fi-t-1); font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+        color: var(--text-muted);
+      }
+      .hero__besoin-label::after { content: none; }
+      /* « Convaincre [Changer] 🔇 » : 340 px pour 336 avec l'écart de 8 px
+         du bureau ; sans lui et avec « Changer » plus serré, 321 px. */
+      .hero__son { width: 44px; padding-inline: 0; margin-left: 0; }
+      .hero__choisir.hero-cta__btn--secondary { padding-inline: var(--fi-e2); }
+      .hero__son span {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip-path: inset(50%); white-space: nowrap;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) { .hero__choisir-fleche { transition: none; } }
   </style>
 </head>
 
@@ -2483,6 +2573,37 @@
                alors « Réserver » dans sa rangée. Il ne reste que pour qui
                n'a pas de dock (retour du 28/09/2026, pas de doublon). -->
           <a class="hero-cta__btn hero-cta__btn--secondary" href="#contact"><span>Réserver 30 min</span></a>
+        </div>
+
+        <!-- L'invitation (décision du 29/09/2026) : la question du dock ne
+             s'ouvre plus seule, tout visiteur voit la même porte d'entrée.
+             Masquée sans JavaScript : la question reste alors dans le hero,
+             en liens. Tenue par composants/hero-depart.js.
+             Placée AVANT la signature (passe d'affordance du 29/09/2026) :
+             l'action suit la promesse, la signature ferme le hero. -->
+        <div class="hero__depart" data-hero-depart hidden>
+          <div class="hero__depart-rangee">
+            <span class="hero__besoin-label" id="heroBesoin">Votre besoin</span>
+            <span class="hero__besoin-valeur" id="heroBesoinValeur" data-hero-besoin hidden>
+              <svg class="pic" aria-hidden="true"><use href="#pic-former"></use></svg><span data-hero-besoin-texte></span>
+            </span>
+            <button class="hero-cta__btn hero-cta__btn--primary hero__choisir" type="button"
+                    data-hero-choisir data-dock-ouvre data-reflet data-eclat aria-expanded="false"
+                    aria-describedby="heroBesoin heroBesoinValeur">
+              <span data-hero-choisir-texte>Choisir</span>
+              <svg class="hero__choisir-fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <button class="hero-cta__btn hero-cta__btn--secondary hero__son" type="button"
+                    data-hero-son aria-pressed="false" title="Activer le son">
+              <svg class="hero__son-icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M11 5 6 9H3v6h3l5 4z"/>
+                <path class="hero__son-ondes" d="M15.5 8.5a5 5 0 0 1 0 7"/>
+                <path class="hero__son-coupe" d="M16 9.5l5 5M21 9.5l-5 5"/>
+              </svg>
+              <span>Son</span>
+            </button>
+          </div>
+          <p class="hero__depart-note" data-hero-depart-note>3 réponses · le site s'adapte</p>
         </div>
 
         <a class="hero__identite" href="#equipe">

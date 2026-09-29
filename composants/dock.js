@@ -8,7 +8,7 @@
 
      état        bandeau                         page
      ─────────   ─────────────────────────────   ─────────────────────────
-     question    la première question (requise)  verrouillée, atténuée
+     question    « Votre savoir doit d'abord : »  libre
      situation   la situation cliquée            libre
      sommaire    « Tous » : les chapitres        libre
      partage     « Partager » : lien, QR,        libre
@@ -20,15 +20,18 @@
    appelle). Deux fonctions seulement le changent : ouvrir() et replier().
 
    Les règles :
-     1. **La question se pose une fois.** Seul un visiteur neuf, arrivé en
-        haut de page, la voit bandeau ouvert. Un retour (« fi:dock-repondu »),
-        un lien `?situation=` ou une ancre (`/#demos`) arrivent replié : ils
-        sont venus pour un contenu précis.
-     2. **Pas de croix sur la question.** Échap ne la ferme pas : elle
-        attend une réponse, et « ou juste regarder » est la sortie visible.
-     3. **Le verrou vient APRÈS le déplacement réussi du panneau.** Si ce
-        script plante avant, la question reste dans le hero, en liens, et
-        la page n'est jamais bloquée.
+     1. **La question se pose sur demande** (décision du 29/09/2026).
+        Elle ne s'ouvrait seule que pour un visiteur neuf arrivé en haut
+        de page : un retour, une ancre ou un lien `?situation=` ne la
+        voyaient jamais. Désormais tout le monde voit la même invitation,
+        « Choisir mon usage » dans le hero (hero-depart.js), et la page
+        n'est plus verrouillée : Échap et clic dehors la referment comme
+        les autres bandeaux.
+     2. **Le panneau rejoint le dock seulement si ce script tourne.** S'il
+        plante avant, la question reste dans le hero, en liens.
+     3. **Pendant la question, <html> porte `fi-question`** : le hero
+        s'en sert pour faire de la place au téléphone (signature,
+        invitation), rien d'autre.
      4. **Il ne choisit rien lui-même.** Le choix d'une situation reste au
         script « LE PARCOURS » (délégation sur [data-situation-choix]) ; le
         dock écoute fi:situation, comme le son et la mesure.
@@ -37,8 +40,7 @@
             fi:partager {mode} (spec 2026-09-28-partage-telecommande-design.md § 4)
    Émet   : fi:dock {etat, avant}, fi:aller {chapitre} (contrat existant)
    Journal: « ?debug=1 » (clé fi:debug), préfixe [dock].
-   Recette: « ?question=1 » repose la question à chaque chargement (efface
-            fi:dock-repondu, remonte en haut) : pour la QA, sans vider le stockage.
+   Recette: « ?question=1 » ouvre la question au chargement (QA, démo).
    ══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -72,37 +74,28 @@
   function marquerPartager(ouvert) {
     Array.prototype.forEach.call(boutonsPartager, function (b) { b.setAttribute('aria-expanded', ouvert ? 'true' : 'false'); });
   }
-  /* Ce que le verrou rend inerte : tout ce qui suit le hero. */
-  var suite = document.querySelectorAll('.page-rest, .footer');
-  var CLE_REPONDU = 'fi:dock-repondu';
+  /* L'ancienne clé de la question « déjà répondue » : plus lue depuis
+     que la question se pose sur demande, on la retire au passage. */
+  try { localStorage.removeItem('fi:dock-repondu'); } catch (e) {}
 
   var etat = 'replie';
   var situationOuverte = null;
 
-  /* ── Le verrou ─────────────────────────────────────────────────────
-     `inert` retire la suite du clavier et des clics ; la classe sur <html>
-     bloque le défilement et atténue (CSS). Les deux vont ensemble. */
-  /* Quitter la question, par n'importe quel chemin, c'est y avoir répondu :
-     la prochaine visite arrive replié. */
-  function noterReponse() {
-    try { localStorage.setItem(CLE_REPONDU, '1'); } catch (e) {}
-  }
-  function verrouiller(oui) {
-    document.documentElement.classList.toggle('fi-verrou', oui);
-    Array.prototype.forEach.call(suite, function (el) { el.inert = oui; });
+  /* La question ouverte se lit sur <html> (règle 3). */
+  function marquerQuestion(oui) {
+    document.documentElement.classList.toggle('fi-question', oui);
   }
 
   /* ── Les deux seules fonctions qui changent l'état ─────────────────── */
   function ouvrir(nouvel, detail) {
     var avant = etat;
-    if (avant === 'question' && nouvel !== 'question') noterReponse();
     etat = nouvel;
     Object.keys(vues).forEach(function (k) { vues[k].hidden = k !== nouvel; });
     dock.setAttribute('data-etat', nouvel);
     boutonTous.setAttribute('aria-expanded', nouvel === 'sommaire' ? 'true' : 'false');
     marquerPartager(nouvel === 'partage');
-    verrouiller(nouvel === 'question');
-    journal(avant, '›', nouvel + (detail ? ' (' + detail + ')' : ''), nouvel === 'question' ? '· page verrouillée' : '');
+    marquerQuestion(nouvel === 'question');
+    journal(avant, '›', nouvel + (detail ? ' (' + detail + ')' : ''));
     emettre('fi:dock', { etat: nouvel, avant: avant });
     verifier();
   }
@@ -115,8 +108,8 @@
     dock.setAttribute('data-etat', 'replie');
     boutonTous.setAttribute('aria-expanded', 'false');
     marquerPartager(false);
-    if (avant === 'question') { verrouiller(false); noterReponse(); }
-    journal(avant, '› replie (' + raison + ')', avant === 'question' ? '· verrou retiré' : '');
+    marquerQuestion(false);
+    journal(avant, '› replie (' + raison + ')');
     emettre('fi:dock', { etat: 'replie', avant: avant });
     verifier();
   }
@@ -180,7 +173,7 @@
 
   /* ── Les boutons de la rangée ────────────────────────────────────── */
   dock.querySelector('[data-dock-depart]').addEventListener('click', function () {
-    if (etat !== 'question') replier('départ');
+    replier('départ');
     emettre('fi:aller', { chapitre: 'top' });
   });
   Array.prototype.forEach.call(boutonsSituation, function (b) {
@@ -192,7 +185,7 @@
     if (etat === 'sommaire') replier('re-clic sur Tous');
     else ouvrir('sommaire');
   });
-  dock.querySelector('[data-dock-rdv]').addEventListener('click', function () { if (etat !== 'question') replier('réserver'); });
+  dock.querySelector('[data-dock-rdv]').addEventListener('click', function () { replier('réserver'); });
   /* Une croix par vue qui en a une (situation, partage). */
   Array.prototype.forEach.call(dock.querySelectorAll('[data-dock-fermer]'), function (b) {
     b.addEventListener('click', function () { replier('croix'); });
@@ -207,7 +200,6 @@
     });
   });
   document.addEventListener('fi:partager', function (e) {
-    if (etat === 'question') { journal('fi:partager ignoré : la question attend sa réponse'); return; }
     ouvrir('partage', (e.detail && e.detail.mode) || 'endroit');
   });
   /* Un chapitre du sommaire passe par fi:aller, la porte que prendra
@@ -229,14 +221,22 @@
   });
   vues.situation.querySelector('[data-dock-suite]').addEventListener('click', function () { replier('voir la suite'); });
 
-  /* Échap et clic dehors : situation et sommaire seulement (règle 2).
+  /* Échap et clic dehors : tous les bandeaux, la question comprise
+     depuis qu'elle n'est plus requise (règle 1).
      ⚠️ `pointerdown` en capture, comme la borne : un `click` ne vient pas
-     toujours (un défilement tactile n'en produit pas). */
+     toujours (un défilement tactile n'en produit pas).
+     ⚠️ Le bouton qui OUVRE un bandeau depuis la page (« Choisir mon
+     usage », [data-dock-ouvre]) n'est pas un clic dehors : sans cette
+     exception, il refermerait aussitôt ce qu'il vient d'ouvrir. */
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && (etat === 'situation' || etat === 'sommaire' || etat === 'partage')) { replier('Échap'); rangee.querySelector('button').focus(); }
+    if (e.key === 'Escape' && etat !== 'replie') { replier('Échap'); rangee.querySelector('button').focus(); }
   });
   document.addEventListener('pointerdown', function (e) {
-    if ((etat === 'situation' || etat === 'sommaire' || etat === 'partage') && !e.composedPath().includes(dock)) replier('clic dehors');
+    if (etat === 'replie') return;
+    var chemin = e.composedPath();
+    if (chemin.includes(dock)) return;
+    if (chemin.some(function (n) { return n.hasAttribute && n.hasAttribute('data-dock-ouvre'); })) return;
+    replier('clic dehors');
   }, true);
 
   /* ── Ce que le reste de la page annonce ─────────────────────────── */
@@ -273,10 +273,8 @@
   function verifier() {
     if (!DEBUG) return;
     var fautes = [];
-    var verrou = document.documentElement.classList.contains('fi-verrou');
-    var inertes = Array.prototype.every.call(suite, function (el) { return el.inert; });
-    if (etat === 'question' && (!verrou || !inertes)) fautes.push('question sans verrou complet (défilement ' + (verrou ? 'bloqué' : 'LIBRE') + ', suite ' + (inertes ? 'inerte' : 'ACTIVE') + ')');
-    if (etat !== 'question' && (verrou || Array.prototype.some.call(suite, function (el) { return el.inert; }))) fautes.push('verrou qui traîne en « ' + etat + ' »');
+    var marque = document.documentElement.classList.contains('fi-question');
+    if (marque !== (etat === 'question')) fautes.push('marque fi-question ' + (marque ? 'qui traîne' : 'absente') + ' en « ' + etat + ' »');
     var r = dock.getBoundingClientRect();
     if (r.width && (r.left < 0 || r.right > window.innerWidth)) fautes.push('dock hors écran (' + Math.round(r.left) + ' › ' + Math.round(r.right) + ' px pour ' + window.innerWidth + ')');
     Array.prototype.forEach.call(rangee.querySelectorAll('button:not([hidden]), a'), function (b) {
@@ -300,8 +298,8 @@
 
   /* Le panneau du hero rejoint TOUJOURS le dock quand le script tourne :
      sans cela, un visiteur qui revient le voyait resté dans le hero, en
-     double avec la rangée (bug relevé le 28/09/2026). Seul le verrou
-     dépend de la question ; le déplacement, jamais. */
+     double avec la rangée (bug relevé le 28/09/2026). La question s'y
+     ouvre ensuite sur demande (hero-depart.js, règle 1). */
   var panneau = document.querySelector('.hero .situations');
   if (panneau) {
     vues.question.appendChild(panneau);
@@ -311,34 +309,11 @@
     journal('⚠️ panneau .situations introuvable : pas de question, page libre');
   }
 
-  /* Recette : ?question=1 force la question, comme pour un visiteur neuf.
-     On oublie la réponse notée et on remonte en haut (le navigateur restaure
-     sinon le défilement au rechargement, ce qui replierait le dock). */
-  var force = new URLSearchParams(location.search).get('question') === '1';
-  if (force && panneau) {
-    try { localStorage.removeItem(CLE_REPONDU); } catch (e) {}
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.scrollTo(0, 0);
-    journal('?question=1 : réponse oubliée, question reposée (recette)');
-  }
-
-  var repondu = false;
-  try { repondu = localStorage.getItem(CLE_REPONDU) === '1'; } catch (e) {}
-  var ancre = !force && location.hash && location.hash !== '#top';
-  var viaSituation = !force && document.body.hasAttribute('data-situation');
-  var descendu = !force && window.scrollY > 40;
-  if (!panneau || repondu || ancre || viaSituation || descendu) {
-    if (panneau) journal('pas de question :', repondu ? 'déjà répondu' : ancre ? 'arrivée sur ' + location.hash : viaSituation ? 'situation venue de l\'URL' : 'page déjà défilée');
+  /* Recette : ?question=1 ouvre la question au chargement (QA, démo). */
+  if (panneau && new URLSearchParams(location.search).get('question') === '1') {
+    ouvrir('question', '?question=1');
+  } else {
     verifier();
-    return;
-  }
-  /* Règle 3 : le panneau est déjà déplacé (plus haut), PUIS on verrouille. */
-  ouvrir('question', 'visiteur neuf');
-  /* Le focus se pose sur la question, sans faire sauter la page. */
-  var titreQuestion = document.getElementById('situationsQuestion');
-  if (titreQuestion) {
-    titreQuestion.setAttribute('tabindex', '-1');
-    titreQuestion.focus({ preventScroll: true });
   }
 
 })();

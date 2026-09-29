@@ -357,7 +357,7 @@
 .fi-dock__vue { position: relative; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .fi-dock__vue[hidden] { display: none; }
 
-/* ── question : une réponse est requise ──────────────────────────── */
+/* ── question : l'invitation du hero l'ouvre (plus de verrou depuis le 29/09/2026) ── */
 .fi-dock[data-etat="question"] { border-color: transparent; }
 .fi-dock[data-etat="question"]::before {
   /* Le contour au dégradé de la charte, 1 px, par masque : le verre reste
@@ -555,17 +555,6 @@
 .fi-partage__etat:empty { display: none; }
 @media (prefers-reduced-motion: reduce) { .fi-partage__qr--pli { animation: none; } }
 
-/* ── Le verrou de la question ─────────────────────────────────────── */
-html.fi-verrou { overflow: hidden; }
-html.fi-verrou .page-rest,
-html.fi-verrou .footer { opacity: 0.35; } /* la suite est là, en attente : visible, pas atteignable */
-/* La transition vit sur l'état de BASE : déclarée sous `.fi-verrou`
-   seulement, elle disparaissait avec la classe et la suite sautait à
-   100 % à la réponse. Désormais elle se révèle en 600 ms pendant que la
-   page descend vers l'offre (passe des transitions, 28/09/2026). */
-.page-rest,
-.footer { transition: opacity 600ms var(--fi-ease-sortie, ease-out); }
-
 @keyframes fiDockPose { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes fiDockFondu { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fiDockDeplie { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -580,6 +569,5 @@ html.fi-verrou .footer { opacity: 0.35; } /* la suite est là, en attente : visi
 }
 @media (prefers-reduced-motion: reduce) {
   .fi-dock, .fi-dock__vue, .fi-dock .fi-pilier__rond { animation: none !important; }
-  .page-rest, .footer { transition: none; }
 }
 .fi-sobre .fi-dock, .fi-sobre .fi-dock__vue, .fi-sobre .fi-dock .fi-pilier__rond { animation: none !important; }
