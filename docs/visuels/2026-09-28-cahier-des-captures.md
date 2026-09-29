@@ -40,7 +40,7 @@ en attendant des images d'usage réel) :
 
 ### Tournage (le master)
 
-- **Une seule prise longue** (ou quelques-unes mises bout à bout), en
+- **Une session**, coupée ensuite plan par plan, en
   **16:9, 2560 × 1440** (1920 × 1080 minimum), **60 i/s** (le hero la
   garde fluide ; les aperçus sont ramenés à 30 i/s à l'encodage).
 - **Par démo, un plan de 7 s utile** (le hero : 12 à 20 s, avec plusieurs
@@ -62,27 +62,18 @@ Enregistrement : chaque démo en plein écran dans Chrome, sans
 `?debug=1`, interface masquée ; OBS (ou `Cmd + Maj + 5`) en 60 i/s,
 qualité max ; exporter le master en ProRes ou H.264 haut débit.
 
-### Découper et encoder
+### Couper, puis encoder
 
-Noter les repères dans un fichier texte, une ligne par boucle
-(« nom début durée ») :
-
-```
-hero      00:00:05  16
-stand     00:00:30  7
-midipile  00:01:02  7
-rayon-x   00:01:40  7
-agorapod  00:02:15  7
-moulage   00:02:50  7
-```
-
-Puis, depuis la racine du site :
+Les plans se coupent à la main (un fichier par boucle, 7 s pour une
+démo, 12 à 20 s pour le hero), nommés comme l'aperçu : `stand.mov`,
+`midipile.mov`, `rayon-x.mov`, `agorapod.mov`, `moulage.mov`,
+`hero.mov`. Puis, depuis la racine du site :
 
 ```bash
-outils/encoder-boucles.sh master.mov decoupe.txt
+outils/encoder-boucles.sh ~/Captures/*.mov
 ```
 
-Il produit, en une passe :
+Il produit :
 
 | Sortie | Taille | Poids visé |
 |---|---|---|
