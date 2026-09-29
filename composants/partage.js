@@ -7,7 +7,10 @@
        direct tant que la vue est ouverte.
      - Télécommande : l'état vient de telecommande-ecran.js
        (window.FiTelecommande, fi:telecommande) ; sans lui, l'onglet reste
-       masqué. Au téléphone, ni QR ni onglet Télécommande.
+       masqué.
+     - Au téléphone, tout pareil (décision du 29/09/2026, spec § 14) :
+       QR de 200 px au-dessus du lien, onglet Télécommande. Un téléphone
+       en pilote un autre : « ce qu'on a dans la poche » suffit.
      - Le QR (qrcode-generator 1.4.4, MIT, 20 Ko) n'est chargé qu'à la
        première ouverture.
 
@@ -48,6 +51,9 @@
   var CONSIGNES = {
     endroit: "Scannez avec l'appareil photo du téléphone : la page s'ouvre au même endroit",
     telecommande: 'Scannez avec le téléphone : il pilote cette page',
+    /* Au téléphone, c'est un AUTRE téléphone qui scanne. */
+    endroitTel: 'À scanner avec un autre téléphone : la page s\'ouvre au même endroit',
+    telecommandeTel: 'À scanner avec un autre téléphone : il pilote celui-ci',
     connexion: 'Préparation de la télécommande…',
     eteinte: 'Préparation de la télécommande…',
     indisponible: 'Télécommande indisponible pour le moment'
@@ -125,7 +131,7 @@
   function rendre() {
     if (vue.hidden) return;
     var t = tele();
-    ongletTele.hidden = estTelephone() || !t;
+    ongletTele.hidden = !t;
     /* Un seul onglet n'est pas un choix : la barre disparaît avec lui. */
     barreOnglets.hidden = ongletTele.hidden;
     if (mode === 'telecommande' && ongletTele.hidden) mode = 'endroit';
@@ -138,11 +144,10 @@
     zoneEtat.textContent = etatTele === 'connectee' ? CONNECTEE : '';
     if (mode === 'telecommande') {
       var pret = etatTele === 'prete' || etatTele === 'connectee';
-      afficher(pret ? t.url() : '', 'Télécommande de cette page', pret ? CONSIGNES.telecommande : CONSIGNES[etatTele], true);
+      afficher(pret ? t.url() : '', 'Télécommande de cette page', pret ? (estTelephone() ? CONSIGNES.telecommandeTel : CONSIGNES.telecommande) : CONSIGNES[etatTele], true);
       return;
     }
-    /* Au téléphone, pas de QR : c'est lui qu'on scannerait. */
-    afficher(lienEndroit(), libelleEndroit(), estTelephone() ? '' : CONSIGNES.endroit, !estTelephone());
+    afficher(lienEndroit(), libelleEndroit(), estTelephone() ? CONSIGNES.endroitTel : CONSIGNES.endroit, true);
   }
 
   /* ── Les entrées ── */
