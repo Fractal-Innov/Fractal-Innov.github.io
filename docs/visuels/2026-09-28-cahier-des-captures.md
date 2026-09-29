@@ -24,71 +24,103 @@
 Tous les cadres sont en **16:9** (`.media-16x9`, `object-fit: cover`) :
 un fichier dans un autre ratio est rogné par le navigateur, pas par vous.
 
-## 2. La vidéo du hero
+## 2. Une session, toutes les vidéos (décision du 29/09/2026)
 
-**Rôle** : dire « c'est de la 3D, et ça vit » sans un mot. Le titre, le
-chapeau et le portrait sont posés PAR-DESSUS, à gauche.
+Les **grands aperçus** jouent une boucle vidéo : le panneau actif de
+l'offre et la démo en avant. Les **petits** (la bande des démos) restent
+des images. Une seule session de tournage donne la vidéo du hero ET les
+5 boucles des démos ; l'offre réutilise celles des démos (choix (c),
+en attendant des images d'usage réel) :
 
-**Où elle joue** : au bureau seulement (768 px et plus). Au téléphone, en
-mouvement réduit ou en économie de données : le **poster seul** (la
-première image). La première image doit donc être belle à elle seule.
+| Aperçu de l'offre | Boucle reprise |
+|---|---|
+| Convaincre | `stand` |
+| Former | `rayon-x` |
+| Conserver | `moulage` |
 
-### Tournage (source)
+### Tournage (le master)
 
-- **Ratio 16:9**, **2560 × 1440** idéalement (1920 × 1080 minimum),
-  **60 i/s**, sans son.
-- **Durée finale 12 à 20 s**, en **boucle sans couture** : la dernière
-  image rejoint la première (même position de caméra), ou un fondu de
-  1 s au montage.
-- **3 ou 4 démos**, 3 à 5 s chacune (ex. STAND, Rayon X, À fleur
-  d'écorce, AgoraPod) : une par usage si possible (convaincre, former,
-  conserver).
-- **Mouvements lents et continus** : orbite, travelling avant, lente
-  montée. Jamais de coupe sèche, de flash ni de secousse (la page reste
-  lisible par-dessus ; les personnes sensibles au mouvement ont le poster).
-- **Aucune interface** : ni boutons, ni curseur, ni texte, ni logo client
-  sans accord écrit.
-- **Composition** : le sujet dans le **tiers droit**. La moitié gauche
-  passe sous le titre et un voile sombre, elle doit rester calme
-  (fond, sol, ciel).
-- **Tons sombres** : fond proche du `#090b13` de la page, lumière sur le
-  sujet. Une image claire rendrait le titre blanc illisible.
+- **Une seule prise longue** (ou quelques-unes mises bout à bout), en
+  **16:9, 2560 × 1440** (1920 × 1080 minimum), **60 i/s** (le hero la
+  garde fluide ; les aperçus sont ramenés à 30 i/s à l'encodage).
+- **Par démo, un plan de 7 s utile** (le hero : 12 à 20 s, avec plusieurs
+  démos) : mouvement **lent et continu** (orbite, travelling avant,
+  montée), **fin = début** (même position de caméra) pour une boucle
+  sans couture. Laisser 2 s de marge avant et après chaque plan.
+- **Aucune interface** : ni boutons, ni curseur, ni texte.
+- **Tons sombres**, fond proche du `#090b13` de la page, lumière sur le
+  sujet.
+- **Cadrage** :
+  - aperçus : sujet dans les **60 % centraux** (la carte rogne les côtés,
+    jusqu'au 5:2 au bureau) ;
+  - hero : sujet dans le **tiers droit**, moitié gauche calme (le titre
+    passe dessus).
+- **Une famille** : même angle (trois-quarts, légèrement plongeant),
+  même lumière d'une démo à l'autre.
 
-### Comment enregistrer
+Enregistrement : chaque démo en plein écran dans Chrome, sans
+`?debug=1`, interface masquée ; OBS (ou `Cmd + Maj + 5`) en 60 i/s,
+qualité max ; exporter le master en ProRes ou H.264 haut débit.
 
-1. Ouvrir chaque démo en plein écran dans Chrome, fenêtre 2560 × 1440,
-   sans `?debug=1`, interface masquée.
-2. Enregistrer avec OBS (ou `Cmd + Maj + 5`) en 60 i/s, qualité max.
-3. Monter les plans (fondus de 0,5 à 1 s), exporter un master ProRes ou
-   H.264 haut débit.
-4. Encoder avec le préréglage déjà prévu (720p, 1,2 Mb/s, WebM VP9 +
-   MP4 + poster WebP) :
+### Découper et encoder
 
-```bash
-Needle5/scripts/encoder-video.sh master.mov --preset hero --sortie Fractal-Innov_Agency/media/accueil/hero/boucle.mp4
+Noter les repères dans un fichier texte, une ligne par boucle
+(« nom début durée ») :
+
+```
+hero      00:00:05  16
+stand     00:00:30  7
+midipile  00:01:02  7
+rayon-x   00:01:40  7
+agorapod  00:02:15  7
+moulage   00:02:50  7
 ```
 
-5. Me dire « la boucle est posée » : je passe `data-hero-video` à
-   `/media/accueil/hero/boucle` et je vérifie le poids (cible : WebM
-   sous 2 Mo).
+Puis, depuis la racine du site :
 
-## 3. Les aperçus des démos
+```bash
+outils/encoder-boucles.sh master.mov decoupe.txt
+```
 
-**Rôle** : reconnaître la démo d'un coup d'œil et donner envie de
-l'ouvrir. Ce sont des **captures 3D pures**, sans personne.
+Il produit, en une passe :
+
+| Sortie | Taille | Poids visé |
+|---|---|---|
+| `media/accueil/hero/boucle.{webm,mp4,webp}` | 1280 px, poster compris | WebM sous 2 Mo |
+| `media/accueil/boucles/<nom>.{webm,mp4}` | 960 × 540, bureau | 0,7 à 1 Mo |
+| `media/accueil/boucles/<nom>-mobile.{webm,mp4}` | 640 × 360, téléphone | 250 à 400 Ko |
+
+Pas de poster pour les aperçus : c'est l'image de la démo (§ 3), déjà
+en place.
+
+### Essayer avant de brancher
+
+Les fichiers posés, ouvrir `/?debug=1&boucle=prevues` : chaque aperçu
+prend sa boucle prévue, le journal `[boucle]` de la console dit laquelle
+joue. Me dire « les boucles sont posées » : je branche les attributs
+(`data-boucle`) et la vidéo du hero, et je vérifie les poids.
+
+### Ce que le site en fait (composants/boucle.js)
+
+- rien n'est téléchargé à l'ouverture : la boucle n'est demandée qu'à
+  l'approche de l'aperçu ;
+- **une seule** boucle joue à la fois (le grand aperçu le plus visible) ;
+- image seule si mouvement réduit, économie de données, réseau 2g, ou
+  lecture refusée (iPhone en économie d'énergie) ;
+- un bouton pause sur chaque boucle.
+
+## 3. Les images des démos
+
+**Rôle** : reconnaître la démo d'un coup d'œil (petites cartes) et servir
+de poster à la boucle (grandes). Ce sont des **captures 3D pures**, sans
+personne, et de préférence **la première image du plan de la boucle** :
+le passage de l'image à la vidéo ne saute pas.
 
 - **Format de sortie** : **1600 × 900** (16:9), WebP qualité 80,
   **cible 60 à 120 Ko** par image.
 - **Source** : capture à 2560 × 1440 puis réduite (plus net qu'une
   capture directe en 1600).
-- **Cadrage** : le sujet dans les **60 % centraux** ; au bureau, la démo
-  mise en avant affiche l'image sur une moitié de carte et peut rogner
-  les côtés.
-- **Une famille** : même angle (trois-quarts, légèrement plongeant),
-  même fond sombre neutre, même lumière d'un aperçu à l'autre. C'est ce
-  qui fait « collection » plutôt que « captures d'écran ».
-- **Aucune interface**, pas de texte incrusté (le titre est dans la
-  carte).
+- **Cadrage, famille, aucune interface** : comme les boucles (§ 2).
 - **Une image par démo** : `stand`, `midipile`, `rayon-x`, `agorapod`,
   `moulage` (même nom, même dossier : `media/accueil/demos/`).
 
@@ -132,8 +164,10 @@ recadrage 16:9 dans Photos), sinon `-resize` la déforme.
 
 ## 6. Ordre conseillé pour le tournage
 
-1. **Les aperçus des démos** : tout se fait au bureau, en une séance.
-2. **La vidéo du hero** : réutilise les mêmes scènes, mêmes réglages.
-3. **Les photos de l'offre** : demandent un lieu et des gens, à caler
-   quand l'occasion se présente (un salon, un atelier). En attendant,
-   l'offre garde les aperçus des démos.
+1. **La session des boucles** (§ 2) : hero et démos, au bureau, en une
+   séance.
+2. **Les images des démos** (§ 3) : la première image de chaque plan,
+   dans la foulée.
+3. **Les photos de l'offre** (§ 4) : demandent un lieu et des gens, à
+   caler quand l'occasion se présente. En attendant, l'offre joue les
+   boucles des démos.

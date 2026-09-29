@@ -57,7 +57,8 @@
   <script defer src="/composants/hero-depart.js"></script> <!-- l'invitation du hero : « Choisir mon usage » et le son -->
   <script defer src="/composants/partage.js"></script> <!-- le bandeau « Partager » : cet endroit, la télécommande -->
   <script defer src="/composants/telecommande-ecran.js"></script> <!-- la télécommande : l'écran obéit au téléphone -->
-  <script defer src="/composants/demos.js"></script> <!-- les démos : une en avant, les autres en bande -->
+  <script defer src="/composants/demos.js"></script>
+  <script defer src="/composants/boucle.js"></script> <!-- les grands aperçus jouent une boucle vidéo, une à la fois --> <!-- les démos : une en avant, les autres en bande -->
   <script defer src="/composants/orbite.js"></script> <!-- l'équipe : le fondateur au centre, les fils vers le réseau -->
   <script defer src="/composants/garde-ecran.js"></script> <!-- ?debug=1 : ce qui tient à l'écran, section par section -->
   <link rel="stylesheet" href="/composants/composants.css">
@@ -2654,7 +2655,7 @@
           </div>
         <div class="offres" data-story-scene>
           <article class="carte offre reveal" id="usage-convaincre" data-usages="convaincre" data-story-panneau>
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/stand">
               <img src="/media/accueil/offre-stand.webp"
                    alt="La borne STAND sur un stand de salon, vue d'ensemble de la scène 3D"
                    width="1600" height="1063" loading="lazy" decoding="async">
@@ -2680,7 +2681,7 @@
           </article>
 
           <article class="carte offre reveal" id="usage-former" data-usages="former" data-story-panneau>
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/rayon-x">
               <img src="/media/accueil/demos/rayon-x.webp"
                    alt="Rayon X : un échangeur thermique industriel en 3D, parcouru comme en formation"
                    width="1200" height="675" loading="lazy" decoding="async">
@@ -2704,7 +2705,7 @@
           </article>
 
           <article class="carte offre reveal" id="usage-garder" data-usages="garder" data-story-panneau>
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/moulage">
               <img src="/media/accueil/demos/moulage.webp"
                    alt="À fleur d'écorce : le geste de l'artiste Mathilde Thiennot, rejouable en 3D"
                    width="1200" height="675" loading="lazy" decoding="async">
@@ -2764,7 +2765,7 @@
               <svg class="pic" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
           <div class="demos__bande" data-demos-bande role="region" aria-label="Les autres démos">
           <article class="carte demo reveal" id="demo-stand" data-usages="convaincre" data-avant-pour="aucune convaincre">
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/stand">
               <img src="/media/accueil/demos/stand.webp" alt="La borne STAND : une scène 3D de stand de salon sur écran tactile"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
@@ -2785,7 +2786,7 @@
             </div>
           </article>
           <article class="carte demo reveal" id="demo-midipile" data-usages="convaincre">
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/midipile">
               <img src="/media/accueil/demos/midipile.webp" alt="Midipile : un utilitaire électrique configurable en 3D"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
@@ -2806,7 +2807,7 @@
             </div>
           </article>
           <article class="carte demo reveal" id="demo-rayon-x" data-usages="former" data-avant-pour="former">
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/rayon-x">
               <img src="/media/accueil/demos/rayon-x.webp" alt="Rayon X : un échangeur thermique industriel en 3D dans le navigateur"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
@@ -2829,7 +2830,7 @@
           <article class="carte demo reveal" id="demo-agorapod" data-usages="former">
             <!-- ⚠️ Textes à valider (rédigés d'après l'interface de la démo,
                  28/09/2026) ; image : capture provisoire. -->
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/agorapod">
               <img src="/media/accueil/demos/agorapod.webp" alt="AgoraPod : le châssis et l'habitacle d'un véhicule en 3D, portes ouvertes"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
@@ -2850,7 +2851,7 @@
             </div>
           </article>
           <article class="carte demo reveal" id="demo-moulage" data-usages="garder" data-avant-pour="garder">
-            <div class="media-16x9">
+            <div class="media-16x9" data-boucle="aucune" data-boucle-prevue="/media/accueil/boucles/moulage">
               <img src="/media/accueil/demos/moulage.webp" alt="À fleur d'écorce : une performance de Mathilde Thiennot, rejouable en 3D"
                    width="1200" height="675" loading="lazy" decoding="async">
             </div>
