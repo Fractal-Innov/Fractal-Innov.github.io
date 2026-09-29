@@ -734,3 +734,30 @@ section en écrans, et essentiels hors du premier écran.
   la liste 8), nouvelles vignettes (webp 1200 × 675, moins de 120 Ko),
   chiffres de l'annexe du plan (à fournir, rien d'inventé), nettoyage du CSS
   mort (`.partenaire*`, `.portrait*`, `.boussole*`, `.repere*`).
+
+## 19. La question sur demande, le son muet, la couleur du navigateur (29/09/2026)
+
+Retour sur le téléphone : la barre de Safari restait blanche, et la
+question du dock ne s'ouvrait « pas toujours » à l'ouverture (elle ne
+s'ouvrait que pour un visiteur neuf arrivé en haut de page ; un retour,
+une ancre ou un lien `?situation=` ne la voyaient jamais).
+
+| Sujet | Décision | Écartée |
+|---|---|---|
+| Porte d'entrée | bouton « Choisir mon usage » dans le hero, sous la signature ; après un choix « Pour former · changer » | le dock qui s'illumine avec « Commencez ici » |
+| Verrou | aucun : la question est une invitation, Échap et clic dehors la referment | verrou gardé quand la question est ouverte |
+| Ligne sous le bouton | « 3 réponses · le site s'adapte », tant qu'aucun usage n'est choisi | · |
+| Ouverture automatique | jamais : même expérience pour tous | au visiteur neuf, comme avant |
+| Son | muet par défaut ; pastille « Son » à côté du bouton (muet / doux), le dock garde ses trois niveaux ; un choix déjà fait est gardé | tout le monde remis à muet |
+| Couleur du navigateur | couleur pleine `--bg-base` et `color-scheme: dark` sur `<html>` (Safari iOS 26 teinte ses barres d'après le fond de la page, `theme-color` ne suffit plus) | `viewport-fit=cover`, gardé en réserve si l'essai ne suffit pas |
+
+- Code : `composants/hero-depart.js` (nouveau), `dock.js` (plus de verrou
+  ni d'ouverture automatique, `html.fi-question` pendant la question,
+  `?question=1` l'ouvre au chargement pour la recette), `son.js` (muet),
+  `composants.css` (bloc du verrou retiré), `index.html`.
+- La clé `fi:dock-repondu` n'est plus lue ; `dock.js` la retire au
+  passage.
+- Mesures : l'invitation tient à 360 × 740 (fin à 573 px, dock à 670),
+  375 × 812 et 1440 × 900 ; question ouverte au téléphone, l'invitation
+  s'efface et le texte reste au-dessus du dock ; garde du dock muette ;
+  aucun défilement horizontal.

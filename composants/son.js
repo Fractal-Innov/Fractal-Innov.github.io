@@ -31,10 +31,11 @@
 
    Ce qu'il promet aussi :
      - trois niveaux, comme fi-v3 : « plein », « doux », « muet ».
-       **Doux par défaut** (retour du 27/09/2026) : le visiteur entend
-       dès son premier geste, discrètement, par-dessus sa musique. Le
-       bouton son fait tourner les niveaux (FiSon.cycler()) et le choix
-       est retenu (localStorage « fi:son-niveau ») ;
+       **Muet par défaut** (décision du 29/09/2026, « doux » avant) : le
+       visiteur l'active lui-même, par la pastille « Son » du hero
+       (hero-depart.js) ou le bouton du dock, qui fait tourner les
+       niveaux (FiSon.cycler()). Un choix déjà fait est gardé
+       (localStorage « fi:son-niveau ») ;
      - le moteur audio du navigateur n'existe pas tant qu'un geste ne l'a
        pas demandé : le premier clic ou la première touche le réveille,
        et rien ne joue avant ;
@@ -93,14 +94,13 @@
   var DELAI_SUSPENSION = 1500;    /* ms en arrière-plan avant de suspendre */
 
   /* Le niveau retenu. ⚠️ Migration : l'ancienne clé « fi:son » était un
-     booléen ; « 1 » (allumé) devient doux, « 0 » (coupé) devient muet,
-     pour qu'un visiteur qui avait coupé le son ne l'entende pas revenir. */
-  var niveau = 'doux';
+     booléen ; « 1 » (allumé) devient doux, « 0 » (coupé) reste muet. */
+  var niveau = 'muet';
   try {
     var retenu = localStorage.getItem('fi:son-niveau');
     var ancien = localStorage.getItem('fi:son');
     if (NIVEAUX.hasOwnProperty(retenu)) niveau = retenu;
-    else if (ancien === '0') niveau = 'muet';
+    else if (ancien === '1') niveau = 'doux';
   } catch (e) {}
   var actif = niveau !== 'muet';
   var ctx = null;
