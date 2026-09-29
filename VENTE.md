@@ -39,6 +39,18 @@ Secteurs déjà servis ou visés : industrie (Greentech, Mobilité, Énergie),
 formation, art et médiation. Ils ne sont plus l'entrée de la page : c'est la
 situation qui l'est.
 
+Sur la page, le « pour qui » se dit par **nature de savoir** (section
+L'équipe, 29/09/2026) : « Un équipement trop lourd ou trop encombrant pour
+voyager, un procédé confidentiel, un geste qui ne s'écrit pas ».
+
+**Qui porte le projet** (message de la section L'équipe) : Corentin, inconnu
+du prospect, porte seul une grande partie du projet (cadrer et piloter,
+mettre en 3D avec direction artistique, rendre interactif avec UX et
+ergonomie, livrer et déployer ; profil R&D et innovation), et s'entoure de
+partenaires solides pour les besoins spécifiques. Crédibilité : accompagné
+par le Catalyseur de Paris Ouest La Défense (11e promotion), qui ouvre son
+réseau d'experts de l'innovation (https://lecatalyseur.pold.fr/).
+
 ## Les douleurs, dans l'ordre où on les dit
 
 1. L'équipement est lourd, encombrant ou fragile : le transporter coûte cher,
@@ -64,6 +76,7 @@ STAND, Rayon X, Midipile, À fleur d'écorce, le village.
 | Garder un savoir-faire rejouable, étape par étape | À fleur d'écorce (geste de l'artiste Mathilde Thiennot) |
 | Ne pas repartir de zéro | un socle commun à ces cinq démonstrateurs |
 | Garder l'outil, sans développeur | l'approche : livré, documenté, mesuré |
+| **L'expérience vous appartient** | hébergée sur le site du client (une URL) ou installée sur ses postes (un exécutable local) ; chaque collaborateur l'ouvre sur son ordinateur, sa tablette ou son téléphone, pour vendre, former, transmettre |
 
 ## Ce qui est livré
 
@@ -129,3 +142,10 @@ L'expérience, sa documentation et sa mesure d'usage (étape 03 de l'approche).
   Garder devient « Garder un savoir-faire » (processus, tour de main, geste
   d'une artiste). Captation : Corentin ou un partenaire selon le besoin. En
   démo, le visiteur tient la télécommande. Mesure d'usage par Umami.
+- 2026-09-29 : section L'équipe refaite en deux temps (ce que Corentin
+  porte, puis les partenaires en orbite autour du logo) et close sur
+  « Réserver 30 min ». La citation « la clarté / design cognitif » est
+  retirée (pas les mots de Corentin) au profit de « L'expérience vous
+  appartient ». Secteurs retirés de la bio. Idée gardée pour plus tard :
+  « votre projet » au centre de l'orbite. « Sans abonnement » non confirmé :
+  ne pas l'écrire tant qu'il ne l'est pas.
