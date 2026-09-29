@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- lastmod = date du dernier commit de la page (git log -1, format %cs),
+     ou du dernier push du dépôt pour les démos servies par d'autres dépôts.
+     Google ne s'y fie que si elle est exacte : la mettre à jour avec la page.
+     Les pages « Cette page a déménagé » n'ont rien à faire ici. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://www.fractal-innov.fr/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/webxr-dans-le-navigateur/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/stand/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/art/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/configure/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/learn/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/pilote-15-jours/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/methode-et-contact/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/moulage-mathilde-thiennot/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/midipile/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/rayon-x/</loc></url>
-  <url><loc>https://www.fractal-innov.fr/village/</loc></url>
+  <url><loc>https://www.fractal-innov.fr/</loc><lastmod>2026-09-29</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/webxr-dans-le-navigateur/</loc><lastmod>2026-09-08</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/stand/</loc><lastmod>2026-09-25</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/art/</loc><lastmod>2026-09-08</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/configure/</loc><lastmod>2026-09-08</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/learn/</loc><lastmod>2026-09-08</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/pilote-15-jours/</loc><lastmod>2026-09-08</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/methode-et-contact/</loc><lastmod>2026-09-08</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/moulage-mathilde-thiennot/</loc><lastmod>2026-09-04</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/midipile/</loc><lastmod>2026-09-04</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/rayon-x/</loc><lastmod>2026-09-04</lastmod></url>
+  <url><loc>https://www.fractal-innov.fr/village/</loc><lastmod>2026-09-25</lastmod></url>
 </urlset>
