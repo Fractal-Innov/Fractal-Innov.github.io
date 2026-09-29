@@ -1993,7 +1993,8 @@
       gap: var(--fi-e6); align-items: start;
     }
     .equipe__temps + .equipe__temps { margin-top: var(--fi-e12); }
-    .equipe__sous-titre { margin: 0 0 var(--fi-e3); }
+    /* Les titres des deux temps : même forme, un cran sous le h2. */
+    .section .equipe__sous-titre { margin: 0 0 var(--fi-e3); font-size: var(--fi-t2); line-height: 1.2; }
 
     /* Le profil : le nom colle au visage. */
     .equipe__signature { display: flex; align-items: center; gap: var(--fi-e3); margin: 0 0 var(--fi-e2); }
@@ -2005,11 +2006,25 @@
     .section .equipe__signature p { margin: 0; display: grid; gap: var(--fi-e05); line-height: 1.3; }
     .equipe__signature strong { font-size: var(--fi-t1); font-weight: 700; color: var(--text-main); }
     .equipe__signature span { font-size: var(--fi-t-05); color: var(--accent-blue-light); white-space: nowrap; } /* le titre sur une ligne à côté de la photo (348 px de colonne à 1440) */
-    .section .equipe__appui { margin: 0 0 var(--fi-e4); font-size: var(--fi-t-1); line-height: 1.5; color: var(--text-muted); }
-    .equipe__appui a { color: var(--text-soft); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: rgba(255, 255, 255, 0.3); }
-    .equipe__appui a:hover, .equipe__appui a:focus-visible { color: var(--text-main); text-decoration-color: var(--accent-blue-light); }
-    .section .equipe__bio { margin: 0 0 var(--fi-e2); color: var(--text-soft); }
-    .section .equipe__rd { margin: 0; font-size: var(--fi-t-05); color: var(--text-muted); }
+    /* Le badge du Catalyseur : une preuve, pas une ligne de bas de page
+       (retour du 29/09/2026). Le pictogramme attend le logo officiel. */
+    .equipe__badge {
+      display: flex; align-items: center; gap: var(--fi-e2);
+      margin-top: var(--fi-e3); padding: var(--fi-e2);
+      border: 1px solid var(--glass-border); border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      color: inherit; text-decoration: none;
+      transition: border-color 0.3s ease, background-color 0.3s ease;
+    }
+    .equipe__badge:hover, .equipe__badge:focus-visible { border-color: rgba(96, 165, 250, 0.5); background: rgba(96, 165, 250, 0.06); }
+    .equipe__badge:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }
+    .equipe__badge-pic {
+      flex: none; display: grid; place-items: center; width: 40px; height: 40px;
+      border-radius: 50%; background: rgba(96, 165, 250, 0.14); color: var(--accent-blue-light);
+    }
+    .equipe__badge-pic svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .equipe__badge-texte { display: grid; gap: 2px; line-height: 1.35; font-size: var(--fi-t-1); color: var(--text-muted); }
+    .equipe__badge-texte strong { font-size: var(--fi-t-05); font-weight: 700; color: var(--text-main); }
 
     /* Les 4 familles : titre, phrase client, compétences en étiquettes. */
     .familles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--fi-e3); }
@@ -2065,16 +2080,28 @@
     .section .equipe__garantie-titre { margin: 0 0 var(--fi-e05); font-size: var(--fi-t0); font-weight: 700; line-height: 1.3; color: var(--text-main); }
     .section .equipe__garantie p:last-child { margin: 0; font-size: var(--fi-t-05); line-height: 1.5; color: var(--text-soft); }
 
-    /* Temps 2 : le titre à gauche, l'orbite à droite. */
-    .equipe__reseau { align-items: center; }
-    .section .equipe__reseau-titre { margin: 0; max-width: 20ch; }
+    /* Temps 2 (retour du 29/09/2026) : à gauche le titre, sa phrase et le
+       geste suivant, empilés au centre de l'orbite ; à droite l'orbite.
+       Le titre et la question du CTA avaient la même forme : la question
+       passe en texte secondaire, c'est le bouton qui porte le geste. */
+    .equipe__reseau {
+      position: relative; /* l'ancre #partenaires s'y accroche */
+      grid-template-areas: "tete orbite" "suite orbite";
+      grid-template-rows: 1fr 1fr; align-items: stretch;
+    }
+    .equipe__reseau-tete { grid-area: tete; align-self: end; }
+    .equipe__reseau > .orbite { grid-area: orbite; }
+    .section .equipe__reseau-titre { margin-bottom: var(--fi-e2); }
+    .section .equipe__reseau-intro { margin: 0; font-size: var(--fi-t0); color: var(--text-soft); max-width: 30ch; }
 
     /* Le geste suivant : là où la confiance est la plus haute. */
     .equipe__suite {
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
-      gap: var(--fi-e2) var(--fi-e3); margin-top: var(--fi-e8);
+      grid-area: suite; align-self: start;
+      display: flex; flex-direction: column; align-items: flex-start; gap: var(--fi-e2);
+      margin-top: var(--fi-e4); padding-top: var(--fi-e4);
+      border-top: 1px solid var(--glass-border);
     }
-    .section .equipe__suite p { margin: 0; font-size: var(--fi-t1); font-weight: 600; color: var(--text-main); }
+    .section .equipe__suite p { margin: 0; font-size: var(--fi-t-05); color: var(--text-muted); }
 
     .orbite { position: relative; height: 480px; } /* 3 rangées de cartes (jusqu'à 144 px) + 24 px d'air : tient à 1280×720 */
     .orbite__fils {
@@ -2157,7 +2184,9 @@
     @media (max-width: 899px) {
       .equipe__temps { grid-template-columns: 1fr; gap: var(--fi-e4); }
       .equipe__temps + .equipe__temps { margin-top: var(--fi-e8); }
-      .section .equipe__reseau-titre { max-width: none; }
+      .equipe__reseau { grid-template-areas: "tete" "orbite" "suite"; grid-template-rows: auto; }
+      .section .equipe__sous-titre { font-size: var(--fi-t1); }
+      .equipe__suite { margin-top: 0; }
       .orbite { height: auto; }
       .orbite__fils,
       .orbite__centre { display: none; }
@@ -3032,9 +3061,12 @@
                    alt="Corentin Duboc, fondateur de Fractal Innov" width="1024" height="1280" loading="lazy" decoding="async">
               <p><strong>Corentin Duboc</strong><span>Architecte d'expériences WebXR</span></p>
             </div>
-            <p class="equipe__appui">Accompagné par le <a href="https://lecatalyseur.pold.fr/" target="_blank" rel="noopener">Catalyseur de Paris Ouest La Défense</a> (11e promotion) et son réseau d'experts de l'innovation</p>
-            <p class="equipe__bio">Un équipement trop lourd ou trop encombrant pour voyager, un procédé confidentiel, un geste qui ne s'écrit pas : je le mets en 3D, de l'atelier à la livraison.</p>
-            <p class="equipe__rd">Profil R&amp;D : je vous propose ce qui marche aujourd'hui, pas ce qui impressionne.</p>
+            <!-- Le badge du Catalyseur (retour du 29/09/2026 : plus visible).
+                 Pictogramme en attendant le logo officiel du Catalyseur. -->
+            <a class="equipe__badge" href="https://lecatalyseur.pold.fr/" target="_blank" rel="noopener">
+              <span class="equipe__badge-pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/></svg></span>
+              <span class="equipe__badge-texte"><span>Accompagné par le</span><strong>Catalyseur de Paris Ouest La Défense</strong><span>11e promotion · réseau d'experts de l'innovation</span></span>
+            </a>
             <div class="equipe__garantie">
               <p class="equipe__garantie-titre">L'expérience vous appartient</p>
               <p>Hébergée sur votre site ou installée sur vos postes, elle s'ouvre sur l'ordinateur, la tablette ou le téléphone de chaque collaborateur : pour vendre, former, transmettre.</p>
@@ -3047,19 +3079,19 @@
                 <span class="famille__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
                 <h4 class="famille__nom">Cadrer et piloter</h4>
                 <p class="famille__phrase">Je comprends votre besoin et je mène le projet jusqu'au bout.</p>
-                <p class="famille__outils">Atelier de 30 min · Conseil 3D/WebXR · Gestion de projet</p>
+                <p class="famille__outils">Atelier de 30 min · Conseil 3D/WebXR · R&amp;D et innovation · Gestion de projet</p>
               </li>
               <li class="famille">
                 <span class="famille__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg></span>
                 <h4 class="famille__nom">Mettre en 3D</h4>
                 <p class="famille__phrase">Votre équipement ou votre geste devient une scène fidèle et belle.</p>
-                <p class="famille__outils">Blender · Unity · Captation · Direction artistique</p>
+                <p class="famille__outils">Blender · Unity · Direction artistique</p>
               </li>
               <li class="famille">
                 <span class="famille__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 9l5 12 1.8-5.2L21 14z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/></svg></span>
                 <h4 class="famille__nom">Rendre interactif</h4>
                 <p class="famille__phrase">Ça marche dans le navigateur, et c'est évident à utiliser.</p>
-                <p class="famille__outils">Needle · WebXR · Développement web · UX et ergonomie</p>
+                <p class="famille__outils">WebXR · Développement web · UX et ergonomie</p>
               </li>
               <li class="famille">
                 <span class="famille__pic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0"/><path d="M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/></svg></span>
@@ -3073,7 +3105,10 @@
 
         <div class="equipe__temps equipe__reseau">
           <span class="equipe__ancre" id="partenaires" aria-hidden="true"></span>
-          <h3 class="equipe__sous-titre equipe__reseau-titre reveal">Quand votre projet demande plus, je mobilise des partenaires solides</h3>
+          <div class="equipe__reseau-tete reveal">
+            <h3 class="equipe__sous-titre equipe__reseau-titre">Quand votre projet demande plus</h3>
+            <p class="equipe__reseau-intro">Je mobilise des partenaires solides, choisis selon votre besoin.</p>
+          </div>
           <div class="orbite reveal" data-composant="orbite">
             <figure class="orbite__centre" aria-label="Fractal Innov">
               <span class="orbite__marque" aria-hidden="true"></span>
@@ -3101,11 +3136,10 @@
             </li>
             </ul>
           </div>
-        </div>
-
-        <div class="equipe__suite reveal">
-          <p>Votre besoin sort du cadre ? Parlons-en.</p>
-          <a class="hero-cta__btn hero-cta__btn--primary" href="#contact" data-reflet data-eclat><span>Réserver 30 min</span></a>
+          <div class="equipe__suite reveal">
+            <p>Votre besoin sort du cadre ? Parlons-en.</p>
+            <a class="hero-cta__btn hero-cta__btn--primary" href="#contact" data-reflet data-eclat><span>Réserver 30 min</span></a>
+          </div>
         </div>
       </section>
     </div>
