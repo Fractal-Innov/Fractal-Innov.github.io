@@ -5,8 +5,9 @@
    visiteur neuf arrivé en haut de page, les autres ne la voyaient jamais.
    Tout le monde voit désormais la même porte d'entrée dans le hero :
 
-     « Choisir mon usage »  ouvre (ou referme) la question du dock ;
-                            après un choix : « Pour former · changer »
+     « Votre besoin : [Choisir] »  ouvre (ou referme) la question du
+                            dock ; après un choix : « Votre besoin :
+                            ◎ Former [Changer] »
      « Son »                muet par défaut ; allume en « doux », coupe
      la ligne sous          « 3 réponses · le site s'adapte », tant
                             qu'aucun usage n'est choisi
@@ -39,36 +40,35 @@
 
   var boutonChoisir = depart.querySelector('[data-hero-choisir]');
   var texteChoisir = depart.querySelector('[data-hero-choisir-texte]');
+  var valeur = depart.querySelector('[data-hero-besoin]');
+  var texteValeur = depart.querySelector('[data-hero-besoin-texte]');
+  var picValeur = valeur.querySelector('use');
   var note = depart.querySelector('[data-hero-depart-note]');
   var boutonSon = depart.querySelector('[data-hero-son]');
-  /* Le verbe de chaque usage ; « Pour » est un <span> à part, que le
-     téléphone masque (« Former · changer ») : « Pour convaincre ·
-     changer » débordait de 30 px à 360 px avec la pastille « Son ». */
-  var VERBE = { convaincre: 'convaincre', former: 'former', garder: 'conserver' };
+  /* « Votre besoin : [Choisir] », puis « Votre besoin : ◎ Former
+     [Changer] » : la valeur se lit à part, le bouton ne porte que le
+     geste (retour du 29/09/2026). */
+  var NOM = { convaincre: 'Convaincre', former: 'Former', garder: 'Conserver' };
 
-  /* ── Choisir mon usage ─────────────────────────────────────────────── */
+  /* ── Votre besoin ──────────────────────────────────────────────────── */
   function majChoix(id) {
-    var choisi = VERBE.hasOwnProperty(id);
-    texteChoisir.textContent = '';
+    var choisi = NOM.hasOwnProperty(id);
+    valeur.hidden = !choisi;
     if (choisi) {
-      var pour = document.createElement('span');
-      pour.className = 'hero__choisir-pour';
-      pour.textContent = 'Pour ';
-      var verbe = document.createElement('span');
-      verbe.className = 'hero__choisir-verbe'; /* capitale au téléphone, sans « Pour » */
-      verbe.textContent = VERBE[id];
-      texteChoisir.appendChild(pour);
-      texteChoisir.appendChild(verbe);
-      texteChoisir.appendChild(document.createTextNode(' · changer'));
-    } else {
-      texteChoisir.textContent = 'Choisir mon usage';
+      texteValeur.textContent = NOM[id];
+      picValeur.setAttribute('href', '#pic-' + id);
     }
+    texteChoisir.textContent = choisi ? 'Changer' : 'Choisir';
+    /* Choisir est LE geste du hero (primaire) ; une fois fait, changer
+       devient secondaire. */
+    boutonChoisir.classList.toggle('hero-cta__btn--primary', !choisi);
+    boutonChoisir.classList.toggle('hero-cta__btn--secondary', choisi);
     note.hidden = choisi;
-    journal('invitation : « ' + texteChoisir.textContent + ' »');
+    journal('besoin : ' + (choisi ? NOM[id] + ' [Changer]' : '[Choisir]'));
   }
   boutonChoisir.addEventListener('click', function () {
-    if (window.FiDock.etat() === 'question') { window.FiDock.replier('re-clic sur « Choisir mon usage »'); return; }
-    window.FiDock.ouvrir('question', 'hero : choisir mon usage');
+    if (window.FiDock.etat() === 'question') { window.FiDock.replier('re-clic sur « Choisir »'); return; }
+    window.FiDock.ouvrir('question', 'hero : votre besoin');
     /* Le focus rejoint la question, sans faire sauter la page. */
     var titre = document.getElementById('situationsQuestion');
     if (titre) {

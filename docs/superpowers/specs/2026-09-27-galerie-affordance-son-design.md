@@ -744,7 +744,7 @@ une ancre ou un lien `?situation=` ne la voyaient jamais).
 
 | Sujet | Décision | Écartée |
 |---|---|---|
-| Porte d'entrée | bouton « Choisir mon usage » dans le hero, sous la signature ; après un choix « Pour former · changer » | le dock qui s'illumine avec « Commencez ici » |
+| Porte d'entrée | « Votre besoin : [Choisir] » dans le hero, avant la signature ; après un choix « Votre besoin : ◎ Former [Changer] » (la valeur se lit à part, le bouton ne porte que le geste, secondaire) | « Pour former · changer » dans un seul CTA ; le dock qui s'illumine avec « Commencez ici » |
 | Verrou | aucun : la question est une invitation, Échap et clic dehors la referment | verrou gardé quand la question est ouverte |
 | Ligne sous le bouton | « 3 réponses · le site s'adapte », tant qu'aucun usage n'est choisi | · |
 | Ouverture automatique | jamais : même expérience pour tous | au visiteur neuf, comme avant |
@@ -761,3 +761,12 @@ une ancre ou un lien `?situation=` ne la voyaient jamais).
   375 × 812 et 1440 × 900 ; question ouverte au téléphone, l'invitation
   s'efface et le texte reste au-dessus du dock ; garde du dock muette ;
   aucun défilement horizontal.
+- Rythme vertical du hero : trois groupes, trois distances (bureau /
+  téléphone) : pastille › titre 16, titre › chapeau 24 / 16, chapeau ›
+  action 40 / 32, action › signature 48 / 40. Tout était à 24 / 16.
+- Dégradé du titre : « par l'expérience » sur sa ligne partout, en
+  `width: fit-content` (la boîte faisait 732 px pour 502 px de texte, le
+  rose n'arrivait jamais) et `box-decoration-break: clone` s'il se coupe.
+- Au téléphone : « Votre besoin » en surtitre au-dessus de la rangée,
+  « Son » en pictogramme seul ; « Convaincre [Changer] » + son tient en
+  321 px pour 336 à 360 px.
