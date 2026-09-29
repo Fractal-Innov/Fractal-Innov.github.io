@@ -2249,7 +2249,7 @@
        plus seule ; « Son » l'allume ou le coupe (muet par défaut). Même
        vocabulaire que les CTA : primaire plein, secondaire au contour.
        ══════════════════════════════════════════════════════════════════ */
-    .hero__depart { display: flex; flex-direction: column; align-items: flex-start; gap: var(--fi-e1); margin-top: var(--fi-e2); }
+    .hero__depart { display: flex; flex-direction: column; align-items: flex-start; gap: var(--fi-e1); }
     .hero__depart[hidden] { display: none; }
     .hero__depart-rangee { display: flex; align-items: center; gap: var(--fi-e2); }
     .hero__choisir-fleche,
@@ -2260,9 +2260,11 @@
     .hero__choisir-fleche { transition: transform 0.2s ease; }
     .hero__choisir:hover .hero__choisir-fleche,
     .hero__choisir:focus-visible .hero__choisir-fleche { transform: translateX(3px); }
-    .hero__choisir[aria-expanded="true"] .hero__choisir-fleche { transform: rotate(-90deg); } /* la question est ouverte, en bas */
+    .hero__choisir[aria-expanded="true"] .hero__choisir-fleche { transform: rotate(90deg); } /* la flèche montre la question, ouverte en bas dans le dock */
     .hero__son { padding-inline: var(--fi-e2); gap: 0.4rem; }
-    .hero__son[aria-pressed="false"] { color: var(--text-muted); }
+    /* Coupé ne veut pas dire désactivé : le libellé reste lisible (70 %),
+       seul le pictogramme barré dit l'état. À 55 % il passait pour grisé. */
+    .hero__son[aria-pressed="false"] { color: var(--text-soft); }
     .hero__son[aria-pressed="false"] .hero__son-ondes,
     .hero__son[aria-pressed="true"] .hero__son-coupe { display: none; }
     .hero__depart-note { margin: 0; font-size: var(--fi-t-1); color: var(--text-muted); letter-spacing: 0.02em; }
@@ -2271,6 +2273,18 @@
        bouton qui l'a ouverte s'efface, le hero garde titre et chapeau. */
     @media (max-width: 767px) {
       html.fi-question .hero__depart { display: none; }
+      /* 312 px utiles à 360 : « Son » passe en pictogramme seul (cible de
+         44 px, nom gardé pour les lecteurs d'écran) et le libellé choisi
+         perd « Pour ». La rangée peut passer à la ligne en dernier
+         recours plutôt que de rogner un bouton. */
+      .hero__depart-rangee { flex-wrap: wrap; }
+      .hero__son { width: 44px; padding-inline: 0; }
+      .hero__son span {
+        position: absolute; width: 1px; height: 1px; overflow: hidden;
+        clip-path: inset(50%); white-space: nowrap;
+      }
+      .hero__choisir-pour { display: none; }
+      .hero__choisir-verbe { text-transform: capitalize; }
     }
     @media (prefers-reduced-motion: reduce) { .hero__choisir-fleche { transition: none; } }
   </style>
@@ -2525,24 +2539,16 @@
           <a class="hero-cta__btn hero-cta__btn--secondary" href="#contact"><span>Réserver 30 min</span></a>
         </div>
 
-        <a class="hero__identite" href="#equipe">
-          <span class="hero__avatar">
-            <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
-          </span>
-          <span>
-            <span class="hero__nom">Corentin Duboc</span><br>
-            <span class="hero__role">Architecte d'expériences WebXR</span>
-          </span>
-        </a>
-
         <!-- L'invitation (décision du 29/09/2026) : la question du dock ne
              s'ouvre plus seule, tout visiteur voit la même porte d'entrée.
              Masquée sans JavaScript : la question reste alors dans le hero,
-             en liens. Tenue par composants/hero-depart.js. -->
+             en liens. Tenue par composants/hero-depart.js.
+             Placée AVANT la signature (passe d'affordance du 29/09/2026) :
+             l'action suit la promesse, la signature ferme le hero. -->
         <div class="hero__depart" data-hero-depart hidden>
           <div class="hero__depart-rangee">
             <button class="hero-cta__btn hero-cta__btn--primary hero__choisir" type="button"
-                    data-hero-choisir data-dock-ouvre aria-expanded="false">
+                    data-hero-choisir data-dock-ouvre data-reflet data-eclat aria-expanded="false">
               <span data-hero-choisir-texte>Choisir mon usage</span>
               <svg class="hero__choisir-fleche" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </button>
@@ -2558,6 +2564,16 @@
           </div>
           <p class="hero__depart-note" data-hero-depart-note>3 réponses · le site s'adapte</p>
         </div>
+
+        <a class="hero__identite" href="#equipe">
+          <span class="hero__avatar">
+            <img src="/media/accueil/portrait.webp" alt="" width="44" height="44">
+          </span>
+          <span>
+            <span class="hero__nom">Corentin Duboc</span><br>
+            <span class="hero__role">Architecte d'expériences WebXR</span>
+          </span>
+        </a>
       </div>
     </section>
 

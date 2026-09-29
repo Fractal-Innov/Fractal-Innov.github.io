@@ -41,12 +41,28 @@
   var texteChoisir = depart.querySelector('[data-hero-choisir-texte]');
   var note = depart.querySelector('[data-hero-depart-note]');
   var boutonSon = depart.querySelector('[data-hero-son]');
-  var POUR = { convaincre: 'Pour convaincre', former: 'Pour former', garder: 'Pour conserver' };
+  /* Le verbe de chaque usage ; « Pour » est un <span> à part, que le
+     téléphone masque (« Former · changer ») : « Pour convaincre ·
+     changer » débordait de 30 px à 360 px avec la pastille « Son ». */
+  var VERBE = { convaincre: 'convaincre', former: 'former', garder: 'conserver' };
 
   /* ── Choisir mon usage ─────────────────────────────────────────────── */
   function majChoix(id) {
-    var choisi = POUR.hasOwnProperty(id);
-    texteChoisir.textContent = choisi ? POUR[id] + ' · changer' : 'Choisir mon usage';
+    var choisi = VERBE.hasOwnProperty(id);
+    texteChoisir.textContent = '';
+    if (choisi) {
+      var pour = document.createElement('span');
+      pour.className = 'hero__choisir-pour';
+      pour.textContent = 'Pour ';
+      var verbe = document.createElement('span');
+      verbe.className = 'hero__choisir-verbe'; /* capitale au téléphone, sans « Pour » */
+      verbe.textContent = VERBE[id];
+      texteChoisir.appendChild(pour);
+      texteChoisir.appendChild(verbe);
+      texteChoisir.appendChild(document.createTextNode(' · changer'));
+    } else {
+      texteChoisir.textContent = 'Choisir mon usage';
+    }
     note.hidden = choisi;
     journal('invitation : « ' + texteChoisir.textContent + ' »');
   }
