@@ -999,61 +999,61 @@
     }
 
     /* ══════════════════════════════════════════════════════════════════════
-       PIED DE PAGE
+       PIED DE PAGE (passe du 29/09/2026)
 
-       ⚠️ La rangée de liens n'est pas décorative : ce sont les pages déjà
-       indexées du site. Sans lien entrant depuis la racine, leur
-       référencement s'éteint. Elle reste jusqu'à ce que la refonte les ait
-       reprises une par une, et pas une minute de moins.
+       La marque, le site, les démos, le contact ; en bas le © et les
+       mentions légales. Il porte AUSSI la réserve du dock : son fond descend
+       jusqu'en bas de page (avant, la marge du body laissait une bande du
+       dégradé sous le footer).
+       ⚠️ Les pages de l'ancienne offre n'y sont plus : elles restent dans
+       sitemap.xml jusqu'à la passe référencement.
        ══════════════════════════════════════════════════════════════════════ */
     .footer {
-      position: relative;
-      z-index: 2;
-      padding: 3rem;
+      position: relative; z-index: 2;
+      padding: var(--fi-e8) var(--fi-e3) calc(var(--fi-dock-h, 64px) + var(--fi-e2) + var(--fi-e4) + env(safe-area-inset-bottom));
       border-top: 1px solid rgba(255, 255, 255, 0.06);
       background: var(--bg-base);
     }
     .footer__inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 2rem;
+      max-width: 1100px; margin: 0 auto;
+      display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+      gap: var(--fi-e6) var(--fi-e4);
     }
-    .footer p { font-size: .85rem; color: var(--text-muted); margin: 0; }
-    .footer a { color: var(--text-muted); transition: color 0.2s ease; }
-    .footer a:hover { color: var(--text-main); }
-    .footer__titre {
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+    .footer p { margin: 0; font-size: var(--fi-t-05); color: var(--text-muted); }
+    .footer a { color: var(--text-muted); text-decoration: none; transition: color 0.2s ease; }
+    .footer a:hover, .footer a:focus-visible { color: var(--text-main); }
+    .footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--fi-e1); }
+    .footer li a { font-size: var(--fi-t-05); }
+    .footer__logo { display: inline-block; margin-bottom: var(--fi-e2); }
+    .footer__logo img { display: block; width: 168px; height: auto; }
+    .footer__catalyseur { display: inline-block; margin-top: var(--fi-e3); font-size: var(--fi-t-1); line-height: 1.45; }
+    .footer__catalyseur strong { font-weight: 600; color: var(--text-soft); }
+    /* `.footer .footer__titre` : il faut battre `.footer p` (0,1,1). */
+    .footer .footer__titre {
+      margin: 0 0 var(--fi-e2);
+      font-size: var(--fi-t-1); font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
       color: rgba(240, 240, 240, 0.4);
-      margin: 0 0 0.75rem;
     }
-    .footer__pages {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem 1.25rem;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      max-width: 34rem;
-    }
-    .footer__pages a { font-size: 0.88rem; }
+    .footer .footer__rdv { color: #fff; margin-bottom: var(--fi-e2); }
     .footer__bas {
-      max-width: 1100px;
-      margin: 2.5rem auto 0;
-      padding-top: 1.5rem;
+      max-width: 1100px; margin: var(--fi-e6) auto 0; padding-top: var(--fi-e3);
       border-top: 1px solid rgba(255, 255, 255, 0.06);
-      font-size: 0.8rem;
-      color: rgba(240, 240, 240, 0.4);
+      display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--fi-e1) var(--fi-e3);
     }
-    @media (max-width: 767px) {
-      .footer { padding: 2rem 1.5rem; }
-      .footer__inner { flex-direction: column; gap: 2rem; }
+    .footer .footer__bas p, .footer .footer__bas a { font-size: var(--fi-t-1); color: rgba(240, 240, 240, 0.4); }
+    .footer .footer__bas a:hover, .footer .footer__bas a:focus-visible { color: var(--text-main); }
+    @media (max-width: 899px) {
+      .footer__inner { grid-template-columns: 1fr 1fr; }
+      .footer__marque { grid-column: 1 / -1; }
+    }
+    /* Téléphone : « Le site » double le dock, il s'efface ; démos et
+       contact restent côte à côte, puis s'empilent sous 420 px. */
+    @media (max-width: 599px) {
+      .footer { padding-top: var(--fi-e6); padding-inline: var(--fi-e3); }
+      .footer__col--site { display: none; }
+    }
+    @media (max-width: 419px) {
+      .footer__inner { grid-template-columns: 1fr; gap: var(--fi-e4); }
     }
 
     /* ══════════════════════════════════════════════════════════════════════
@@ -1321,13 +1321,15 @@
     .contact__links a { height: auto; min-height: var(--fi-cible); font-size: var(--fi-t-05); } /* 42 px avant */
 
     /* ── Le pied de page ─────────────────────────────────────────────── */
-    .footer p, .footer__titre, .footer__bas { font-size: var(--fi-t-1); }
-    .footer__pages a { font-size: var(--fi-t-05); }
     @media (pointer: coarse) {
       /* Au doigt, un lien isolé prend la cible entière (17 à 18 px avant).
          Réservé au tactile : à la souris, la liste reste compacte. */
-      .footer__pages a,
-      .footer p > a { display: inline-flex; align-items: center; min-height: var(--fi-cible); }
+      .footer li a,
+      .footer__bas a { display: inline-flex; align-items: center; min-height: var(--fi-cible); }
+      /* Le Catalyseur mêle texte et <strong> : en flex, ils se rangeaient
+         côte à côte ; en bloc, la phrase coule et le rembourrage fait la cible. */
+      .footer__catalyseur { display: block; padding-block: var(--fi-e1); }
+      .footer ul { gap: 0; }
     }
 
     /* ══════════════════════════════════════════════════════════════════
@@ -1467,7 +1469,8 @@
     @media (min-width: 768px) { .logo-coin { top: var(--fi-e3); left: var(--fi-e3); } } /* 24 px dès la tablette */
     /* Le pied de page ne passe pas sous le dock : sa hauteur mesurée
        (--fi-dock-h, dock.js) plus 16 px de respiration. */
-    body { padding-bottom: calc(var(--fi-dock-h, 64px) + var(--fi-e2) + env(safe-area-inset-bottom)); }
+    /* ⚠️ Depuis le 29/09/2026 c'est le footer qui porte cette réserve (son
+       fond descend jusqu'en bas) : le body n'en ajoute plus. */
 
     /* « Réserver 30 min » : le dock le porte dans sa rangée ; le hero ne le
        garde que sans JavaScript (pas de dock). */
@@ -3227,28 +3230,58 @@
     </section>
   </main>
 
+  <!-- Le pied de page (passe du 29/09/2026) : la marque, le site, les
+       démos, le contact. Les pages de l'ancienne offre (STAND/ART/
+       CONFIGURE/LEARN, pilote, méthode) en sont sorties : elles restent en
+       ligne et dans sitemap.xml, la passe référencement décidera de leur
+       sort (réécrire, rediriger ou désindexer). -->
   <footer class="footer">
     <div class="footer__inner">
-      <div>
-        <p><b>Fractal Innov</b><br>Transmettre les savoirs par l'expérience.</p>
-        <p style="margin-top:0.5rem"><a href="mailto:corentin.duboc@fractal-innov.fr">corentin.duboc@fractal-innov.fr</a></p>
+      <div class="footer__marque">
+        <a class="footer__logo" href="#top" aria-label="Fractal Innov, retour en haut de la page">
+          <img src="/media/marque/fractalinnov-logo.webp" alt="" width="770" height="142" loading="lazy" decoding="async">
+        </a>
+        <p>Transmettre les savoirs par l'expérience.</p>
+        <a class="footer__catalyseur" href="https://lecatalyseur.pold.fr/" target="_blank" rel="noopener">Accompagné par le <strong>Catalyseur de Paris Ouest La Défense</strong></a>
       </div>
 
-      <nav aria-labelledby="footer-pages-titre">
-        <p class="footer__titre" id="footer-pages-titre">En savoir plus</p>
-        <ul class="footer__pages">
-          <li><a href="/webxr-dans-le-navigateur/">Comment ça marche</a></li>
-          <li><a href="/stand/">STAND</a></li>
-          <li><a href="/art/">ART</a></li>
-          <li><a href="/configure/">CONFIGURE</a></li>
-          <li><a href="/learn/">LEARN</a></li>
-          <li><a href="/pilote-15-jours/">Le pilote en 15 jours</a></li>
-          <li><a href="/methode-et-contact/">Méthode et contact</a></li>
+      <nav class="footer__col footer__col--site" aria-labelledby="footer-site-titre">
+        <p class="footer__titre" id="footer-site-titre">Le site</p>
+        <ul>
+          <li><a href="#offre">L'offre</a></li>
+          <li><a href="#demos">Démos</a></li>
+          <li><a href="#approche">L'approche</a></li>
+          <li><a href="#equipe">L'équipe</a></li>
         </ul>
       </nav>
+
+      <nav class="footer__col" aria-labelledby="footer-demos-titre">
+        <p class="footer__titre" id="footer-demos-titre">Les démos</p>
+        <ul>
+          <li><a href="/stand/">STAND</a></li>
+          <li><a href="/midipile/">Midipile</a></li>
+          <li><a href="/rayon-x/">Rayon X</a></li>
+          <li><a href="https://albrice-montfort.github.io/ICAM-AgoraPod/" target="_blank" rel="noopener">AgoraPod</a></li>
+          <li><a href="/moulage-mathilde-thiennot/">À fleur d'écorce</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer__col footer__contact">
+        <p class="footer__titre">Contact</p>
+        <a class="hero-cta__btn hero-cta__btn--primary footer__rdv" href="#contact"><span>Réserver 30 min</span></a>
+        <ul>
+          <li><a href="mailto:corentin.duboc@fractal-innov.fr" title="corentin.duboc@fractal-innov.fr">Écrire un e-mail</a></li>
+          <li><a href="https://www.linkedin.com/in/corentin-duboc/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+          <li><a href="https://www.instagram.com/fractalinnov/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a href="https://s.blinq.me/wEhJoOeZIrvGvSIe46Yy?bs=icl" target="_blank" rel="noopener noreferrer">Carte de visite</a></li>
+        </ul>
+      </div>
     </div>
 
-    <p class="footer__bas" id="footerCopyright"></p>
+    <div class="footer__bas">
+      <p id="footerCopyright">© Fractal Innov</p>
+      <a href="/mentions-legales/">Mentions légales</a>
+    </div>
   </footer>
 
   <script>
