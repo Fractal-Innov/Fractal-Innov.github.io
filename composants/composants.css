@@ -554,6 +554,27 @@
 .fi-partage__etat { margin: var(--fi-e2) 0 0; font-size: var(--fi-t-05); color: #34d399; }
 .fi-partage__etat:empty { display: none; }
 @media (prefers-reduced-motion: reduce) { .fi-partage__qr--pli { animation: none; } }
+/* Au téléphone (29/09/2026, spec partage § 14) : un autre téléphone
+   scanne celui-ci. Le QR passe AU-DESSUS du texte, en 200 px (148 à côté
+   du texte au bureau, lu à un mètre ; ici on le tend à bout de bras). */
+@media (max-width: 767px) {
+  .fi-partage__corps { flex-direction: column; align-items: stretch; gap: var(--fi-e2); }
+  .fi-partage__qr { width: 200px; height: 200px; align-self: center; }
+  /* Le bouton Partager est dans le sommaire au téléphone : le témoin
+     vert passe sur « Tous », sinon personne ne le verrait. */
+  .fi-dock[data-telecommande="connectee"] [data-dock-tous] { position: relative; }
+  .fi-dock[data-telecommande="connectee"] [data-dock-tous]::after {
+    content: ""; position: absolute; top: 9px; right: 9px; width: 8px; height: 8px; border-radius: 50%;
+    background: #34d399; box-shadow: 0 0 0 2px var(--fi-fond-plein);
+  }
+}
+/* Téléphone court (360 × 740) : le bandeau demandait 562 px pour 518
+   (70 % de l'écran), « Copier » passait sous le bord. QR à 168 px
+   (2,6 cm à l'écran, toujours lisible) et 16 px de marge intérieure. */
+@media (max-width: 767px) and (max-height: 759px) {
+  .fi-partage__qr { width: 168px; height: 168px; }
+  .fi-dock__vue--partage { padding: var(--fi-e2); }
+}
 
 @keyframes fiDockPose { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes fiDockFondu { from { opacity: 0; } to { opacity: 1; } }

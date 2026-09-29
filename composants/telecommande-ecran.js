@@ -84,16 +84,41 @@
     } });
   }
 
+  /* ── L'écran reste allumé tant qu'on le pilote (29/09/2026) ──────────
+     Un téléphone qui sert d'écran n'est plus touché : sans verrou de
+     veille, il s'éteindrait au bout de ~30 s et la page se figerait
+     (plus de défilement, plus de relais). Wake Lock : Chrome, Safari iOS
+     16.4+ ; ailleurs, rien ne change. Le navigateur lâche le verrou quand
+     l'onglet passe en arrière-plan : on le reprend au retour. */
+  var veille = null;
+  function tenirEveille(oui) {
+    if (!('wakeLock' in navigator)) return;
+    if (oui && !veille && document.visibilityState === 'visible') {
+      navigator.wakeLock.request('screen').then(function (v) {
+        veille = v;
+        journal('écran gardé allumé pendant le pilotage');
+        v.addEventListener('release', function () { veille = null; });
+      }, function (e) { journal('veille : verrou refusé (' + e.name + ')'); });
+    } else if (!oui && veille) {
+      veille.release();
+      veille = null;
+      journal('veille rendue au système');
+    }
+  }
+  document.addEventListener('visibilitychange', function () { if (presente) tenirEveille(true); });
+
   function marquerPresence() {
     clearTimeout(minuteriePresence);
     minuteriePresence = setTimeout(function () {
       presente = false;
+      tenirEveille(false);
       if (dock) dock.removeAttribute('data-telecommande');
       journal('plus de nouvelles du téléphone depuis ' + SILENCE_MAX / 1000 + ' s : témoin éteint');
       changer('prete');
     }, SILENCE_MAX);
     if (presente) return;
     presente = true;
+    tenirEveille(true);
     if (dock) dock.setAttribute('data-telecommande', 'connectee');
     changer('connectee');
     /* Le bandeau se referme : l'écran appartient à la présentation. */

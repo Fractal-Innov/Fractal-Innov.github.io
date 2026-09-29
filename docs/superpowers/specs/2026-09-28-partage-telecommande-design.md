@@ -227,3 +227,26 @@ Le protocole du Salon, inchangé côté serveur :
 - Hors périmètre, relevé en passant : à 360 × 740 avec une situation
   choisie, le bouton « Voir la page » de la démo mise en avant passe
   8 px sous le dock.
+
+## 14. Partager et piloter depuis un téléphone (29/09/2026)
+
+Retour : montrer que « ce qu'on a dans la poche » suffit, un téléphone
+qui en pilote un autre. Cela revient sur la ligne « Page ouverte sur un
+téléphone » du § 2 (lien seul, sans QR ni télécommande).
+
+| Sujet | Décision | Écartée |
+|---|---|---|
+| « Cet endroit » au téléphone | QR de 200 px au-dessus du lien (168 px sur un écran de moins de 760 px de haut) | QR derrière un bouton « Montrer le QR » |
+| Télécommande au téléphone | même onglet qu'au bureau : le téléphone devient l'écran | un mode « présentation » à activer |
+| Consignes | « À scanner avec un autre téléphone : … » au téléphone | celles du bureau (« Scannez avec l'appareil photo du téléphone ») |
+| Témoin | le point vert passe sur « Tous » au téléphone (Partager y est dans le sommaire) | aucun témoin au téléphone |
+| Veille | l'écran piloté reste allumé (Wake Lock) tant qu'un téléphone est présent, rendu au système 45 s après le dernier `BONJOUR` | laisser le téléphone s'éteindre (~30 s sans toucher : la page se fige) |
+
+- Mesures : à 375 × 812 le bandeau fait 562 px et tient ; à 360 × 740 il
+  en demandait 562 pour 518, d'où le QR de 168 px et 16 px de marge :
+  514 / 514. Bureau inchangé (QR de 148 px à côté du texte).
+- Parcours simulé (`outils/telephone-simule.mjs`) : téléphone-écran à
+  360 × 740, salle tirée, commande reçue et traduite, bandeau refermé,
+  point vert sur « Tous ».
+- ⚠️ Le Wake Lock ne se teste que sur un vrai appareil visible (le
+  navigateur le refuse à un onglet caché).
