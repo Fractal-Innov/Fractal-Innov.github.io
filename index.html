@@ -9,9 +9,13 @@
        JavaScript, tout reste visible au lieu de disparaître pour toujours. -->
   <script>document.documentElement.className += ' js';</script>
 
-  <title>Fractal Innov : agence et conseil WebXR, des expériences 3D dans le navigateur</title>
+  <!-- Titre et description écrits avec les mots du prospect (passe SEO du
+       29/09/2026) : « équipement », « 3D », « vendre », « former », « sans
+       application ». « WebXR » reste dans les données structurées, pas dans
+       ce que Google affiche : le prospect ne le tape pas. -->
+  <title>Fractal Innov : vos équipements en 3D, pour vendre et former</title>
   <meta name="description"
-    content="Fractal Innov conçoit des expériences 3D, AR et VR qui s'ouvrent dans un navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation scientifique.">
+    content="Votre équipement ou votre savoir-faire en 3D, pour vendre, former et transmettre, dans le navigateur et sans application. Premier atelier de 30 min offert.">
   <link rel="canonical" href="https://www.fractal-innov.fr/">
   <meta name="robots" content="index,follow">
   <meta name="theme-color" content="#090b13">
@@ -25,15 +29,15 @@
   <meta property="og:site_name" content="Fractal Innov">
   <meta property="og:title" content="Transmettre les savoirs par l'expérience">
   <meta property="og:description"
-    content="Des expériences 3D, AR et VR accessibles directement depuis un navigateur, sans application. Pour l'industrie, la formation, l'art et la médiation scientifique.">
+    content="Votre équipement ou votre savoir-faire en 3D, pour vendre, former et transmettre, dans le navigateur et sans application. Premier atelier de 30 min offert.">
   <meta property="og:image" content="https://www.fractal-innov.fr/media/accueil/og-accueil.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Fractal Innov, agence et conseil WebXR">
+  <meta property="og:image:alt" content="Fractal Innov : un équipement en 3D, ouvert dans le navigateur">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Transmettre les savoirs par l'expérience">
   <meta name="twitter:description"
-    content="Des expériences 3D, AR et VR accessibles directement depuis un navigateur, sans application.">
+    content="Votre équipement ou votre savoir-faire en 3D, pour vendre, former et transmettre. Sans application.">
   <meta name="twitter:image" content="https://www.fractal-innov.fr/media/accueil/og-accueil.jpg">
 
   <link rel="icon" href="/icones/fi-32.png" sizes="32x32" type="image/png">
@@ -57,8 +61,8 @@
   <script defer src="/composants/hero-depart.js"></script> <!-- l'invitation du hero : « Choisir mon usage » et le son -->
   <script defer src="/composants/partage.js"></script> <!-- le bandeau « Partager » : cet endroit, la télécommande -->
   <script defer src="/composants/telecommande-ecran.js"></script> <!-- la télécommande : l'écran obéit au téléphone -->
-  <script defer src="/composants/demos.js"></script>
-  <script defer src="/composants/boucle.js"></script> <!-- les grands aperçus jouent une boucle vidéo, une à la fois --> <!-- les démos : une en avant, les autres en bande -->
+  <script defer src="/composants/demos.js"></script> <!-- les démos : une en avant, les autres en bande -->
+  <script defer src="/composants/boucle.js"></script> <!-- les grands aperçus jouent une boucle vidéo, une à la fois -->
   <script defer src="/composants/orbite.js"></script> <!-- l'équipe : le fondateur au centre, les fils vers le réseau -->
   <script defer src="/composants/garde-ecran.js"></script> <!-- ?debug=1 : ce qui tient à l'écran, section par section -->
   <link rel="stylesheet" href="/composants/composants.css">
@@ -73,14 +77,43 @@
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Organization",
+        "@type": ["Organization", "ProfessionalService"],
         "@id": "https://www.fractal-innov.fr/#organisation",
         "name": "Fractal Innov",
+        "slogan": "Transmettre les savoirs par l'expérience",
         "url": "https://www.fractal-innov.fr/",
         "email": "corentin.duboc@fractal-innov.fr",
         "logo": "https://www.fractal-innov.fr/media/marque/fi-logo-252.webp",
-        "description": "Agence et conseil WebXR : des expériences 3D, AR et VR qui s'ouvrent dans un navigateur, sans application.",
+        "image": "https://www.fractal-innov.fr/media/accueil/og-accueil.jpg",
+        "description": "Fractal Innov met en 3D, une seule fois, le savoir d'une entreprise (un équipement, un procédé, un geste) pour qu'il serve à vendre, à former et à transmettre, dans le navigateur, sans application. Le client garde l'outil.",
+        "foundingDate": "2024-11-01",
         "founder": { "@id": "https://www.fractal-innov.fr/#fondateur" },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Suresnes",
+          "postalCode": "92150",
+          "addressRegion": "Île-de-France",
+          "addressCountry": "FR"
+        },
+        "areaServed": [
+          { "@type": "AdministrativeArea", "name": "Île-de-France" },
+          { "@type": "Country", "name": "France" }
+        ],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Une expérience 3D, trois usages",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service",
+              "name": "Démonstrateur 3D pour convaincre un acheteur",
+              "description": "Votre équipement présenté en 3D sur un salon ou en rendez-vous, sans le transporter." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service",
+              "name": "Formation interactive en 3D",
+              "description": "Vos nouveaux arrivants apprennent sur l'équipement en 3D, sans arrêter la production ni exposer ce qui est confidentiel." } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service",
+              "name": "Préservation d'un savoir-faire en 3D",
+              "description": "Un geste ou un procédé rejouable étape par étape, pour qu'il ne parte pas avec ceux qui le maîtrisent." } }
+          ]
+        },
         "sameAs": [
           "https://www.linkedin.com/in/corentin-duboc/",
           "https://www.instagram.com/fractalinnov/"
@@ -90,8 +123,9 @@
         "@type": "Person",
         "@id": "https://www.fractal-innov.fr/#fondateur",
         "name": "Corentin Duboc",
-        "jobTitle": "Architecte d'expériences WebXR et 3D temps réel",
-        "knowsAbout": ["WebXR", "Réalité augmentée", "3D temps réel", "Unity", "Blender"],
+        "jobTitle": "Architecte d'expériences WebXR",
+        "image": "https://www.fractal-innov.fr/media/accueil/portrait.webp",
+        "knowsAbout": ["3D temps réel", "Réalité augmentée", "WebXR", "Formation interactive", "Direction artistique", "UX et ergonomie", "Gestion de projet", "Unity", "Blender"],
         "worksFor": { "@id": "https://www.fractal-innov.fr/#organisation" },
         "url": "https://www.fractal-innov.fr/",
         "sameAs": ["https://www.linkedin.com/in/corentin-duboc/"]

@@ -1,14 +1,17 @@
+# Tous les robots, y compris ceux des modèles de langage, autorisés
+# délibérément : être cité par un assistant, c'est être trouvé.
+# ⚠️ Un robot ne suit QUE le groupe qui le nomme : les exclusions valent pour
+# tous parce que tous sont dans ce même groupe.
 User-agent: *
-Allow: /
-
-# Robots des modèles de langage — autorisés délibérément.
 User-agent: GPTBot
-Allow: /
 User-agent: ClaudeBot
-Allow: /
 User-agent: PerplexityBot
-Allow: /
 User-agent: Google-Extended
 Allow: /
+# Les fichiers de travail publiés avec le dépôt (le workflow publie tout) :
+# ni liés ni destinés aux visiteurs, on ne les fait pas explorer.
+Disallow: /docs/
+Disallow: /outils/
+Disallow: /VENTE.md
 
 Sitemap: https://www.fractal-innov.fr/sitemap.xml
