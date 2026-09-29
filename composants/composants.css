@@ -592,3 +592,37 @@
   .fi-dock, .fi-dock__vue, .fi-dock .fi-pilier__rond { animation: none !important; }
 }
 .fi-sobre .fi-dock, .fi-sobre .fi-dock__vue, .fi-sobre .fi-dock .fi-pilier__rond { animation: none !important; }
+
+/* ══ LES BOUCLES DES APERÇUS (composants/boucle.js, 29/09/2026) ═══════
+   La vidéo se pose SUR l'image, invisible tant qu'elle ne joue pas :
+   l'image reste l'aperçu tant que la boucle n'a pas démarré (et pour
+   toujours si elle échoue). Le voile ::after de .media-16x9 passe
+   par-dessus, comme sur l'image. */
+.boucle__video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity var(--fi-fx-moyen, 0.4s) ease;
+  pointer-events: none;
+}
+[data-boucle-joue] > .boucle__video { opacity: 1; }
+.boucle__pause {
+  position: absolute; z-index: 2;
+  right: var(--fi-e1); bottom: var(--fi-e1);
+  display: inline-grid; place-items: center;
+  width: var(--fi-cible, 44px); height: var(--fi-cible, 44px); /* 44 px : cible tactile */
+  border-radius: 50%;
+  border: 1px solid var(--glass-border-highlight);
+  background: rgba(15, 18, 32, 0.62);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+.boucle__pause[hidden] { display: none; }
+.boucle__pause:hover, .boucle__pause:focus-visible { color: var(--text-main); border-color: var(--accent-blue); }
+.boucle__pause:focus-visible { outline: 2px solid var(--accent-blue); outline-offset: 2px; }
+.boucle__pause svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.boucle__pause[aria-pressed="false"] .boucle__pause-lecture,
+.boucle__pause[aria-pressed="true"] .boucle__pause-barres { display: none; }
+@media (prefers-reduced-motion: reduce) { .boucle__video { transition: none; } }
