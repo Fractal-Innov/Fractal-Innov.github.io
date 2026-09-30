@@ -59,6 +59,16 @@ jobs:
           test -f index.html || { echo "::error::index.html manquant : ce dépôt ne porte pas de build."; exit 1; }
           test -f .nojekyll || { echo "::error::.nojekyll manquant : Pages ignorerait les dossiers commençant par un souligné."; exit 1; }
 
+      - name: Retirer les fichiers de travail
+        # ⚠️ « Tel quel » vaut pour le site, pas pour l'atelier : sans cette
+        # étape, la fiche de vente (VENTE.md : pitch, objections, journal),
+        # les plans (docs/) et les scripts (outils/) étaient servis en ligne
+        # (relevé le 30/09/2026). On les retire de la copie du runner, jamais
+        # du dépôt. Un nouveau fichier de travail à la racine s'ajoute ici.
+        run: |
+          rm -rf VENTE.md docs outils
+          echo "Retirés de la publication : VENTE.md, docs/, outils/"
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
