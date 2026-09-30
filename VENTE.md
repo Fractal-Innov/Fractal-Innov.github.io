@@ -1,9 +1,13 @@
 # Fractal Innov : fiche de vente de l'accueil
 
-> ⚠️ Ce dépôt est **public**, et tant que le workflow de publication n'exclut
-> pas ce fichier, il est aussi servi sur www.fractal-innov.fr/VENTE.md.
-> **Aucun nom de prospect ni de contact ici** : le détail nominatif vit hors
-> de ce dépôt, comme pour `stand/VENTE.md`.
+> ⚠️ **Suspendue depuis le pivot du 29-30/09/2026** : l'accueil redirige vers
+> `/stand/`, et la seule fiche de vente active est `stand/VENTE.md`. Ce qui
+> suit (trois usages) est gardé pour l'histoire ; aucun support ne doit s'en
+> servir.
+>
+> Ce dépôt est **public** (le fichier n'est plus publié sur le site depuis le
+> 30/09/2026, mais reste lisible sur GitHub). **Aucun nom de prospect ni de
+> contact ici** : le détail nominatif vit hors de ce dépôt.
 >
 > Créée le 25/09/2026 (rôle `commercial`), à partir des décisions prises
 > pendant le brainstorming du parcours interactif. Les rubriques marquées
