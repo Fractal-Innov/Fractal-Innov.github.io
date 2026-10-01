@@ -8,7 +8,20 @@
        de stand (dépôt Fractal-Innov/stand). L'ancien accueil vit dans
        l'historique git (dernier état : a08fdea). -->
   <link rel="canonical" href="https://www.fractal-innov.fr/stand/" />
+  <!-- Redirection dès la lecture du <head>, sans attendre le meta refresh (gardé en
+       secours sans JavaScript). replace() : la page de passage ne reste pas dans
+       l'historique ; paramètres et ancre suivent (?poi=, #demo). -->
+  <script>location.replace('https://www.fractal-innov.fr/stand/' + location.search + location.hash);</script>
   <meta http-equiv="refresh" content="0; url=https://www.fractal-innov.fr/stand/" />
+  <!-- Page de passage au fond du site (plus de flash blanc) ; le texte n'apparaît
+       qu'après 2 s, si la redirection n'a pas eu lieu. -->
+  <meta name="color-scheme" content="dark" />
+  <style>
+    html, body { margin: 0; background: #090b13; color: #f0f0f0; font-family: system-ui, sans-serif; }
+    body > p { padding: 2rem 1rem; opacity: 0; animation: secours 0s 2s forwards; }
+    a { color: #a8c8ff; }
+    @keyframes secours { to { opacity: 1; } }
+  </style>
 
   <!-- Aperçu de partage : LinkedIn, WhatsApp et les messageries ne suivent pas
        le meta refresh ; sans ces balises, un lien vers l'accueil s'afficherait
