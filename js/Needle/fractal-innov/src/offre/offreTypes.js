@@ -37,7 +37,7 @@
  * ════════════════════════════════════════════════════════════════════════════
  * ⚠️ DEUX FICHIERS DE CONTENU, ET C'EST STRUCTURANT
  * ════════════════════════════════════════════════════════════════════════════
- *     contenu.json   ✅ expédié   — textes, structure, délais, l'ancrage 4 900 €
+ *     contenu.json   ✅ expédié   — textes et structure, AUCUN montant ni délai
  *     tarifs.json    ❌ JAMAIS    — les prix unitaires. Build « extract » seul
  *
  * **Mettre un tarif dans `contenu.json`, c'est publier les prix par accident.**

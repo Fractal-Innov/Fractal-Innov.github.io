@@ -5,8 +5,9 @@
     "⚠️ CE FICHIER EST EXPÉDIÉ DANS LE BUILD PUBLIC. Tout ce qui est écrit ici",
     "   est lisible par n'importe qui, en ouvrant les sources de la page.",
     "",
-    "⚠️ AUCUN MONTANT ICI, sauf `site.ancrageEuros` (4 900 €, l'accroche du",
-    "   deck). Les prix unitaires des modules vivent dans `tarifs.json`, qui",
+    "⚠️ AUCUN MONTANT NI DÉLAI ICI. Depuis le 27/10/2026, plus d'ancrage",
+    "   public : le devis et le délai suivent l'atelier. Les prix unitaires",
+    "   des modules vivent dans `tarifs.json`, qui",
     "   n'est JAMAIS expédié en public. Écrire un prix ici, c'est le publier —",
     "   et c'est la seule erreur de ce jalon qui ne se rattrape pas. `t33`",
     "   monte la garde.",
@@ -35,9 +36,8 @@
       "fr": "Des expériences 3D et AR de qualité studio, accessibles en 3 secondes, sans application et sans casque.",
       "en": ""
     },
-    "contact": "contact@fractal-innov.fr",
-    "ancrageEuros": 4900,
-    "niveauPrix": "ancrage",
+    "contact": "corentin.duboc@fractal-innov.fr",
+    "niveauPrix": "aucun",
     "umamiId": "6d76c813-ff70-4f96-b7c3-186f17661a14",
     "experienceChemin": "/openfit/"
   },
@@ -1074,11 +1074,11 @@
       "rang": 11,
       "page": "pilote-15-jours",
       "titre": {
-        "fr": "Un premier projet en ligne en 15 jours",
+        "fr": "Un premier projet, cadré avec vous en atelier",
         "en": ""
       },
       "resume": {
-        "fr": "Un périmètre réduit et un prix connu d'avance, pour juger sur pièce avant d'engager un budget. À partir de 4 900 €, déduits du budget si le projet se poursuit.",
+        "fr": "Un périmètre réduit, défini ensemble, pour juger sur pièce avant d'engager un budget. Le devis et le délai suivent l'atelier.",
         "en": ""
       },
       "points": [
@@ -1134,11 +1134,11 @@
         },
         {
           "titre": {
-            "fr": "Trois pilotes par mois",
+            "fr": "Un délai fixé avec vous",
             "en": ""
           },
           "description": {
-            "fr": "C'est ce qui garantit le délai annoncé.",
+            "fr": "Il se décide après l'atelier, avec le devis.",
             "en": ""
           }
         }
@@ -1218,7 +1218,7 @@
         "en": ""
       },
       "resume": {
-        "fr": "Le déroulé tient en quatre étapes : cadrage, socle, modules, mise en ligne. Trois démonstrations sont en ligne et testables sans rendez-vous, et un premier projet démarre à 4 900 €.",
+        "fr": "Le déroulé tient en quatre étapes : cadrage, socle, modules, mise en ligne. Trois démonstrations sont en ligne et testables sans rendez-vous, et un premier projet se cadre en atelier.",
         "en": ""
       },
       "points": [
@@ -2010,15 +2010,15 @@
         "pilote"
       ],
       "titre": {
-        "fr": "Un premier projet en ligne en 15 jours, à partir de 4 900 €",
+        "fr": "Démarrer un premier projet : l'atelier, puis le devis",
         "en": ""
       },
       "description": {
-        "fr": "Un périmètre réduit et un prix connu d'avance, pour juger sur pièce avant d'engager un budget : on cadre, je construis, vous testez, on ajuste. Trois projets pilotes ouverts par mois.",
+        "fr": "Un périmètre réduit, défini ensemble, pour juger sur pièce avant d'engager un budget : on cadre, je construis, vous testez, on ajuste. Le devis et le délai suivent l'atelier.",
         "en": ""
       },
       "h1": {
-        "fr": "Un premier projet en ligne en 15 jours",
+        "fr": "Un premier projet, cadré avec vous en atelier",
         "en": ""
       },
       "menu": {
