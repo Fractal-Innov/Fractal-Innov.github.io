@@ -197,13 +197,11 @@ export function verifierContenu(contenu) {
     // pas seulement les champs où l'on croit que des prix pourraient être :
     // c'est précisément dans le champ auquel on n'a pas pensé qu'un montant
     // finira par être écrit.
-    const ancrage = String(contenu.site.ancrageEuros);
+    // ⚠️ Depuis le 27/10/2026, plus AUCUN montant n'est public, pas même
+    //    l'ancrage du pilote : le devis et le délai suivent l'atelier.
     const brut = JSON.stringify(contenu);
-    for (const m of brut.matchAll(/(\d[\d   ]{2,})\s*(?:€|EUR|euros)/gi)) {
-        const montant = m[1].replace(/[^\d]/g, "");
-        if (montant !== ancrage) {
-            soucis.push(`⚠️ montant autre que l'ancrage dans le manifeste public : ${m[0].trim()}`);
-        }
+    for (const m of brut.matchAll(/(\d[\d\u00a0\u202f ]{2,})\s*(?:€|EUR|euros)/gi)) {
+        soucis.push(`⚠️ montant dans le manifeste public : ${m[0].trim()}`);
     }
     log("vérification —", soucis.length, "anomalie(s)");
     return soucis;
