@@ -1,0 +1,42 @@
+# Fractal Innov
+
+> Fractal Innov conçoit le démonstrateur 3D de votre produit : son jumeau 3D, sur votre stand de salon (même sans réseau), sur votre site et en rendez-vous, piloté depuis un téléphone. Un contenu 3D, produit une fois, que le client garde.
+
+Fractal Innov est une entreprise française installée à Suresnes (Île-de-France). Elle travaille dans toute la France.
+
+## Pour qui
+
+- Les industriels et fabricants dont le produit ne peut pas être montré facilement : trop grand, trop lourd, trop fragile ou pas encore fabriqué (machines, équipements, systèmes intégrés).
+- Les entreprises qui font plusieurs salons par an, reçoivent en showroom ou présentent leur produit en rendez-vous.
+
+## Ce que fait le démonstrateur
+
+- Le visiteur explore le produit en 3D du bout du doigt, sous tous les angles.
+- Un parcours guidé amène la caméra au bon endroit et affiche la vidéo ou la fiche au moment où la question se pose.
+- Le commercial pilote la présentation depuis son téléphone, sans application à installer.
+- Sur un salon, le kit fonctionne hors ligne, avec son propre réseau, indépendant du wifi du lieu.
+- Les contenus se changent sans développeur, en français et en anglais.
+- Des statistiques de visite indiquent ce qui a intéressé les visiteurs.
+
+## Options sur devis
+
+- La version en ligne, sur le site du client, et la réalité augmentée. En ligne et hors ligne sont deux diffusions du même contenu 3D, livrées et mises à jour séparément.
+- La modélisation 3D du produit, plusieurs produits dans la même expérience, le mobilier et le flight case.
+
+## Ce qui n'est pas inclus
+
+- L'écran tactile, loué sur place auprès du loueur du salon.
+- Les vidéos et les fiches, fournies par le client.
+- Une équipe sur place pendant le salon : l'accompagnement a lieu avant.
+
+## Comment travailler avec Fractal Innov
+
+1. Un appel de 30 minutes, gratuit et sans engagement.
+2. Un atelier de 2 heures, compris dans le projet, pour réunir les éléments du devis.
+3. Le devis, remis sous 24 heures après l'atelier. Le prix dépend du produit et des fichiers disponibles : il n'y a pas de tarif public.
+
+## Liens
+
+- [Démonstrateur 3D de votre produit](https://www.fractal-innov.fr/stand/) : l'offre, les questions fréquentes et la prise de rendez-vous
+- [Démo en ligne](https://stand-demonstrateur.osc-fr1.scalingo.io/) : un stand d'exemple à manipuler depuis un navigateur
+- [Contact](mailto:corentin.duboc@fractal-innov.fr)
